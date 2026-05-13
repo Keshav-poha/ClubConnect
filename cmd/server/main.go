@@ -33,8 +33,12 @@ func main() {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
 
-	// seed defaults
+	// init services
+	parser := services.NewParserService(cfg.ParserAPIKey, cfg.ParserURL)
+	discovery := services.NewDiscoveryService(db, parser)
 	clubService := services.NewClubService(db)
+
+	// seed defaults
 	if err := clubService.SeedDefaults(); err != nil {
 		log.Printf("failed to seed defaults: %v", err)
 	} else {
@@ -42,7 +46,7 @@ func main() {
 	}
 
 	// Setup router
-	r := router.Setup(db)
+	r := router.Setup(db, discovery)
 
 	// start server
 	port := cfg.Port

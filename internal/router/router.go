@@ -3,12 +3,13 @@ package router
 import (
 	"github.com/clubconnect/clubconnect/internal/handlers"
 	"github.com/clubconnect/clubconnect/internal/middleware"
+	"github.com/clubconnect/clubconnect/internal/services"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 // Setup router
-func Setup(db *gorm.DB) *gin.Engine {
+func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 	r := gin.New()
 
 	// Global middleware
@@ -23,7 +24,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	// Initialize handlers
 	eventHandler := handlers.NewEventHandler(db)
 	clubHandler := handlers.NewClubHandler(db)
-	adminHandler := handlers.NewAdminHandler(db)
+	adminHandler := handlers.NewAdminHandler(db, discovery)
 
 	// Public API routes
 	api := r.Group("/api")

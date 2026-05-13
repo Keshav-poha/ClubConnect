@@ -4,18 +4,23 @@ import (
 	"net/http"
 
 	"github.com/clubconnect/clubconnect/internal/models"
+	"github.com/clubconnect/clubconnect/internal/services"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 // AdminHandler for admin endpoints
 type AdminHandler struct {
-	DB *gorm.DB
+	DB        *gorm.DB
+	Discovery *services.DiscoveryService
 }
 
 // NewAdminHandler init
-func NewAdminHandler(db *gorm.DB) *AdminHandler {
-	return &AdminHandler{DB: db}
+func NewAdminHandler(db *gorm.DB, discovery *services.DiscoveryService) *AdminHandler {
+	return &AdminHandler{
+		DB:        db,
+		Discovery: discovery,
+	}
 }
 
 // AddClubRequest json body
@@ -49,9 +54,18 @@ func (h *AdminHandler) AddClub(c *gin.Context) {
 
 // TriggerScrape handler
 func (h *AdminHandler) TriggerScrape(c *gin.Context) {
-	// TODO: Wire up to DiscoveryService in Phase 1 completion
+	handle := c.Query("handle")
+	if handle == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "handle required"})
+		return
+	}
+
+	if err := h.Discovery.ScrapeClub(handle); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to trigger scrape"})
+		return
+	}
+
 	c.JSON(http.StatusAccepted, gin.H{
-		"message": "scrape job queued",
-		"status":  "not_implemented",
+		"message": "scrape job triggered for " + handle,
 	})
 }

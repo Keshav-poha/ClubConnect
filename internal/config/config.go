@@ -23,6 +23,7 @@ type Config struct {
 
 	// Parser
 	ParserAPIKey string
+	ParserURL    string
 
 	// Scraper
 	ScrapeInterval time.Duration
@@ -56,6 +57,7 @@ func Load() (*Config, error) {
 		Port:           getEnv("PORT", "8080"),
 		GinMode:        getEnv("GIN_MODE", "debug"),
 		ParserAPIKey:   getEnv("PARSER_API_KEY", ""),
+		ParserURL:      getEnv("PARSER_URL", ""),
 		ScrapeInterval: scrapeInterval,
 		ScrapeWorkers:  scrapeWorkers,
 	}
