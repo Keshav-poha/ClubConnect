@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/chromedp/chromedp"
+	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -125,7 +125,7 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 
 func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error) {
 	ua := userAgents[rand.Intn(len(userAgents))]
-	
+
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.UserAgent(ua),
 		chromedp.NoSandbox,
@@ -143,14 +143,14 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 
 	url := fmt.Sprintf("https://www.instagram.com/%s/", handle)
 	var posts []PostData
-	
+
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(url),
 		chromedp.WaitVisible(`article`, chromedp.ByQuery),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			return chromedp.Evaluate(`window.scrollTo(0, 800)`, nil).Do(ctx)
 		}),
-		chromedp.Sleep(3*time.Second), 
+		chromedp.Sleep(3*time.Second),
 		chromedp.Evaluate(`
 			Array.from(document.querySelectorAll('article a')).slice(0, 12).map(a => {
 				const img = a.querySelector('img');
