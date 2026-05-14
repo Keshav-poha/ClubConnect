@@ -54,7 +54,7 @@ func Load() (*Config, error) {
 		DBPassword:     getEnv("DB_PASSWORD", ""),
 		DBName:         getEnv("DB_NAME", "clubconnect"),
 		DBSSLMode:      getEnv("DB_SSLMODE", "disable"),
-		Port:           getEnv("PORT", "8080"),
+		Port:           getEnv("PORT", "7860"),
 		GinMode:        getEnv("GIN_MODE", "debug"),
 		ParserAPIKey:   getEnv("PARSER_API_KEY", ""),
 		ParserURL:      getEnv("PARSER_URL", ""),
