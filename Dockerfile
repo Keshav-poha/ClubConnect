@@ -3,23 +3,22 @@ FROM golang:alpine AS builder
 
 WORKDIR /app
 
-# Install git for dependencies if needed
+# Install git
 RUN apk add --no-cache git
 
-# Copy dependency files first for better caching
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy the rest of the code
+# Copy everything
 COPY . .
 
-# Build the app - strip debug info for a smaller binary
+# Force tidy to ensure compatibility with the build environment's Go version
+RUN go mod tidy
+
+# Build
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o main ./cmd/server/main.go
 
 # --- Run Stage ---
 FROM alpine:3.19
 
-# Install Chromium and dependencies for chromedp
+# Install Chromium and dependencies
 RUN apk add --no-cache \
     chromium \
     nss \
@@ -29,17 +28,11 @@ RUN apk add --no-cache \
     ttf-freefont
 
 WORKDIR /app
-
-# Copy the binary from the builder
 COPY --from=builder /app/main .
 
-# Standard environment variables
 ENV PORT=7860
 ENV GIN_MODE=release
 ENV CHROME_BIN=/usr/bin/chromium-browser
 
-# Hugging Face Spaces run on port 7860
 EXPOSE 7860
-
-# Run the app
 CMD ["./main"]
