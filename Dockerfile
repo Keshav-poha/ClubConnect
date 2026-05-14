@@ -25,7 +25,8 @@ RUN apk add --no-cache \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    tzdata
 
 WORKDIR /app
 COPY --from=builder /app/main .
