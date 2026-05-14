@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/clubconnect/clubconnect/internal/config"
 	"github.com/clubconnect/clubconnect/internal/database"
@@ -35,7 +36,7 @@ func main() {
 
 	// init services
 	parser := services.NewParserService(cfg.ParserAPIKey, cfg.ParserURL)
-	discovery := services.NewDiscoveryService(db, parser)
+	discovery := services.NewDiscoveryService(db, parser, cfg.ScrapeWorkers)
 	clubService := services.NewClubService(db)
 
 	// seed defaults
@@ -44,6 +45,16 @@ func main() {
 	} else {
 		log.Println("default clubs seeded")
 	}
+
+	// Run discovery cycle periodically
+	go func() {
+		// Initial wait to let server start
+		time.Sleep(5 * time.Second)
+		for {
+			discovery.RunDiscoveryCycle()
+			time.Sleep(cfg.ScrapeInterval)
+		}
+	}()
 
 	// Setup router
 	r := router.Setup(db, discovery)
