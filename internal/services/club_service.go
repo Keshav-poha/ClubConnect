@@ -6,49 +6,40 @@ import (
 	"gorm.io/gorm"
 )
 
-// ClubService handles clubs
 type ClubService struct {
-	DB *gorm.DB
+	db *gorm.DB
 }
 
-// NewClubService init
 func NewClubService(db *gorm.DB) *ClubService {
-	return &ClubService{DB: db}
+	return &ClubService{db}
 }
 
-// GetAll clubs
 func (s *ClubService) GetAll() ([]models.Club, error) {
 	var clubs []models.Club
-	result := s.DB.Order("name ASC").Find(&clubs)
-	return clubs, result.Error
+	err := s.db.Order("name ASC").Find(&clubs).Error
+	return clubs, err
 }
 
-// GetByID gets club
 func (s *ClubService) GetByID(id uuid.UUID) (*models.Club, error) {
 	var club models.Club
-	result := s.DB.Preload("Events").First(&club, "id = ?", id)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := s.db.Preload("Events").First(&club, "id = ?", id).Error; err != nil {
+		return nil, err
 	}
 	return &club, nil
 }
 
-// GetByHandle gets club
 func (s *ClubService) GetByHandle(handle string) (*models.Club, error) {
 	var club models.Club
-	result := s.DB.First(&club, "handle = ?", handle)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := s.db.First(&club, "handle = ?", handle).Error; err != nil {
+		return nil, err
 	}
 	return &club, nil
 }
 
-// Create club
 func (s *ClubService) Create(club *models.Club) error {
-	return s.DB.Create(club).Error
+	return s.db.Create(club).Error
 }
 
-// SeedDefaults seeds clubs
 func (s *ClubService) SeedDefaults() error {
 	defaults := []models.Club{
 		{Name: "Tech Development Society", Handle: "tds_nsut"},
@@ -64,13 +55,10 @@ func (s *ClubService) SeedDefaults() error {
 	}
 
 	for _, club := range defaults {
-		// Only insert if handle doesn't already exist
 		var count int64
-		s.DB.Model(&models.Club{}).Where("handle = ?", club.Handle).Count(&count)
+		s.db.Model(&models.Club{}).Where("handle = ?", club.Handle).Count(&count)
 		if count == 0 {
-			if err := s.DB.Create(&club).Error; err != nil {
-				return err
-			}
+			s.db.Create(&club)
 		}
 	}
 

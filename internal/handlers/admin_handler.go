@@ -1,40 +1,31 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/clubconnect/clubconnect/internal/services"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-// AdminHandler for admin endpoints
 type AdminHandler struct {
-	DB        *gorm.DB
-	Discovery *services.DiscoveryService
+	db        *gorm.DB
+	discovery *services.DiscoveryService
 }
 
-// NewAdminHandler init
 func NewAdminHandler(db *gorm.DB, discovery *services.DiscoveryService) *AdminHandler {
-	return &AdminHandler{
-		DB:        db,
-		Discovery: discovery,
-	}
+	return &AdminHandler{db, discovery}
 }
 
-// AddClubRequest json body
-type AddClubRequest struct {
+type AddClubReq struct {
 	Name   string `json:"name" binding:"required"`
 	Handle string `json:"handle" binding:"required"`
 	Bio    string `json:"bio"`
 }
 
-// AddClub handler
 func (h *AdminHandler) AddClub(c *gin.Context) {
-	var req AddClubRequest
+	var req AddClubReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": "bad request"})
 		return
 	}
 
@@ -44,28 +35,25 @@ func (h *AdminHandler) AddClub(c *gin.Context) {
 		Bio:    req.Bio,
 	}
 
-	if result := h.DB.Create(&club); result.Error != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "club with this handle may already exist"})
+	if err := h.db.Create(&club).Error; err != nil {
+		c.JSON(409, gin.H{"error": "handle taken"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, club)
+	c.JSON(201, club)
 }
 
-// TriggerScrape handler
 func (h *AdminHandler) TriggerScrape(c *gin.Context) {
 	handle := c.Query("handle")
 	if handle == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "handle required"})
+		c.JSON(400, gin.H{"error": "need handle"})
 		return
 	}
 
-	if err := h.Discovery.ScrapeClub(handle); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to trigger scrape"})
-		return
-	}
+	// run in background
+	go func() {
+		h.discovery.ScrapeClub(handle)
+	}()
 
-	c.JSON(http.StatusAccepted, gin.H{
-		"message": "scrape job triggered for " + handle,
-	})
+	c.JSON(202, gin.H{"status": "started"})
 }

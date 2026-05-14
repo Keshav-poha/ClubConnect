@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// Club represents a university society
 type Club struct {
 	ID         uuid.UUID      `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	Name       string         `gorm:"type:varchar(255);not null" json:"name"`
@@ -19,12 +18,10 @@ type Club struct {
 	UpdatedAt  time.Time      `json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 
-	// Relationships
 	Events     []Event     `gorm:"foreignKey:ClubID" json:"events,omitempty"`
 	ScrapeLogs []ScrapeLog `gorm:"foreignKey:ClubID" json:"-"`
 }
 
-// BeforeCreate generates a UUID
 func (c *Club) BeforeCreate(tx *gorm.DB) error {
 	if c.ID == uuid.Nil {
 		c.ID = uuid.New()

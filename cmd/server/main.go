@@ -14,61 +14,44 @@ import (
 )
 
 func main() {
-	// load .env
-	if err := godotenv.Load(); err != nil {
-		log.Println("no .env file found, falling back to system env")
-	}
+	godotenv.Load()
 
-	// load config
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
+		log.Fatal("config error:", err)
 	}
 
-	// Set Gin mode
 	gin.SetMode(cfg.GinMode)
 
-	// connect db
 	db, err := database.Connect(cfg)
 	if err != nil {
-		log.Fatalf("failed to connect to db: %v", err)
+		log.Fatal("db error:", err)
 	}
 
-	// init services
 	parser := services.NewParserService(cfg.ParserAPIKey, cfg.ParserURL)
 	discovery := services.NewDiscoveryService(db, parser, cfg.ScrapeWorkers)
-	clubService := services.NewClubService(db)
+	clubSvc := services.NewClubService(db)
 
-	// seed defaults
-	if err := clubService.SeedDefaults(); err != nil {
-		log.Printf("failed to seed defaults: %v", err)
-	} else {
-		log.Println("default clubs seeded")
-	}
+	clubSvc.SeedDefaults()
 
-	// Run discovery cycle periodically
+	// background scraper
 	go func() {
-		// Initial wait to let server start
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 		for {
 			discovery.RunDiscoveryCycle()
 			time.Sleep(cfg.ScrapeInterval)
 		}
 	}()
 
-	// Setup router
 	r := router.Setup(db, discovery)
 
-	// start server
 	port := cfg.Port
 	if port == "" {
 		port = "8080"
 	}
 
-	log.Printf("server starting on :%s", port)
-
+	log.Println("starting on :" + port)
 	if err := r.Run(":" + port); err != nil {
-		log.Fatalf("server died: %v", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
