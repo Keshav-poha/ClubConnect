@@ -42,7 +42,7 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid SCRAPE_INTERVAL: %w", err)
 	}
 
-	scrapeWorkers, err := strconv.Atoi(getEnv("SCRAPE_WORKERS", "3"))
+	scrapeWorkers, err := strconv.Atoi(getEnv("SCRAPE_WORKERS", "1"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid SCRAPE_WORKERS: %w", err)
 	}

@@ -42,7 +42,7 @@ func (s *ClubService) Create(club *models.Club) error {
 
 func (s *ClubService) SeedDefaults() error {
 	defaults := []models.Club{
-		{Name: "Tech Development Society", Handle: "tds_nsut"},
+		{Name: "Tech Development Society", Handle: "thedebuggingsocietynsut"},
 		{Name: "E-Cell NSUT", Handle: "ecell_nsut"},
 		{Name: "IEEE NSUT", Handle: "ieee_nsut"},
 		{Name: "Rotaract Club NSUT", Handle: "rotaract_nsut"},
