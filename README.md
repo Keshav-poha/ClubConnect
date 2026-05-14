@@ -1,3 +1,12 @@
+---
+title: Club Connect
+emoji: 🎬
+colorFrom: gray
+colorTo: blue
+sdk: docker
+app_port: 7860
+---
+
 # Club Connect
 
 Campus event discovery platform that scrapes Instagram and parses captions into structured data. Backend built in Go, frontend in React Native.
