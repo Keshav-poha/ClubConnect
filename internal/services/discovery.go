@@ -147,9 +147,12 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(url),
 		chromedp.WaitVisible(`article`, chromedp.ByQuery),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			return chromedp.Evaluate(`window.scrollTo(0, 800)`, nil).Do(ctx)
+		}),
 		chromedp.Sleep(3*time.Second), 
 		chromedp.Evaluate(`
-			Array.from(document.querySelectorAll('article a')).slice(0, 5).map(a => {
+			Array.from(document.querySelectorAll('article a')).slice(0, 12).map(a => {
 				const img = a.querySelector('img');
 				const href = a.getAttribute('href');
 				return {
