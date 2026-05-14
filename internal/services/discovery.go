@@ -62,7 +62,7 @@ func (s *DiscoveryService) RunDiscoveryCycle() {
 				if err := s.ScrapeClub(club.Handle); err != nil {
 					log.Printf("scrape failed [%s]: %v", club.Handle, err)
 				}
-				time.Sleep(2 * time.Second)
+				time.Sleep(10 * time.Second)
 			}
 		}()
 	}
@@ -100,6 +100,9 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			log.Printf("parser fail [%s]: %v", p.PostID, err)
 			continue
 		}
+		
+		// Wait between parser calls to avoid 429
+		time.Sleep(5 * time.Second)
 
 		event := models.Event{
 			ClubID:       club.ID,
@@ -148,9 +151,9 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 		chromedp.Navigate(url),
 		chromedp.WaitVisible(`article`, chromedp.ByQuery),
 		chromedp.ActionFunc(func(ctx context.Context) error {
-			return chromedp.Evaluate(`window.scrollTo(0, 800)`, nil).Do(ctx)
+			return chromedp.Evaluate(`window.scrollTo(0, 1500)`, nil).Do(ctx)
 		}),
-		chromedp.Sleep(3*time.Second),
+		chromedp.Sleep(5*time.Second),
 		chromedp.Evaluate(`
 			Array.from(document.querySelectorAll('article a')).slice(0, 12).map(a => {
 				const img = a.querySelector('img');
