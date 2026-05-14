@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/clubconnect/clubconnect/internal/config"
