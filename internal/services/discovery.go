@@ -153,13 +153,21 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	var result struct {
-		Data struct {
-			Items []struct {
-				Shortcode  string `json:"shortcode"`
-				Caption    string `json:"caption"`
-				DisplayURL string `json:"display_url"`
-			} `json:"items"`
-		} `json:"data"`
+		Result struct {
+			Edges []struct {
+				Node struct {
+					Code    string `json:"code"`
+					Caption struct {
+						Text string `json:"text"`
+					} `json:"caption"`
+					ImageVersions2 struct {
+						Candidates []struct {
+							URL string `json:"url"`
+						} `json:"candidates"`
+					} `json:"image_versions2"`
+				} `json:"node"`
+			} `json:"edges"`
+		} `json:"result"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -167,12 +175,18 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	var posts []PostData
-	for _, p := range result.Data.Items {
+	for _, edge := range result.Result.Edges {
+		p := edge.Node
+		imgURL := ""
+		if len(p.ImageVersions2.Candidates) > 0 {
+			imgURL = p.ImageVersions2.Candidates[0].URL
+		}
+
 		posts = append(posts, PostData{
-			PostID:       p.Shortcode,
-			Caption:      p.Caption,
-			ImageURL:     p.DisplayURL,
-			InstagramURL: fmt.Sprintf("https://instagram.com/p/%s/", p.Shortcode),
+			PostID:       p.Code,
+			Caption:      p.Caption.Text,
+			ImageURL:     imgURL,
+			InstagramURL: fmt.Sprintf("https://instagram.com/p/%s/", p.Code),
 		})
 	}
 
