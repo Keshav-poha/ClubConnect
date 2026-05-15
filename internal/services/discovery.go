@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -132,9 +133,11 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 		return nil, fmt.Errorf("RAPIDAPI_KEY not configured")
 	}
 
-	url := fmt.Sprintf("https://%s/user/posts?username=%s", s.cfg.RapidAPIHost, handle)
+	url := fmt.Sprintf("https://%s/api/instagram/posts", s.cfg.RapidAPIHost)
+	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s"}`, handle))
 	
-	req, _ := http.NewRequest("GET", url, nil)
+	req, _ := http.NewRequest("POST", url, payload)
+	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-RapidAPI-Key", s.cfg.RapidAPIKey)
 	req.Header.Add("X-RapidAPI-Host", s.cfg.RapidAPIHost)
 
@@ -150,10 +153,12 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	var result struct {
-		Data []struct {
-			Shortcode string `json:"shortcode"`
-			Caption   string `json:"caption"`
-			ImageURL  string `json:"image_url"`
+		Data struct {
+			Items []struct {
+				Shortcode  string `json:"shortcode"`
+				Caption    string `json:"caption"`
+				DisplayURL string `json:"display_url"`
+			} `json:"items"`
 		} `json:"data"`
 	}
 
@@ -162,11 +167,11 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	var posts []PostData
-	for _, p := range result.Data {
+	for _, p := range result.Data.Items {
 		posts = append(posts, PostData{
 			PostID:       p.Shortcode,
 			Caption:      p.Caption,
-			ImageURL:     p.ImageURL,
+			ImageURL:     p.DisplayURL,
 			InstagramURL: fmt.Sprintf("https://instagram.com/p/%s/", p.Shortcode),
 		})
 	}
