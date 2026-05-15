@@ -41,7 +41,7 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid DB_PORT: %w", err)
 	}
 
-	scrapeInterval, err := time.ParseDuration(getEnv("SCRAPE_INTERVAL", "30m"))
+	scrapeInterval, err := time.ParseDuration(getEnv("SCRAPE_INTERVAL", "8h"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid SCRAPE_INTERVAL: %w", err)
 	}
