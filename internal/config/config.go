@@ -25,6 +25,10 @@ type Config struct {
 	ParserAPIKey string
 	ParserURL    string
 
+	// External Scraper (RapidAPI)
+	RapidAPIKey  string
+	RapidAPIHost string
+
 	// Scraper
 	ScrapeInterval time.Duration
 	ScrapeWorkers  int
@@ -58,6 +62,8 @@ func Load() (*Config, error) {
 		GinMode:        getEnv("GIN_MODE", "debug"),
 		ParserAPIKey:   getEnv("PARSER_API_KEY", ""),
 		ParserURL:      getEnv("PARSER_URL", ""),
+		RapidAPIKey:    getEnv("RAPIDAPI_KEY", ""),
+		RapidAPIHost:   getEnv("RAPIDAPI_HOST", ""),
 		ScrapeInterval: scrapeInterval,
 		ScrapeWorkers:  scrapeWorkers,
 	}

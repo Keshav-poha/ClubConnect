@@ -1,15 +1,14 @@
 package services
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
-	"strings"
+	"net/http"
 	"sync"
 	"time"
 
-	"github.com/chromedp/chromedp"
+	"github.com/clubconnect/clubconnect/internal/config"
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -18,6 +17,7 @@ import (
 type DiscoveryService struct {
 	db      *gorm.DB
 	parser  *ParserService
+	cfg     *config.Config
 	workers int
 }
 
@@ -28,11 +28,11 @@ type PostData struct {
 	Caption      string
 }
 
-func NewDiscoveryService(db *gorm.DB, parser *ParserService, workers int) *DiscoveryService {
+func NewDiscoveryService(db *gorm.DB, parser *ParserService, cfg *config.Config, workers int) *DiscoveryService {
 	if workers <= 0 {
 		workers = 1
 	}
-	return &DiscoveryService{db, parser, workers}
+	return &DiscoveryService{db, parser, cfg, workers}
 }
 
 var userAgents = []string{
@@ -127,61 +127,48 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 }
 
 func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error) {
-	ua := userAgents[rand.Intn(len(userAgents))]
+	// If no API key, we can't scrape
+	if s.cfg.RapidAPIKey == "" {
+		return nil, fmt.Errorf("RAPIDAPI_KEY not configured")
+	}
 
-	opts := append(chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.UserAgent(ua),
-		chromedp.NoSandbox,
-		chromedp.DisableGPU,
-	)
+	url := fmt.Sprintf("https://%s/user/posts?username=%s", s.cfg.RapidAPIHost, handle)
+	
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("X-RapidAPI-Key", s.cfg.RapidAPIKey)
+	req.Header.Add("X-RapidAPI-Host", s.cfg.RapidAPIHost)
 
-	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
-	defer cancel()
-
-	ctx, cancel := chromedp.NewContext(allocCtx)
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 120*time.Second)
-	defer cancel()
-
-	// Silence the noisy CookiePartitionKey errors
-	ctx, cancel = chromedp.NewContext(ctx, chromedp.WithLogf(func(string, ...interface{}) {}))
-	defer cancel()
-
-	url := fmt.Sprintf("https://www.instagram.com/%s/", handle)
-	var posts []PostData
-
-	err := chromedp.Run(ctx,
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			// Stealth: Hide webdriver property
-			return chromedp.Evaluate(`Object.defineProperty(navigator, 'webdriver', {get: () => undefined})`, nil).Do(ctx)
-		}),
-		chromedp.Navigate(url),
-		chromedp.Sleep(10*time.Second), // Give it extra time to handle potential redirects
-		chromedp.WaitVisible(`article`, chromedp.ByQuery),
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			return chromedp.Evaluate(`window.scrollTo(0, 2000)`, nil).Do(ctx)
-		}),
-		chromedp.Sleep(5*time.Second),
-		chromedp.Evaluate(`
-			Array.from(document.querySelectorAll('article a')).slice(0, 12).map(a => {
-				const img = a.querySelector('img');
-				const href = a.getAttribute('href');
-				return {
-					PostID: href ? href.split('/')[2] : '',
-					InstagramURL: 'https://www.instagram.com' + href,
-					ImageURL: img ? img.src : '',
-					Caption: img ? img.alt : ''
-				};
-			})
-		`, &posts),
-	)
-
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
 	if err != nil {
-		if strings.Contains(err.Error(), "deadline") {
-			return nil, fmt.Errorf("timeout reaching %s", handle)
-		}
 		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("external api error: %d", resp.StatusCode)
+	}
+
+	var result struct {
+		Data []struct {
+			Shortcode string `json:"shortcode"`
+			Caption   string `json:"caption"`
+			ImageURL  string `json:"image_url"`
+		} `json:"data"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	var posts []PostData
+	for _, p := range result.Data {
+		posts = append(posts, PostData{
+			PostID:       p.Shortcode,
+			Caption:      p.Caption,
+			ImageURL:     p.ImageURL,
+			InstagramURL: fmt.Sprintf("https://instagram.com/p/%s/", p.Shortcode),
+		})
 	}
 
 	return posts, nil

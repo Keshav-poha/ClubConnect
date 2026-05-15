@@ -28,7 +28,7 @@ func main() {
 	}
 
 	parser := services.NewParserService(cfg.ParserAPIKey, cfg.ParserURL)
-	discovery := services.NewDiscoveryService(db, parser, cfg.ScrapeWorkers)
+	discovery := services.NewDiscoveryService(db, parser, cfg, cfg.ScrapeWorkers)
 	clubSvc := services.NewClubService(db)
 
 	clubSvc.SeedDefaults()
