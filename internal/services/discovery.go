@@ -141,17 +141,26 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 120*time.Second)
+	defer cancel()
+
+	// Silence the noisy CookiePartitionKey errors
+	ctx, cancel = chromedp.NewContext(ctx, chromedp.WithLogf(func(string, ...interface{}) {}))
 	defer cancel()
 
 	url := fmt.Sprintf("https://www.instagram.com/%s/", handle)
 	var posts []PostData
 
 	err := chromedp.Run(ctx,
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			// Stealth: Hide webdriver property
+			return chromedp.Evaluate(`Object.defineProperty(navigator, 'webdriver', {get: () => undefined})`, nil).Do(ctx)
+		}),
 		chromedp.Navigate(url),
+		chromedp.Sleep(10*time.Second), // Give it extra time to handle potential redirects
 		chromedp.WaitVisible(`article`, chromedp.ByQuery),
 		chromedp.ActionFunc(func(ctx context.Context) error {
-			return chromedp.Evaluate(`window.scrollTo(0, 1500)`, nil).Do(ctx)
+			return chromedp.Evaluate(`window.scrollTo(0, 2000)`, nil).Do(ctx)
 		}),
 		chromedp.Sleep(5*time.Second),
 		chromedp.Evaluate(`
