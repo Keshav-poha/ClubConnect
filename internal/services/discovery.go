@@ -134,12 +134,15 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	url := fmt.Sprintf("https://%s/api/instagram/posts", s.cfg.RapidAPIHost)
-	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s"}`, handle))
+	// Body must be exactly as expected by the API
+	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s", "maxId": ""}`, handle))
 	
 	req, _ := http.NewRequest("POST", url, payload)
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-RapidAPI-Key", s.cfg.RapidAPIKey)
-	req.Header.Add("X-RapidAPI-Host", s.cfg.RapidAPIHost)
+	req.Header.Set("x-rapidapi-key", s.cfg.RapidAPIKey)
+	req.Header.Set("x-rapidapi-host", s.cfg.RapidAPIHost)
+	req.Header.Set("Content-Type", "application/json")
+
+	log.Printf("fetching posts for %s using %s", handle, s.cfg.RapidAPIHost)
 
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
