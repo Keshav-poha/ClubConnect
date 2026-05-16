@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,11 +26,9 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Safety: Force update if URL is empty, old Gemini, old Router, or broken Mistral
-	if apiUrl == "" || strings.Contains(apiUrl, "googleapis.com") || 
-	   strings.Contains(apiUrl, "router.huggingface.co") || 
-	   strings.Contains(apiUrl, "mistralai") {
-		apiUrl = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B-Instruct"
+	// Use the new HF Router (OpenAI-compatible) as the default
+	if apiUrl == "" || strings.Contains(apiUrl, "api-inference.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
+		apiUrl = "https://router.huggingface.co/v1/chat/completions"
 	}
 	return &ParserService{
 		apiKey: apiKey,
@@ -43,49 +42,40 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 		return s.heuristicParse(caption), nil
 	}
 
-	models := []string{
-		s.apiUrl,
-		"https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
-		"https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B-Instruct",
+	// We'll use the Router URL with a reliable model
+	event, err := s.tryParse(caption, s.apiUrl, "Qwen/Qwen2.5-1.5B-Instruct")
+	if err == nil {
+		return event, nil
 	}
-
-	for _, modelUrl := range models {
-		log.Printf("DEBUG: attempting parse with %s", modelUrl)
-		
-		event, err := s.tryParse(caption, modelUrl)
-		if err == nil {
-			return event, nil
-		}
-		log.Printf("DEBUG: model %s failed: %v", modelUrl, err)
-	}
-
-	log.Printf("DEBUG: all AI models failed, using heuristic fallback")
+	
+	log.Printf("DEBUG: AI parse failed (%v), falling back to heuristic", err)
 	return s.heuristicParse(caption), nil
 }
 
-func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, error) {
-	prompt := fmt.Sprintf(`[INST] You are an event filter. Determine if this Instagram post is a student-relevant event (hackathon, session, recruitment, book/magazine release, workshop). 
-If it IS an event, extract details. If it is NOT an event (just greetings, awards, generic info), set is_event to false.
-
+func (s *ParserService) tryParse(caption string, url string, model string) (*ExtractedEvent, error) {
+	prompt := fmt.Sprintf(`Extract event details from this caption into JSON format. 
 Today is %s. Year is 2026.
-Return JSON ONLY: {"is_event": bool, "title": "string", "date": "ISO8601", "location": "string"}
+Student-relevant events only (Hackathons, Recruitments, Sessions, Releases).
+Return JSON: {"is_event": bool, "title": "string", "date": "ISO8601", "location": "string"}
 
-Text: %s [/INST]`, time.Now().Format("2006-01-02"), caption)
+Caption: %s`, time.Now().Format("2006-01-02"), caption)
 
+	// OpenAI-compatible Chat Payload
 	payload := map[string]interface{}{
-		"inputs": prompt,
-		"parameters": map[string]interface{}{
-			"return_full_text": false,
-			"max_new_tokens":   200,
+		"model": model,
+		"messages": []map[string]string{
+			{"role": "system", "content": "You are a helpful assistant that extracts event data into JSON."},
+			{"role": "user", "content": prompt},
 		},
+		"response_format": map[string]string{"type": "json_object"},
+		"max_tokens":      300,
 	}
 
 	reqBody, _ := json.Marshal(payload)
-	req, _ := http.NewRequest("POST", url, strings.NewReader(string(reqBody)))
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(reqBody))
 	
 	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(s.apiKey))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
 	resp, err := s.client.Do(req)
 	if err != nil {
@@ -98,28 +88,26 @@ Text: %s [/INST]`, time.Now().Format("2006-01-02"), caption)
 		return nil, fmt.Errorf("api error %d: %s", resp.StatusCode, string(body))
 	}
 
-	var res []struct {
-		GeneratedText string `json:"generated_text"`
+	var res struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
 	}
 
 	if err := json.Unmarshal(body, &res); err != nil {
 		return nil, err
 	}
 
-	if len(res) == 0 {
-		return nil, fmt.Errorf("empty response")
+	if len(res.Choices) == 0 {
+		return nil, fmt.Errorf("no response choices")
 	}
 
-	text := res[0].GeneratedText
-	start := strings.Index(text, "{")
-	end := strings.LastIndex(text, "}")
-	if start == -1 || end == -1 {
-		return nil, fmt.Errorf("no json in output")
-	}
-
+	text := res.Choices[0].Message.Content
 	var event ExtractedEvent
-	if err := json.Unmarshal([]byte(text[start:end+1]), &event); err != nil {
-		return nil, err
+	if err := json.Unmarshal([]byte(text), &event); err != nil {
+		return nil, fmt.Errorf("json parse error: %w", err)
 	}
 
 	return &event, nil
@@ -128,7 +116,6 @@ Text: %s [/INST]`, time.Now().Format("2006-01-02"), caption)
 func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
 	lower := strings.ToLower(caption)
 	
-	// Keywords for relevant student events
 	eventKeywords := []string{
 		"hackathon", "session", "recruitment", "release", "magazine", 
 		"book", "workshop", "webinar", "seminar", "competition", 
