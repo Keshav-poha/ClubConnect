@@ -42,8 +42,8 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 		return s.heuristicParse(caption), nil
 	}
 
-	// We'll use the Router URL with a reliable model
-	event, err := s.tryParse(caption, s.apiUrl, "Qwen/Qwen2.5-1.5B-Instruct")
+	// Try Phi-3-mini (highly stable on HF Router)
+	event, err := s.tryParse(caption, s.apiUrl, "microsoft/Phi-3-mini-4k-instruct")
 	if err == nil {
 		return event, nil
 	}
