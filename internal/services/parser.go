@@ -1,12 +1,10 @@
 package services
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
+	"os/exec"
 	"regexp"
 	"strings"
 	"time"
@@ -20,75 +18,42 @@ type ExtractedEvent struct {
 }
 
 type ParserService struct {
-	apiKey string
-	apiUrl string
-	client *http.Client
+	// No longer needs an API URL or Key for the local integrated workflow
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Default to local Ollama if no URL is provided
-	if apiUrl == "" {
-		apiUrl = "http://127.0.0.1:11434/api/generate"
-	}
-	return &ParserService{
-		apiKey: apiKey,
-		apiUrl: apiUrl,
-		client: &http.Client{Timeout: 60 * time.Second}, // Longer timeout for local inference
-	}
+	return &ParserService{}
 }
 
 func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
-	// Try local AI first
-	event, err := s.tryLocalParse(caption)
+	// Try the integrated Python AI first
+	event, err := s.tryIntegratedParse(caption)
 	if err == nil {
 		return event, nil
 	}
 	
-	log.Printf("DEBUG: local AI parse failed (%v), falling back to heuristic", err)
+	log.Printf("DEBUG: integrated AI parse failed (%v), falling back to heuristic", err)
 	return s.heuristicParse(caption), nil
 }
 
-func (s *ParserService) tryLocalParse(caption string) (*ExtractedEvent, error) {
-	prompt := fmt.Sprintf(`Extract event details from this caption into JSON format. 
-Today is %s. Year is 2026.
-Student-relevant events only (Hackathons, Recruitments, Sessions, Releases).
-Return JSON: {"is_event": bool, "title": "string", "date": "ISO8601", "location": "string"}
-
-Caption: %s`, time.Now().Format("2006-01-02"), caption)
-
-	// Ollama API format
-	payload := map[string]interface{}{
-		"model":  "phi3:mini",
-		"prompt": prompt,
-		"stream": false,
-		"format": "json",
-	}
-
-	reqBody, _ := json.Marshal(payload)
-	req, _ := http.NewRequest("POST", s.apiUrl, bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := s.client.Do(req)
+func (s *ParserService) tryIntegratedParse(caption string) (*ExtractedEvent, error) {
+	// Call our integrated Python script
+	cmd := exec.Command("python3", "internal/services/extract.py", caption)
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("local ai error %d: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("python script failed: %v - %s", err, string(output))
 	}
 
-	var res struct {
-		Response string `json:"response"`
-	}
-
-	if err := json.Unmarshal(body, &res); err != nil {
-		return nil, err
+	// Find JSON in the output
+	outStr := string(output)
+	start := strings.Index(outStr, "{")
+	end := strings.LastIndex(outStr, "}")
+	if start == -1 || end == -1 {
+		return nil, fmt.Errorf("no json in python output: %s", outStr)
 	}
 
 	var event ExtractedEvent
-	if err := json.Unmarshal([]byte(res.Response), &event); err != nil {
+	if err := json.Unmarshal([]byte(outStr[start:end+1]), &event); err != nil {
 		return nil, fmt.Errorf("json parse error: %w", err)
 	}
 

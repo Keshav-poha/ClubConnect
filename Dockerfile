@@ -10,61 +10,32 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o main ./cmd/server/main
 # --- Run Stage ---
 FROM ubuntu:22.04
 
-# Install basic dependencies, curl, and common AI libraries
+# Install Python and basic tools
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     tzdata \
-    curl \
-    libglib2.0-0 \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Ollama
-RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama \
-    && chmod +x /usr/bin/ollama
+# Install AI libraries
+RUN pip3 install --no-cache-dir \
+    torch \
+    transformers \
+    accelerate
+
+# Pre-download the ultra-light AI model (Qwen 0.5B)
+RUN python3 -c 'from transformers import AutoModelForCausalLM, AutoTokenizer; \
+    model_name = "Qwen/Qwen2.5-0.5B-Instruct"; \
+    AutoTokenizer.from_pretrained(model_name); \
+    AutoModelForCausalLM.from_pretrained(model_name)'
 
 WORKDIR /app
 COPY --from=builder /app/main .
-
-# Create writable directories for Ollama
-RUN mkdir -p /app/ollama /app/models
-ENV OLLAMA_HOME=/app/ollama
-ENV OLLAMA_MODELS=/app/models
-ENV HOME=/app/ollama
-
-# Script to start Ollama and pull model before starting main app
-RUN echo '#!/bin/bash\n\
-set -x\n\
-export OLLAMA_HOST=127.0.0.1:11434\n\
-export OLLAMA_LLM_LIBRARY=cpu\n\
-export HOME=/app/ollama\n\
-\n\
-ls -l /usr/bin/ollama\n\
-/usr/bin/ollama --version\n\
-\n\
-echo "Starting Ollama server..."\n\
-ollama serve & \n\
-\n\
-echo "Waiting for Ollama to wake up..."\n\
-for i in {1..20}; do\n\
-  if curl -s http://127.0.0.1:11434/api/tags > /dev/null; then\n\
-    echo "Ollama is awake!"\n\
-    break\n\
-  fi\n\
-  echo "Still waiting... ($i/20)"\n\
-  sleep 3\n\
-done\n\
-\n\
-echo "Ensuring model exists..."\n\
-ollama pull phi3:mini\n\
-\n\
-echo "AI ready, starting app..."\n\
-./main' > /app/start.sh \
-    && chmod +x /app/start.sh
+COPY internal/services/extract.py internal/services/extract.py
 
 ENV PORT=7860
 ENV GIN_MODE=release
-# Point parser to local ollama by default
-ENV PARSER_URL=http://127.0.0.1:11434/api/generate
 
 EXPOSE 7860
-CMD ["/app/start.sh"]
+CMD ["./main"]
