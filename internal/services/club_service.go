@@ -42,25 +42,21 @@ func (s *ClubService) Create(club *models.Club) error {
 
 func (s *ClubService) SeedDefaults() error {
 	defaults := []models.Club{
-		{Name: "Tech Development Society", Handle: "thedebuggingsocietynsut"},
-		{Name: "E-Cell NSUT", Handle: "ecell_nsut"},
+		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut"},
 		{Name: "IEEE NSUT", Handle: "ieee_nsut"},
-		{Name: "Rotaract Club NSUT", Handle: "rotaract_nsut"},
-		{Name: "GDSC NSUT", Handle: "gdsc_nsut"},
-		{Name: "CodeChef NSUT", Handle: "codechef_nsut"},
-		{Name: "Enactus NSUT", Handle: "enactus_nsut"},
-		{Name: "NSS NSUT", Handle: "nss_nsut"},
-		{Name: "Sports Society NSUT", Handle: "sports_nsut"},
-		{Name: "Literati NSUT", Handle: "literati_nsut"},
 	}
 
-	for _, club := range defaults {
-		var count int64
-		s.db.Model(&models.Club{}).Where("handle = ?", club.Handle).Count(&count)
-		if count == 0 {
-			s.db.Create(&club)
+	// Remove clubs that are not in our defaults
+	handles := []string{"thedebuggingsocietynsut", "ieee_nsut"}
+	s.db.Unscoped().Where("handle NOT IN ?", handles).Delete(&models.Club{})
+
+	for _, d := range defaults {
+		var existing models.Club
+		if err := s.db.First(&existing, "handle = ?", d.Handle).Error; err != nil {
+			s.db.Create(&d)
+		} else {
+			s.db.Model(&existing).Update("name", d.Name)
 		}
 	}
-
 	return nil
 }
