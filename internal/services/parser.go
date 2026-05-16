@@ -1,7 +1,6 @@
 package services
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,9 +25,9 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Use the new HF Router (OpenAI-compatible) as the default
-	if apiUrl == "" || strings.Contains(apiUrl, "api-inference.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
-		apiUrl = "https://router.huggingface.co/v1/chat/completions"
+	// Standard Legacy Serverless URL (the most reliable free tier path)
+	if apiUrl == "" || strings.Contains(apiUrl, "router.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
+		apiUrl = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
 	}
 	return &ParserService{
 		apiKey: apiKey,
@@ -42,8 +41,8 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 		return s.heuristicParse(caption), nil
 	}
 
-	// Try Phi-3-mini (highly stable on HF Router)
-	event, err := s.tryParse(caption, s.apiUrl, "microsoft/Phi-3-mini-4k-instruct")
+	// Try the legacy serverless model (Zephyr is very stable)
+	event, err := s.tryParse(caption, s.apiUrl)
 	if err == nil {
 		return event, nil
 	}
@@ -52,27 +51,23 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 	return s.heuristicParse(caption), nil
 }
 
-func (s *ParserService) tryParse(caption string, url string, model string) (*ExtractedEvent, error) {
-	prompt := fmt.Sprintf(`Extract event details from this caption into JSON format. 
-Today is %s. Year is 2026.
-Student-relevant events only (Hackathons, Recruitments, Sessions, Releases).
-Return JSON: {"is_event": bool, "title": "string", "date": "ISO8601", "location": "string"}
+func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, error) {
+	prompt := fmt.Sprintf("<|system|>\nYou are an event extractor. Extract details into JSON.<|endoftext|>\n<|user|>\nExtract from this caption: title, date (ISO 8601), location, and is_event (bool). Today is %s. Year 2026.\n\nCaption: %s\n\nJSON:<|endoftext|>\n<|assistant|>\n", time.Now().Format("2006-01-02"), caption)
 
-Caption: %s`, time.Now().Format("2006-01-02"), caption)
-
-	// OpenAI-compatible Chat Payload
+	// Legacy "inputs" format
 	payload := map[string]interface{}{
-		"model": model,
-		"messages": []map[string]string{
-			{"role": "system", "content": "You are a helpful assistant that extracts event data into JSON."},
-			{"role": "user", "content": prompt},
+		"inputs": prompt,
+		"parameters": map[string]interface{}{
+			"return_full_text": false,
+			"max_new_tokens":   250,
 		},
-		"response_format": map[string]string{"type": "json_object"},
-		"max_tokens":      300,
+		"options": map[string]interface{}{
+			"wait_for_model": true,
+		},
 	}
 
 	reqBody, _ := json.Marshal(payload)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(string(reqBody)))
 	
 	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(s.apiKey))
 	req.Header.Set("Content-Type", "application/json")
@@ -88,26 +83,28 @@ Caption: %s`, time.Now().Format("2006-01-02"), caption)
 		return nil, fmt.Errorf("api error %d: %s", resp.StatusCode, string(body))
 	}
 
-	var res struct {
-		Choices []struct {
-			Message struct {
-				Content string `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
+	var res []struct {
+		GeneratedText string `json:"generated_text"`
 	}
 
 	if err := json.Unmarshal(body, &res); err != nil {
 		return nil, err
 	}
 
-	if len(res.Choices) == 0 {
-		return nil, fmt.Errorf("no response choices")
+	if len(res) == 0 {
+		return nil, fmt.Errorf("empty response")
 	}
 
-	text := res.Choices[0].Message.Content
+	text := res[0].GeneratedText
+	start := strings.Index(text, "{")
+	end := strings.LastIndex(text, "}")
+	if start == -1 || end == -1 {
+		return nil, fmt.Errorf("no json in output")
+	}
+
 	var event ExtractedEvent
-	if err := json.Unmarshal([]byte(text), &event); err != nil {
-		return nil, fmt.Errorf("json parse error: %w", err)
+	if err := json.Unmarshal([]byte(text[start:end+1]), &event); err != nil {
+		return nil, err
 	}
 
 	return &event, nil
