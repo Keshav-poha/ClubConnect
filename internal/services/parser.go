@@ -25,7 +25,10 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	if apiUrl == "" || strings.Contains(apiUrl, "router.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
+	// Safety: Force update if URL is empty, old Gemini, old Router, or broken Mistral
+	if apiUrl == "" || strings.Contains(apiUrl, "googleapis.com") || 
+	   strings.Contains(apiUrl, "router.huggingface.co") || 
+	   strings.Contains(apiUrl, "mistralai") {
 		apiUrl = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B-Instruct"
 	}
 	return &ParserService{
@@ -43,7 +46,7 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 	models := []string{
 		s.apiUrl,
 		"https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
-		"https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3",
+		"https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B-Instruct",
 	}
 
 	for _, modelUrl := range models {
