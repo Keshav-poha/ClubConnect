@@ -23,9 +23,9 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Safety: Force HF URL if old Gemini URL is present
-	if apiUrl == "" || strings.Contains(apiUrl, "googleapis.com") {
-		apiUrl = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+	// Use new HF router URL if old URL is present or empty
+	if apiUrl == "" || strings.Contains(apiUrl, "api-inference.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
+		apiUrl = "https://router.huggingface.co/hf-inference/models/google/gemma-2-2b-it"
 	}
 	return &ParserService{
 		apiKey: apiKey,
@@ -42,8 +42,8 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 	// Try multiple models in case of rate limits
 	models := []string{
 		s.apiUrl,
-		"https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
-		"https://api-inference.huggingface.co/models/google/gemma-2b-it",
+		"https://router.huggingface.co/hf-inference/models/HuggingFaceH4/zephyr-7b-beta",
+		"https://router.huggingface.co/hf-inference/models/google/gemma-2-9b-it",
 	}
 
 	var lastErr error
