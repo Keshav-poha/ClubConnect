@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -151,8 +152,11 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 	defer resp.Body.Close()
 
+	body, _ := io.ReadAll(resp.Body)
+	log.Printf("DEBUG: raw response from instagram120: %s", string(body))
+
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("external api error: %d", resp.StatusCode)
+		return nil, fmt.Errorf("external api error: %d - %s", resp.StatusCode, string(body))
 	}
 
 	var result struct {
@@ -173,8 +177,8 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 		} `json:"result"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, err
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("unmarshal error: %w", err)
 	}
 
 	var posts []PostData
