@@ -27,17 +27,19 @@ COPY --from=builder /app/main .
 # Script to start Ollama and pull model before starting main app
 RUN echo '#!/bin/bash\n\
 ollama serve &\n\
-sleep 5\n\
+sleep 10\n\
 echo "Pulling light AI model (phi3:mini)..."\n\
 ollama pull phi3:mini\n\
+echo "Current Models:"\n\
+ollama list\n\
 echo "AI ready, starting app..."\n\
 ./main' > /app/start.sh \
     && chmod +x /app/start.sh
 
 ENV PORT=7860
 ENV GIN_MODE=release
-# Point parser to local ollama by default
-ENV PARSER_URL=http://localhost:11434/api/generate
+# Point parser to local ollama by default (use 127.0.0.1 to avoid IPv6 issues)
+ENV PARSER_URL=http://127.0.0.1:11434/api/generate
 
 EXPOSE 7860
 CMD ["/app/start.sh"]

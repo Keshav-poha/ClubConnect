@@ -28,7 +28,7 @@ type ParserService struct {
 func NewParserService(apiKey, apiUrl string) *ParserService {
 	// Default to local Ollama if no URL is provided
 	if apiUrl == "" {
-		apiUrl = "http://localhost:11434/api/generate"
+		apiUrl = "http://127.0.0.1:11434/api/generate"
 	}
 	return &ParserService{
 		apiKey: apiKey,
