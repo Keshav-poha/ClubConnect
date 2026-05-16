@@ -15,6 +15,7 @@ type ExtractedEvent struct {
 	Title    string    `json:"title"`
 	Date     time.Time `json:"date"`
 	Location string    `json:"location"`
+	IsEvent  bool      `json:"is_event"`
 }
 
 type ParserService struct {
@@ -24,7 +25,6 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Standard Legacy Serverless URL (the only true free tier)
 	if apiUrl == "" || strings.Contains(apiUrl, "router.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
 		apiUrl = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B-Instruct"
 	}
@@ -40,7 +40,6 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 		return s.heuristicParse(caption), nil
 	}
 
-	// Try the legacy serverless models
 	models := []string{
 		s.apiUrl,
 		"https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
@@ -62,13 +61,19 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 }
 
 func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, error) {
-	prompt := fmt.Sprintf("Extract event title, date (ISO 8601), and location from this text into a JSON object. today is %s.\n\nText: %s\n\nJSON:", time.Now().Format("2006-01-02"), caption)
+	prompt := fmt.Sprintf(`[INST] You are an event filter. Determine if this Instagram post is a student-relevant event (hackathon, session, recruitment, book/magazine release, workshop). 
+If it IS an event, extract details. If it is NOT an event (just greetings, awards, generic info), set is_event to false.
+
+Today is %s. Year is 2026.
+Return JSON ONLY: {"is_event": bool, "title": "string", "date": "ISO8601", "location": "string"}
+
+Text: %s [/INST]`, time.Now().Format("2006-01-02"), caption)
 
 	payload := map[string]interface{}{
 		"inputs": prompt,
 		"parameters": map[string]interface{}{
 			"return_full_text": false,
-			"max_new_tokens":   150,
+			"max_new_tokens":   200,
 		},
 	}
 
@@ -77,7 +82,6 @@ func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, e
 	
 	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(s.apiKey))
 	req.Header.Set("Content-Type", "application/json")
-	// Important: Set a browser-like User-Agent
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
 	resp, err := s.client.Do(req)
@@ -119,7 +123,27 @@ func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, e
 }
 
 func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
-	// Simple fallback: first line as title, current time as date
+	lower := strings.ToLower(caption)
+	
+	// Keywords for relevant student events
+	eventKeywords := []string{
+		"hackathon", "session", "recruitment", "release", "magazine", 
+		"book", "workshop", "webinar", "seminar", "competition", 
+		"apply now", "register", "deadline", "bootcamp", "audition",
+	}
+
+	isEvent := false
+	for _, kw := range eventKeywords {
+		if strings.Contains(lower, kw) {
+			isEvent = true
+			break
+		}
+	}
+
+	if !isEvent {
+		return &ExtractedEvent{IsEvent: false}
+	}
+
 	lines := strings.Split(caption, "\n")
 	title := "New Event"
 	if len(lines) > 0 && len(lines[0]) > 5 {
@@ -129,8 +153,7 @@ func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
 		}
 	}
 
-	// Try to find a date like 25th May or 2026-05-25
-	date := time.Now().AddDate(0, 0, 7) // Default to 1 week from now
+	date := time.Now().AddDate(0, 0, 7)
 	dateRegex := regexp.MustCompile(`(\d{1,2})[th|st|nd|rd]*\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)`)
 	match := dateRegex.FindStringSubmatch(caption)
 	if len(match) >= 3 {
@@ -144,5 +167,6 @@ func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
 		Title:    title,
 		Date:     date,
 		Location: "TBD",
+		IsEvent:  true,
 	}
 }

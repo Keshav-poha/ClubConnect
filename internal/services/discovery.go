@@ -102,6 +102,11 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			log.Printf("parser fail [%s]: %v", p.PostID, err)
 			continue
 		}
+
+		if !extracted.IsEvent {
+			log.Printf("skipping non-event post [%s]", p.PostID)
+			continue
+		}
 		
 		// Wait between parser calls (HF Inference is faster/more generous)
 		time.Sleep(3 * time.Second)
