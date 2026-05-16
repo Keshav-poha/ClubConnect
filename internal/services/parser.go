@@ -35,8 +35,15 @@ func NewParserService(apiKey, apiUrl string) *ParserService {
 
 func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 	if s.apiKey == "" {
-		return nil, fmt.Errorf("HF_TOKEN missing")
+		return nil, fmt.Errorf("HF_TOKEN missing in environment")
 	}
+
+	// Masked log for debugging
+	prefix := s.apiKey
+	if len(prefix) > 4 {
+		prefix = prefix[:4]
+	}
+	log.Printf("DEBUG: Using HF token starting with: %s...", prefix)
 
 	prompt := fmt.Sprintf(`[INST] Extract event details from this caption into JSON format. 
 Fields: "title", "date" (ISO 8601), "location". 
