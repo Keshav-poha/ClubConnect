@@ -10,11 +10,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o main ./cmd/server/main
 # --- Run Stage ---
 FROM ubuntu:22.04
 
-# Install basic dependencies and curl
+# Install basic dependencies, curl, and common AI libraries
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     tzdata \
     curl \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama
@@ -33,8 +34,9 @@ ENV HOME=/app/ollama
 # Script to start Ollama and pull model before starting main app
 RUN echo '#!/bin/bash\n\
 export OLLAMA_HOST=127.0.0.1:11434\n\
-echo "Starting Ollama server..."\n\
-ollama serve > /app/ollama.log 2>&1 &\n\
+export OLLAMA_LLM_LIBRARY=cpu\n\
+echo "Starting Ollama server (CPU Mode)..."\n\
+ollama serve & \n\
 \n\
 echo "Waiting for Ollama to wake up..."\n\
 for i in {1..20}; do\n\
@@ -45,11 +47,6 @@ for i in {1..20}; do\n\
   echo "Still waiting... ($i/20)"\n\
   sleep 3\n\
 done\n\
-\n\
-if ! curl -s http://127.0.0.1:11434/api/tags > /dev/null; then\n\
-  echo "CRITICAL: Ollama failed to start. Logs follow:"\n\
-  cat /app/ollama.log\n\
-fi\n\
 \n\
 echo "Ensuring model exists..."\n\
 ollama pull phi3:mini\n\
