@@ -47,7 +47,6 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 		"https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3",
 	}
 
-	var lastErr error
 	for _, modelUrl := range models {
 		log.Printf("DEBUG: attempting parse with %s", modelUrl)
 		
@@ -55,7 +54,6 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 		if err == nil {
 			return event, nil
 		}
-		lastErr = err
 		log.Printf("DEBUG: model %s failed: %v", modelUrl, err)
 	}
 
