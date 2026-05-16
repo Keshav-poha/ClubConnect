@@ -103,8 +103,8 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			continue
 		}
 		
-		// Wait longer between parser calls to avoid 429 (Gemini free tier is strict)
-		time.Sleep(12 * time.Second)
+		// Wait between parser calls (HF Inference is faster/more generous)
+		time.Sleep(3 * time.Second)
 
 		event := models.Event{
 			ClubID:       club.ID,

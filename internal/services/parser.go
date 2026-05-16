@@ -1,11 +1,11 @@
 package services
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -22,6 +22,10 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
+	// Default to Mistral-7B if no URL provided
+	if apiUrl == "" {
+		apiUrl = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+	}
 	return &ParserService{
 		apiKey: apiKey,
 		apiUrl: apiUrl,
@@ -30,32 +34,25 @@ func NewParserService(apiKey, apiUrl string) *ParserService {
 }
 
 func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
-	if s.apiKey == "" || s.apiUrl == "" {
-		return nil, fmt.Errorf("parser config missing")
+	if s.apiKey == "" {
+		return nil, fmt.Errorf("HF_TOKEN missing")
 	}
 
-	prompt := fmt.Sprintf(`
-		Extract event info from this caption. 
-		Return JSON: {"title": "", "date": "ISO8601", "location": ""}.
-		Empty strings if missing. Year 2026.
-		Caption: %s
-	`, caption)
+	prompt := fmt.Sprintf(`[INST] Extract event details from this caption into JSON format. 
+Fields: "title", "date" (ISO 8601), "location". 
+Today's date is %s. Year is 2026.
+Caption: %s [/INST]`, time.Now().Format("2006-01-02"), caption)
 
-	reqBody, _ := json.Marshal(map[string]interface{}{
-		"contents": []interface{}{
-			map[string]interface{}{
-				"parts": []interface{}{
-					map[string]interface{}{"text": prompt},
-				},
-			},
+	payload := map[string]interface{}{
+		"inputs": prompt,
+		"parameters": map[string]interface{}{
+			"return_full_text": false,
 		},
-		"generationConfig": map[string]interface{}{
-			"responseMimeType": "application/json",
-		},
-	})
+	}
 
-	url := fmt.Sprintf("%s?key=%s", s.apiUrl, s.apiKey)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(reqBody))
+	reqBody, _ := json.Marshal(payload)
+	req, _ := http.NewRequest("POST", s.apiUrl, strings.NewReader(string(reqBody)))
+	req.Header.Set("Authorization", "Bearer "+s.apiKey)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := s.client.Do(req)
@@ -66,30 +63,30 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("api error: %d", resp.StatusCode)
+		return nil, fmt.Errorf("hf api error: %d - %s", resp.StatusCode, string(body))
 	}
 
-	var res struct {
-		Candidates []struct {
-			Content struct {
-				Parts []struct {
-					Text string `json:"text"`
-				} `json:"parts"`
-			} `json:"content"`
-		} `json:"candidates"`
+	var res []struct {
+		GeneratedText string `json:"generated_text"`
 	}
 
 	if err := json.Unmarshal(body, &res); err != nil {
 		return nil, err
 	}
 
-	if len(res.Candidates) == 0 {
-		return nil, fmt.Errorf("no candidates")
+	if len(res) == 0 {
+		return nil, fmt.Errorf("no response from model")
+	}
+
+	text := res[0].GeneratedText
+	start := strings.Index(text, "{")
+	end := strings.LastIndex(text, "}")
+	if start == -1 || end == -1 {
+		return nil, fmt.Errorf("no JSON found: %s", text)
 	}
 
 	var event ExtractedEvent
-	raw := res.Candidates[0].Content.Parts[0].Text
-	if err := json.Unmarshal([]byte(raw), &event); err != nil {
+	if err := json.Unmarshal([]byte(text[start:end+1]), &event); err != nil {
 		return nil, fmt.Errorf("json parse error: %w", err)
 	}
 
