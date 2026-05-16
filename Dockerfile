@@ -24,18 +24,34 @@ RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama \
 WORKDIR /app
 COPY --from=builder /app/main .
 
+# Create writable directories for Ollama
+RUN mkdir -p /app/ollama /app/models
+ENV OLLAMA_HOME=/app/ollama
+ENV OLLAMA_MODELS=/app/models
+
 # Script to start Ollama and pull model before starting main app
 RUN echo '#!/bin/bash\n\
 export OLLAMA_HOST=0.0.0.0:11434\n\
-ollama serve &\n\
-echo "Waiting for Ollama to start..."\n\
-until curl -s http://127.0.0.1:11434/api/tags > /dev/null; do\n\
+echo "Starting Ollama server..."\n\
+ollama serve > /app/ollama.log 2>&1 &\n\
+\n\
+echo "Waiting for Ollama to wake up..."\n\
+for i in {1..30}; do\n\
+  if curl -s http://127.0.0.1:11434/api/tags > /dev/null; then\n\
+    echo "Ollama is awake!"\n\
+    break\n\
+  fi\n\
+  echo "Still waiting... ($i/30)"\n\
   sleep 2\n\
 done\n\
-echo "Ollama started! Pulling light AI model (phi3:mini)..."\n\
+\n\
+if ! curl -s http://127.0.0.1:11434/api/tags > /dev/null; then\n\
+  echo "CRITICAL: Ollama failed to start. Logs:"\n\
+  cat /app/ollama.log\n\
+fi\n\
+\n\
+echo "Pulling light AI model (phi3:mini)..."\n\
 ollama pull phi3:mini\n\
-echo "Current Models:"\n\
-ollama list\n\
 echo "AI ready, starting app..."\n\
 ./main' > /app/start.sh \
     && chmod +x /app/start.sh
