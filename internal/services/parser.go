@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,51 +26,46 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Standard Legacy Serverless URL (the most reliable free tier path)
-	if apiUrl == "" || strings.Contains(apiUrl, "router.huggingface.co") || strings.Contains(apiUrl, "googleapis.com") {
-		apiUrl = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
+	// Default to local Ollama if no URL is provided
+	if apiUrl == "" {
+		apiUrl = "http://localhost:11434/api/generate"
 	}
 	return &ParserService{
 		apiKey: apiKey,
 		apiUrl: apiUrl,
-		client: &http.Client{Timeout: 30 * time.Second},
+		client: &http.Client{Timeout: 60 * time.Second}, // Longer timeout for local inference
 	}
 }
 
 func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
-	if s.apiKey == "" {
-		return s.heuristicParse(caption), nil
-	}
-
-	// Try the legacy serverless model (Zephyr is very stable)
-	event, err := s.tryParse(caption, s.apiUrl)
+	// Try local AI first
+	event, err := s.tryLocalParse(caption)
 	if err == nil {
 		return event, nil
 	}
 	
-	log.Printf("DEBUG: AI parse failed (%v), falling back to heuristic", err)
+	log.Printf("DEBUG: local AI parse failed (%v), falling back to heuristic", err)
 	return s.heuristicParse(caption), nil
 }
 
-func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, error) {
-	prompt := fmt.Sprintf("<|system|>\nYou are an event extractor. Extract details into JSON.<|endoftext|>\n<|user|>\nExtract from this caption: title, date (ISO 8601), location, and is_event (bool). Today is %s. Year 2026.\n\nCaption: %s\n\nJSON:<|endoftext|>\n<|assistant|>\n", time.Now().Format("2006-01-02"), caption)
+func (s *ParserService) tryLocalParse(caption string) (*ExtractedEvent, error) {
+	prompt := fmt.Sprintf(`Extract event details from this caption into JSON format. 
+Today is %s. Year is 2026.
+Student-relevant events only (Hackathons, Recruitments, Sessions, Releases).
+Return JSON: {"is_event": bool, "title": "string", "date": "ISO8601", "location": "string"}
 
-	// Legacy "inputs" format
+Caption: %s`, time.Now().Format("2006-01-02"), caption)
+
+	// Ollama API format
 	payload := map[string]interface{}{
-		"inputs": prompt,
-		"parameters": map[string]interface{}{
-			"return_full_text": false,
-			"max_new_tokens":   250,
-		},
-		"options": map[string]interface{}{
-			"wait_for_model": true,
-		},
+		"model":  "phi3:mini",
+		"prompt": prompt,
+		"stream": false,
+		"format": "json",
 	}
 
 	reqBody, _ := json.Marshal(payload)
-	req, _ := http.NewRequest("POST", url, strings.NewReader(string(reqBody)))
-	
-	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(s.apiKey))
+	req, _ := http.NewRequest("POST", s.apiUrl, bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := s.client.Do(req)
@@ -80,31 +76,20 @@ func (s *ParserService) tryParse(caption string, url string) (*ExtractedEvent, e
 
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("api error %d: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("local ai error %d: %s", resp.StatusCode, string(body))
 	}
 
-	var res []struct {
-		GeneratedText string `json:"generated_text"`
+	var res struct {
+		Response string `json:"response"`
 	}
 
 	if err := json.Unmarshal(body, &res); err != nil {
 		return nil, err
 	}
 
-	if len(res) == 0 {
-		return nil, fmt.Errorf("empty response")
-	}
-
-	text := res[0].GeneratedText
-	start := strings.Index(text, "{")
-	end := strings.LastIndex(text, "}")
-	if start == -1 || end == -1 {
-		return nil, fmt.Errorf("no json in output")
-	}
-
 	var event ExtractedEvent
-	if err := json.Unmarshal([]byte(text[start:end+1]), &event); err != nil {
-		return nil, err
+	if err := json.Unmarshal([]byte(res.Response), &event); err != nil {
+		return nil, fmt.Errorf("json parse error: %w", err)
 	}
 
 	return &event, nil
