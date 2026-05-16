@@ -22,8 +22,8 @@ type ParserService struct {
 }
 
 func NewParserService(apiKey, apiUrl string) *ParserService {
-	// Default to Mistral-7B if no URL provided
-	if apiUrl == "" {
+	// Safety: If the old Gemini URL is still in env, force the new HF URL
+	if apiUrl == "" || strings.Contains(apiUrl, "googleapis.com") {
 		apiUrl = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
 	}
 	return &ParserService{
