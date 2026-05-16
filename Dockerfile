@@ -33,9 +33,15 @@ ENV HOME=/app/ollama
 
 # Script to start Ollama and pull model before starting main app
 RUN echo '#!/bin/bash\n\
+set -x\n\
 export OLLAMA_HOST=127.0.0.1:11434\n\
 export OLLAMA_LLM_LIBRARY=cpu\n\
-echo "Starting Ollama server (CPU Mode)..."\n\
+export HOME=/app/ollama\n\
+\n\
+ls -l /usr/bin/ollama\n\
+/usr/bin/ollama --version\n\
+\n\
+echo "Starting Ollama server..."\n\
 ollama serve & \n\
 \n\
 echo "Waiting for Ollama to wake up..."\n\
