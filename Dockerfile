@@ -20,11 +20,9 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install AI libraries
-RUN pip3 install --no-cache-dir \
-    torch \
-    transformers \
-    accelerate
+# Install AI libraries (optimized CPU-only PyTorch to reduce image size from 2GB to ~150MB)
+RUN pip3 install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip3 install --no-cache-dir transformers accelerate
 
 # Pre-download the ultra-light AI model (Qwen 0.5B)
 RUN python3 -c 'from transformers import AutoModelForCausalLM, AutoTokenizer; \
