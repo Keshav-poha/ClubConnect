@@ -10,6 +10,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o main ./cmd/server/main
 # --- Run Stage ---
 FROM ubuntu:22.04
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Install Python and basic tools
 RUN apt-get update && apt-get install -y \
     ca-certificates \
