@@ -49,9 +49,11 @@ JSON:"""
     try:
         start = response.find('{')
         end = response.rfind('}') + 1
-        return response[start:end]
-    except:
+        if start != -1 and end > start:
+            return response[start:end]
         return json.dumps({"is_event": False})
+    except Exception as e:
+        return json.dumps({"is_event": False, "error": str(e)})
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
