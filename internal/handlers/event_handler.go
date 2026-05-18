@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -61,11 +62,11 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 
 	var events []map[string]interface{}
 	if err := query.Offset(offset).Limit(limit).Find(&events).Error; err != nil {
-		c.JSON(500, gin.H{"error": "db error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"events": events,
 		"page":   page,
 		"limit":  limit,
@@ -76,7 +77,7 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 func (h *EventHandler) GetEvent(c *gin.Context) {
 	id := c.Param("id")
 	if _, err := uuid.Parse(id); err != nil {
-		c.JSON(400, gin.H{"error": "bad id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad id"})
 		return
 	}
 
@@ -88,9 +89,9 @@ func (h *EventHandler) GetEvent(c *gin.Context) {
 		First(&event).Error
 
 	if err != nil {
-		c.JSON(404, gin.H{"error": "not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 
-	c.JSON(200, event)
+	c.JSON(http.StatusOK, event)
 }
