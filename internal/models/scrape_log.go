@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ScrapeLog struct {
@@ -16,8 +17,12 @@ type ScrapeLog struct {
 	ScrapedAt    time.Time `gorm:"autoCreateTime" json:"scraped_at"`
 }
 
-func (l *ScrapeLog) BeforeCreate() {
+// BeforeCreate is a GORM hook that auto-generates a UUID if not set.
+// The correct signature is (tx *gorm.DB) error — without it, GORM
+// silently ignores the hook entirely.
+func (l *ScrapeLog) BeforeCreate(tx *gorm.DB) error {
 	if l.ID == uuid.Nil {
 		l.ID = uuid.New()
 	}
+	return nil
 }

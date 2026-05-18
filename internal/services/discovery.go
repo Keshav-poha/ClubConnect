@@ -16,6 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// DiscoveryService handles scraping Instagram posts and extracting events.
 type DiscoveryService struct {
 	db      *gorm.DB
 	parser  *ParserService
@@ -23,6 +24,7 @@ type DiscoveryService struct {
 	workers int
 }
 
+// PostData represents a single Instagram post fetched from the external API.
 type PostData struct {
 	PostID       string
 	InstagramURL string
@@ -37,6 +39,7 @@ func NewDiscoveryService(db *gorm.DB, parser *ParserService, cfg *config.Config,
 	return &DiscoveryService{db, parser, cfg, workers}
 }
 
+// RunDiscoveryCycle scrapes all registered clubs concurrently using a worker pool.
 func (s *DiscoveryService) RunDiscoveryCycle() {
 	var clubs []models.Club
 	if err := s.db.Find(&clubs).Error; err != nil {
@@ -71,6 +74,8 @@ func (s *DiscoveryService) RunDiscoveryCycle() {
 	log.Println("discovery cycle done")
 }
 
+// ScrapeClub fetches Instagram posts for a single club handle, parses each
+// caption through the AI, and saves qualifying events to the database.
 func (s *DiscoveryService) ScrapeClub(handle string) error {
 	var club models.Club
 	if err := s.db.First(&club, "handle = ?", handle).Error; err != nil {
@@ -83,26 +88,37 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 		return err
 	}
 
-	parsed := 0
+	saved := 0
+	skipped := 0
+
 	for _, p := range posts {
+		// Skip posts we've already processed.
 		var existing models.Event
 		if err := s.db.First(&existing, "post_id = ?", p.PostID).Error; err == nil {
 			continue
 		}
 
+		// Skip empty captions — nothing to parse.
+		if strings.TrimSpace(p.Caption) == "" {
+			log.Printf("skipping empty-caption post [%s]", p.PostID)
+			continue
+		}
+
 		extracted, err := s.parser.ParseCaption(p.Caption)
+
+		// Throttle between AI calls to avoid overloading the model.
+		time.Sleep(3 * time.Second)
+
 		if err != nil {
 			log.Printf("parser fail [%s]: %v", p.PostID, err)
 			continue
 		}
 
 		if !extracted.IsEvent {
-			log.Printf("skipping non-event post [%s]", p.PostID)
+			log.Printf("skipping non-event post [%s]: %s", p.PostID, truncate(extracted.Title, 40))
+			skipped++
 			continue
 		}
-
-		// Wait between parser calls (HF Inference is faster/more generous)
-		time.Sleep(3 * time.Second)
 
 		event := models.Event{
 			ClubID:       club.ID,
@@ -119,29 +135,34 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			log.Printf("db error saving event: %v", err)
 			continue
 		}
-		parsed++
+		saved++
+		log.Printf("saved event [%s]: %s", p.PostID, extracted.Title)
 	}
 
-	s.saveLog(club.ID, "success", len(posts), parsed, "")
+	log.Printf("scrape [%s] done: %d posts, %d saved, %d skipped", handle, len(posts), saved, skipped)
+	s.saveLog(club.ID, "success", len(posts), saved, "")
 	return nil
 }
 
+// fetchInstagramPosts calls the RapidAPI Instagram endpoint to retrieve
+// recent posts for the given handle.
 func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error) {
-	// If no API key, we can't scrape
 	if s.cfg.RapidAPIKey == "" {
 		return nil, fmt.Errorf("RAPIDAPI_KEY not configured")
 	}
 
 	url := fmt.Sprintf("https://%s/api/instagram/posts", s.cfg.RapidAPIHost)
-	// Body must be exactly as expected by the API
 	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s", "maxId": ""}`, handle))
 
-	req, _ := http.NewRequest("POST", url, payload)
+	req, err := http.NewRequest("POST", url, payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
 	req.Header.Set("x-rapidapi-key", s.cfg.RapidAPIKey)
 	req.Header.Set("x-rapidapi-host", s.cfg.RapidAPIHost)
 	req.Header.Set("Content-Type", "application/json")
 
-	log.Printf("fetching posts for %s using %s", handle, s.cfg.RapidAPIHost)
+	log.Printf("fetching posts for %s", handle)
 
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
@@ -150,11 +171,13 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
-	log.Printf("DEBUG: raw response from instagram120: %s", string(body))
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("external api error: %d - %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("instagram API error: %d - %s", resp.StatusCode, string(body))
 	}
 
 	var result struct {
@@ -176,7 +199,7 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return nil, fmt.Errorf("unmarshal error: %w", err)
+		return nil, fmt.Errorf("json unmarshal error: %w", err)
 	}
 
 	var posts []PostData
@@ -195,15 +218,16 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 		})
 	}
 
+	log.Printf("fetched %d posts for %s", len(posts), handle)
 	return posts, nil
 }
 
-func (s *DiscoveryService) saveLog(clubID uuid.UUID, status string, found, parsed int, msg string) {
+func (s *DiscoveryService) saveLog(clubID uuid.UUID, status string, found, saved int, msg string) {
 	s.db.Create(&models.ScrapeLog{
 		ClubID:       clubID,
 		Status:       status,
 		PostsFound:   found,
-		EventsParsed: parsed,
+		EventsParsed: saved,
 		Error:        msg,
 	})
 }
