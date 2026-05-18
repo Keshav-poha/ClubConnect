@@ -25,6 +25,6 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	log.Println("db connected")
+	log.Printf("db connected: %s@%s:%d", cfg.DBName, cfg.DBHost, cfg.DBPort)
 	return db, nil
 }
