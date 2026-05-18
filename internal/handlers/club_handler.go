@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -18,16 +20,16 @@ func NewClubHandler(db *gorm.DB) *ClubHandler {
 func (h *ClubHandler) ListClubs(c *gin.Context) {
 	var clubs []models.Club
 	if err := h.db.Order("name ASC").Find(&clubs).Error; err != nil {
-		c.JSON(500, gin.H{"error": "internal error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 		return
 	}
-	c.JSON(200, gin.H{"clubs": clubs, "total": len(clubs)})
+	c.JSON(http.StatusOK, gin.H{"clubs": clubs, "total": len(clubs)})
 }
 
 func (h *ClubHandler) GetClub(c *gin.Context) {
 	id := c.Param("id")
 	if _, err := uuid.Parse(id); err != nil {
-		c.JSON(400, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
@@ -37,8 +39,8 @@ func (h *ClubHandler) GetClub(c *gin.Context) {
 	}).First(&club, "id = ?", id).Error
 
 	if err != nil {
-		c.JSON(404, gin.H{"error": "not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
-	c.JSON(200, club)
+	c.JSON(http.StatusOK, club)
 }
