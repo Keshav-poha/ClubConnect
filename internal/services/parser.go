@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -26,14 +25,8 @@ func NewParserService() *ParserService {
 }
 
 func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
-	// Try the integrated Python AI first
-	event, err := s.tryIntegratedParse(caption)
-	if err == nil {
-		return event, nil
-	}
-
-	log.Printf("DEBUG: integrated AI parse failed (%v), falling back to heuristic", err)
-	return s.heuristicParse(caption), nil
+	// Rely exclusively on the integrated Python AI
+	return s.tryIntegratedParse(caption)
 }
 
 type rawExtractedEvent struct {
@@ -89,64 +82,3 @@ func (s *ParserService) tryIntegratedParse(caption string) (*ExtractedEvent, err
 	return &event, nil
 }
 
-func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
-	lower := strings.ToLower(caption)
-
-	eventKeywords := []string{
-		"hackathon", "session", "recruitment", "release", "magazine",
-		"book", "workshop", "webinar", "seminar", "competition",
-		"apply now", "register", "deadline", "bootcamp", "audition",
-		"hiring", "contest", "challenge", "tournament", "event",
-	}
-
-	isEvent := false
-	for _, kw := range eventKeywords {
-		if strings.Contains(lower, kw) {
-			isEvent = true
-			break
-		}
-	}
-
-	negativeKeywords := []string{
-		"happy diwali", "happy holi", "merry christmas", "happy new year",
-		"announcing our president", "meet the team", "results are out", "results declared",
-		"thank you for attending", "wrap up", "wrapped",
-	}
-	
-	for _, kw := range negativeKeywords {
-		if strings.Contains(lower, kw) {
-			isEvent = false
-			break
-		}
-	}
-
-	if !isEvent {
-		return &ExtractedEvent{IsEvent: false}
-	}
-
-	lines := strings.Split(caption, "\n")
-	title := "New Event"
-	if len(lines) > 0 && len(lines[0]) > 5 {
-		title = strings.TrimSpace(lines[0])
-		if len(title) > 50 {
-			title = title[:47] + "..."
-		}
-	}
-
-	date := time.Now().AddDate(0, 0, 7)
-	dateRegex := regexp.MustCompile(`(\d{1,2})[th|st|nd|rd]*\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)`)
-	match := dateRegex.FindStringSubmatch(caption)
-	if len(match) >= 3 {
-		parsedDate, err := time.Parse("2 Jan 2006", fmt.Sprintf("%s %s 2026", match[1], match[2]))
-		if err == nil {
-			date = parsedDate
-		}
-	}
-
-	return &ExtractedEvent{
-		Title:    title,
-		Date:     date,
-		Location: "TBD",
-		IsEvent:  true,
-	}
-}
