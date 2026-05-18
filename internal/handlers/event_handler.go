@@ -21,9 +21,13 @@ func NewEventHandler(db *gorm.DB) *EventHandler {
 func (h *EventHandler) ListEvents(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
-	if page < 1 { page = 1 }
-	if limit < 1 || limit > 100 { limit = 20 }
-	
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 20
+	}
+
 	offset := (page - 1) * limit
 	query := h.db.Table("events").
 		Select("events.*, clubs.name as club_name, clubs.handle as club_handle, clubs.avatar_url as club_avatar").
@@ -46,7 +50,7 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 			query = query.Where("date >= ?", t)
 		}
 	}
-	
+
 	if to := c.Query("to"); to != "" {
 		if t, err := time.Parse("2006-01-02", to); err == nil {
 			query = query.Where("date <= ?", t)

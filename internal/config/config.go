@@ -21,8 +21,6 @@ type Config struct {
 	Port    string
 	GinMode string
 
-
-
 	// External Scraper (RapidAPI)
 	RapidAPIKey  string
 	RapidAPIHost string
@@ -50,14 +48,14 @@ func Load() (*Config, error) {
 	}
 
 	cfg := &Config{
-		DBHost:         getEnv("DB_HOST", "localhost"),
-		DBPort:         dbPort,
-		DBUser:         getEnv("DB_USER", "clubconnect"),
-		DBPassword:     getEnv("DB_PASSWORD", ""),
-		DBName:         getEnv("DB_NAME", "clubconnect"),
-		DBSSLMode:      getEnv("DB_SSLMODE", "disable"),
-		Port:           getEnv("PORT", "7860"),
-		GinMode:        getEnv("GIN_MODE", "debug"),
+		DBHost:     getEnv("DB_HOST", "localhost"),
+		DBPort:     dbPort,
+		DBUser:     getEnv("DB_USER", "clubconnect"),
+		DBPassword: getEnv("DB_PASSWORD", ""),
+		DBName:     getEnv("DB_NAME", "clubconnect"),
+		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
+		Port:       getEnv("PORT", "7860"),
+		GinMode:    getEnv("GIN_MODE", "debug"),
 
 		RapidAPIKey:    getEnv("RAPIDAPI_KEY", ""),
 		RapidAPIHost:   getEnv("RAPIDAPI_HOST", ""),

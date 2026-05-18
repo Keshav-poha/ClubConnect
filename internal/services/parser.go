@@ -31,7 +31,7 @@ func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 	if err == nil {
 		return event, nil
 	}
-	
+
 	log.Printf("DEBUG: integrated AI parse failed (%v), falling back to heuristic", err)
 	return s.heuristicParse(caption), nil
 }
@@ -91,10 +91,10 @@ func (s *ParserService) tryIntegratedParse(caption string) (*ExtractedEvent, err
 
 func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
 	lower := strings.ToLower(caption)
-	
+
 	eventKeywords := []string{
-		"hackathon", "session", "recruitment", "release", "magazine", 
-		"book", "workshop", "webinar", "seminar", "competition", 
+		"hackathon", "session", "recruitment", "release", "magazine",
+		"book", "workshop", "webinar", "seminar", "competition",
 		"apply now", "register", "deadline", "bootcamp", "audition",
 	}
 

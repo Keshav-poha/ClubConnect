@@ -37,8 +37,6 @@ func NewDiscoveryService(db *gorm.DB, parser *ParserService, cfg *config.Config,
 	return &DiscoveryService{db, parser, cfg, workers}
 }
 
-
-
 func (s *DiscoveryService) RunDiscoveryCycle() {
 	var clubs []models.Club
 	if err := s.db.Find(&clubs).Error; err != nil {
@@ -102,7 +100,7 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			log.Printf("skipping non-event post [%s]", p.PostID)
 			continue
 		}
-		
+
 		// Wait between parser calls (HF Inference is faster/more generous)
 		time.Sleep(3 * time.Second)
 
@@ -137,7 +135,7 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	url := fmt.Sprintf("https://%s/api/instagram/posts", s.cfg.RapidAPIHost)
 	// Body must be exactly as expected by the API
 	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s", "maxId": ""}`, handle))
-	
+
 	req, _ := http.NewRequest("POST", url, payload)
 	req.Header.Set("x-rapidapi-key", s.cfg.RapidAPIKey)
 	req.Header.Set("x-rapidapi-host", s.cfg.RapidAPIHost)
