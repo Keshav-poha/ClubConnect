@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/clubconnect/clubconnect/internal/services"
 	"github.com/gin-gonic/gin"
@@ -25,7 +27,7 @@ type AddClubReq struct {
 func (h *AdminHandler) AddClub(c *gin.Context) {
 	var req AddClubReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "bad request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 
@@ -36,17 +38,17 @@ func (h *AdminHandler) AddClub(c *gin.Context) {
 	}
 
 	if err := h.db.Create(&club).Error; err != nil {
-		c.JSON(409, gin.H{"error": "handle taken"})
+		c.JSON(http.StatusConflict, gin.H{"error": "handle taken"})
 		return
 	}
 
-	c.JSON(201, club)
+	c.JSON(http.StatusCreated, club)
 }
 
 func (h *AdminHandler) TriggerScrape(c *gin.Context) {
 	handle := c.Query("handle")
 	if handle == "" {
-		c.JSON(400, gin.H{"error": "need handle"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "need handle"})
 		return
 	}
 
@@ -55,5 +57,5 @@ func (h *AdminHandler) TriggerScrape(c *gin.Context) {
 		h.discovery.ScrapeClub(handle)
 	}()
 
-	c.JSON(202, gin.H{"status": "started"})
+	c.JSON(http.StatusAccepted, gin.H{"status": "started"})
 }
