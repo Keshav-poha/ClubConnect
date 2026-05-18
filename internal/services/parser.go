@@ -106,6 +106,19 @@ func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
 		}
 	}
 
+	negativeKeywords := []string{
+		"happy diwali", "happy holi", "merry christmas", "happy new year",
+		"announcing our president", "meet the team", "results are out", "results declared",
+		"thank you for attending", "wrap up", "wrapped",
+	}
+	
+	for _, kw := range negativeKeywords {
+		if strings.Contains(lower, kw) {
+			isEvent = false
+			break
+		}
+	}
+
 	if !isEvent {
 		return &ExtractedEvent{IsEvent: false}
 	}
