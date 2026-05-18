@@ -27,7 +27,7 @@ func main() {
 		log.Fatal("db error:", err)
 	}
 
-	parser := services.NewParserService(cfg.ParserAPIKey, cfg.ParserURL)
+	parser := services.NewParserService()
 	discovery := services.NewDiscoveryService(db, parser, cfg, cfg.ScrapeWorkers)
 	clubSvc := services.NewClubService(db)
 

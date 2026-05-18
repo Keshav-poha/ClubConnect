@@ -21,7 +21,7 @@ type ParserService struct {
 	// No longer needs an API URL or Key for the local integrated workflow
 }
 
-func NewParserService(apiKey, apiUrl string) *ParserService {
+func NewParserService() *ParserService {
 	return &ParserService{}
 }
 
