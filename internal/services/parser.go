@@ -96,6 +96,7 @@ func (s *ParserService) heuristicParse(caption string) *ExtractedEvent {
 		"hackathon", "session", "recruitment", "release", "magazine",
 		"book", "workshop", "webinar", "seminar", "competition",
 		"apply now", "register", "deadline", "bootcamp", "audition",
+		"hiring", "contest", "challenge", "tournament", "event",
 	}
 
 	isEvent := false

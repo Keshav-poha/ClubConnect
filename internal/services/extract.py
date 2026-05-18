@@ -15,7 +15,7 @@ def extract_event(caption):
     )
 
     prompt = f"""Analyze the caption and extract event details into JSON.
-ONLY set "is_event": true if the caption is explicitly inviting students to an actionable upcoming event (e.g. Hackathon, Session, Workshop, Recruitment, Audition, or Material Release).
+ONLY set "is_event": true if the caption is explicitly inviting students to an actionable upcoming event (e.g. Hackathon, Session, Workshop, Recruitment, Audition, Competition, Material Release, or anything of high interest for student participation).
 STRICTLY set "is_event": false for generic announcements, festival greetings, team introductions, president/member announcements, election results, or past event recaps.
 
 Today is 2026-05-18.
