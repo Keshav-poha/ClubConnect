@@ -21,9 +21,7 @@ type Config struct {
 	Port    string
 	GinMode string
 
-	// Parser
-	ParserAPIKey string
-	ParserURL    string
+
 
 	// External Scraper (RapidAPI)
 	RapidAPIKey  string
@@ -60,8 +58,7 @@ func Load() (*Config, error) {
 		DBSSLMode:      getEnv("DB_SSLMODE", "disable"),
 		Port:           getEnv("PORT", "7860"),
 		GinMode:        getEnv("GIN_MODE", "debug"),
-		ParserAPIKey:   getEnv("PARSER_API_KEY", getEnv("HF_TOKEN", "")),
-		ParserURL:      getEnv("PARSER_URL", "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"),
+
 		RapidAPIKey:    getEnv("RAPIDAPI_KEY", ""),
 		RapidAPIHost:   getEnv("RAPIDAPI_HOST", ""),
 		ScrapeInterval: scrapeInterval,
