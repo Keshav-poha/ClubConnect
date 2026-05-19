@@ -152,6 +152,11 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 		"page":   page,
 		"limit":  limit,
 		"total":  total,
+		"debug": gin.H{
+			"raw_query": c.Request.URL.RawQuery,
+			"all_param": c.Query("all"),
+			"club_id":   c.Query("club_id"),
+		},
 	})
 }
 
