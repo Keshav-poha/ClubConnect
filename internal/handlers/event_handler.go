@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -18,6 +19,46 @@ func NewEventHandler(db *gorm.DB) *EventHandler {
 	return &EventHandler{db}
 }
 
+// EventResponse is the JSON shape returned for each event in the API.
+type EventResponse struct {
+	ID           uuid.UUID  `json:"id"`
+	ClubID       uuid.UUID  `json:"club_id"`
+	Title        string     `json:"title"`
+	Description  string     `json:"description"`
+	Date         *time.Time `json:"date"`
+	Location     string     `json:"location"`
+	ImageURL     string     `json:"image_url"`
+	InstagramURL string     `json:"instagram_url"`
+	PostID       string     `json:"post_id"`
+	IsFeatured   bool       `json:"is_featured"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+
+	ClubName   string `json:"club_name"`
+	ClubHandle string `json:"club_handle"`
+	ClubAvatar string `json:"club_avatar"`
+}
+
+func eventToResponse(e models.Event) EventResponse {
+	return EventResponse{
+		ID:           e.ID,
+		ClubID:       e.ClubID,
+		Title:        e.Title,
+		Description:  e.Description,
+		Date:         e.Date,
+		Location:     e.Location,
+		ImageURL:     e.ImageURL,
+		InstagramURL: e.InstagramURL,
+		PostID:       e.PostID,
+		IsFeatured:   e.IsFeatured,
+		CreatedAt:    e.CreatedAt,
+		UpdatedAt:    e.UpdatedAt,
+		ClubName:     e.Club.Name,
+		ClubHandle:   e.Club.Handle,
+		ClubAvatar:   e.Club.AvatarURL,
+	}
+}
+
 func (h *EventHandler) ListEvents(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -29,55 +70,55 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 	}
 	offset := (page - 1) * limit
 
-	// Build the base query with joins and filters.
-	query := h.db.Table("events").
-		Select("events.*, clubs.name as club_name, clubs.handle as club_handle, clubs.avatar_url as club_avatar").
-		Joins("LEFT JOIN clubs ON clubs.id = events.club_id").
-		Where("events.deleted_at IS NULL").
-		Order("events.date ASC")
+	// Use Model-based queries so GORM handles soft-delete and scanning properly.
+	query := h.db.Model(&models.Event{}).Order("date ASC")
 
 	if cid := c.Query("club_id"); cid != "" {
 		if _, err := uuid.Parse(cid); err == nil {
-			query = query.Where("events.club_id = ?", cid)
+			query = query.Where("club_id = ?", cid)
 		}
 	}
 
 	if c.Query("featured") == "true" {
-		query = query.Where("events.is_featured = ?", true)
+		query = query.Where("is_featured = ?", true)
 	}
 
 	if from := c.Query("from"); from != "" {
 		if t, err := time.Parse("2006-01-02", from); err == nil {
-			query = query.Where("events.date >= ?", t)
+			query = query.Where("date >= ?", t)
 		}
 	}
 
 	if to := c.Query("to"); to != "" {
 		if t, err := time.Parse("2006-01-02", to); err == nil {
-			query = query.Where("events.date <= ?", t)
+			query = query.Where("date <= ?", t)
 		}
 	}
 
-	// Default: only upcoming events (unless explicit date range given).
+	// Default: show upcoming events only (unless an explicit date range is given).
 	if c.Query("from") == "" && c.Query("to") == "" {
-		query = query.Where("events.date >= ? OR events.date IS NULL", time.Now())
+		query = query.Where("date >= ? OR date IS NULL", time.Now())
 	}
 
-	// Clone the query before Count to avoid GORM mutating the SELECT clause.
-	// Without this, Count() strips the SELECT and subsequent Find() returns
-	// rows with missing columns or errors out silently.
+	// Count total matching rows (on a separate query instance).
 	var total int64
-	countQuery := query.Session(&gorm.Session{})
-	countQuery.Count(&total)
+	query.Count(&total)
 
-	var events []map[string]interface{}
-	if err := query.Offset(offset).Limit(limit).Find(&events).Error; err != nil {
+	// Fetch the events with their associated Club preloaded.
+	var events []models.Event
+	if err := query.Preload("Club").Offset(offset).Limit(limit).Find(&events).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
 
+	// Build a flat response with club fields at the top level.
+	results := make([]EventResponse, 0, len(events))
+	for _, e := range events {
+		results = append(results, eventToResponse(e))
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"events": events,
+		"events": results,
 		"page":   page,
 		"limit":  limit,
 		"total":  total,
@@ -91,17 +132,12 @@ func (h *EventHandler) GetEvent(c *gin.Context) {
 		return
 	}
 
-	var event map[string]interface{}
-	err := h.db.Table("events").
-		Select("events.*, clubs.name as club_name, clubs.handle as club_handle, clubs.avatar_url as club_avatar").
-		Joins("LEFT JOIN clubs ON clubs.id = events.club_id").
-		Where("events.id = ? AND events.deleted_at IS NULL", id).
-		First(&event).Error
-
+	var event models.Event
+	err := h.db.Preload("Club").First(&event, "id = ?", id).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	c.JSON(http.StatusOK, eventToResponse(event))
 }

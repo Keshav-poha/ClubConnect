@@ -24,20 +24,26 @@ func NewParserService() *ParserService {
 }
 
 // ParseCaption runs the integrated Python AI to extract event info from a
-// raw Instagram caption. It also applies a Go-side keyword safety net to
-// reject posts that the AI might incorrectly classify as events.
+// raw Instagram caption. A two-layer Go-side filter catches misclassifications.
 func (s *ParserService) ParseCaption(caption string) (*ExtractedEvent, error) {
 	event, err := s.runPythonParser(caption)
 	if err != nil {
 		return nil, err
 	}
 
-	// Go-side safety net: override is_event=true if the caption clearly
-	// matches a non-event pattern. The small AI model sometimes misclassifies
-	// festival greetings, team announcements, etc. as events.
-	if event.IsEvent && isObviouslyNotAnEvent(caption) {
-		log.Printf("safety-net override: rejecting %q as non-event", truncate(event.Title, 60))
-		event.IsEvent = false
+	if event.IsEvent {
+		// Layer 1: reject if caption matches known non-event patterns.
+		if isNonEventPost(caption) {
+			log.Printf("filter: rejected by non-event keywords — %q", truncate(event.Title, 50))
+			event.IsEvent = false
+		}
+
+		// Layer 2: reject if caption has zero positive event signals.
+		// A real event post should mention at least one actionable keyword.
+		if event.IsEvent && !hasEventSignal(caption) {
+			log.Printf("filter: rejected by missing event signals — %q", truncate(event.Title, 50))
+			event.IsEvent = false
+		}
 	}
 
 	return event, nil
@@ -104,46 +110,116 @@ func (s *ParserService) runPythonParser(caption string) (*ExtractedEvent, error)
 	}, nil
 }
 
-// isObviouslyNotAnEvent provides a fast keyword-based check to catch posts
-// that the AI model might wrongly classify. These are patterns that almost
-// never represent actionable student events.
-func isObviouslyNotAnEvent(caption string) bool {
+// isNonEventPost checks if the caption matches patterns that are NEVER real events.
+func isNonEventPost(caption string) bool {
 	lower := strings.ToLower(caption)
 
-	// Reject: festival/holiday greetings
-	greetings := []string{
+	rejectPhrases := []string{
+		// Festival / holiday greetings
 		"happy diwali", "happy holi", "happy eid", "happy christmas",
 		"happy new year", "happy independence day", "happy republic day",
 		"happy raksha bandhan", "happy navratri", "happy ganesh chaturthi",
-		"merry christmas", "eid mubarak", "festival greetings",
+		"happy makar sankranti", "happy pongal", "happy onam", "happy baisakhi",
+		"happy lohri", "happy ugadi", "happy guru nanak jayanti",
+		"merry christmas", "eid mubarak", "ramadan mubarak",
+		"festival greetings", "festive vibes", "festive season",
 		"wishing you", "warm wishes", "season's greetings",
+		"may this festival", "celebrate the spirit",
+
+		// Leadership / team / org announcements
+		"new president", "new vice president", "new secretary", "new treasurer",
+		"meet our team", "meet the team", "meet our core",
+		"introducing our", "introducing the",
+		"elected as", "appointed as", "takes over as",
+		"core team", "team reveal", "board members", "council members",
+		"executive board", "new board", "office bearers",
+		"congratulations to our", "welcome our new", "handing over",
+		"tenure", "we are proud to announce",
+
+		// Throwback / recap / past event
+		"throwback", "#throwback", "#tbt", "throw back",
+		"recap", "highlights from", "glimpses from", "relive the",
+		"looking back", "memories from", "a look back",
+		"thank you for attending", "thank you all for",
+		"it was a pleasure", "successfully conducted",
+		"event was a success", "wrapped up",
+
+		// RIP / condolence / tribute
+		"rest in peace", "rip", "heartfelt condolences", "we mourn",
+		"in loving memory",
+
+		// Birthday / personal congratulations
+		"happy birthday", "birthday wishes", "many happy returns",
+
+		// Memes / quotes / generic engagement
+		"quote of the day", "meme", "relatable", "tag someone",
+		"comment below", "share if you agree", "double tap",
+		"follow us for more",
+
+		// Generic promotions without specific event
+		"stay tuned", "coming soon", "something exciting", "big reveal",
+		"watch this space", "announcement coming",
 	}
-	for _, g := range greetings {
-		if strings.Contains(lower, g) {
+
+	for _, phrase := range rejectPhrases {
+		if strings.Contains(lower, phrase) {
 			return true
 		}
 	}
 
-	// Reject: leadership/team announcements
-	announcements := []string{
-		"new president", "new vice president", "meet our team",
-		"introducing our", "elected as", "appointed as",
-		"core team", "team reveal", "board members",
-		"congratulations to our", "welcome our new",
-	}
-	for _, a := range announcements {
-		if strings.Contains(lower, a) {
-			return true
-		}
+	return false
+}
+
+// hasEventSignal checks if the caption contains at least one keyword that
+// indicates a real, actionable, upcoming event. If a post has NO signal at all,
+// it's almost certainly not an event a student would care about.
+func hasEventSignal(caption string) bool {
+	lower := strings.ToLower(caption)
+
+	signals := []string{
+		// Event type keywords
+		"hackathon", "workshop", "seminar", "webinar", "bootcamp",
+		"competition", "contest", "challenge", "quiz",
+		"recruitment", "hiring", "audition", "tryout", "selections",
+		"orientation", "induction", "info session", "information session",
+		"guest lecture", "talk", "speaker session", "panel discussion",
+		"open mic", "jam session", "performance",
+		"fest ", "festival registration", "cultural fest",
+		"book launch", "magazine release", "publication",
+		"internship", "placement drive",
+		"meetup", "meet-up", "gathering",
+		"exhibition", "expo",
+		"marathon", "run ", "walkathon",
+		"drive", "blood donation", "donation drive",
+
+		// Action / registration keywords
+		"register now", "register here", "registration",
+		"sign up", "signup", "apply now", "apply here",
+		"register at", "form link", "google form",
+		"link in bio", "fill the form", "fill out",
+		"join us", "participate", "last date to register",
+		"deadline", "hurry up", "limited seats", "limited spots",
+		"don't miss", "do not miss", "grab your spot",
+		"book your", "reserve your", "enroll",
+		"rsvp",
+
+		// Date / time indicators
+		"on the", "from the", "starting from",
+		"jan ", "feb ", "mar ", "apr ", "may ", "jun ",
+		"jul ", "aug ", "sep ", "oct ", "nov ", "dec ",
+		"january", "february", "march", "april",
+		"june", "july", "august", "september",
+		"october", "november", "december",
+		"tomorrow", "this weekend", "next week",
+		"am ", "pm ", "a.m.", "p.m.",
+
+		// Venue indicators
+		"venue:", "location:", "at the auditorium", "at the",
+		"seminar hall", "conference room",
 	}
 
-	// Reject: throwback / recap posts (not upcoming)
-	recaps := []string{
-		"throwback", "recap", "highlights from", "relive the",
-		"looking back", "memories from", "#tbt", "thank you for attending",
-	}
-	for _, r := range recaps {
-		if strings.Contains(lower, r) {
+	for _, sig := range signals {
+		if strings.Contains(lower, sig) {
 			return true
 		}
 	}
