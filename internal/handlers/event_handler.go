@@ -59,6 +59,45 @@ func eventToResponse(e models.Event) EventResponse {
 	}
 }
 
+// applyEventFilters builds the WHERE conditions from query params.
+// Returns a func that can be applied to any fresh query, so Count and Find
+// each get their own unmodified query instance.
+func (h *EventHandler) applyEventFilters(c *gin.Context) func(*gorm.DB) *gorm.DB {
+	return func(q *gorm.DB) *gorm.DB {
+		if cid := c.Query("club_id"); cid != "" {
+			if _, err := uuid.Parse(cid); err == nil {
+				q = q.Where("club_id = ?", cid)
+			}
+		}
+
+		if c.Query("featured") == "true" {
+			q = q.Where("is_featured = ?", true)
+		}
+
+		if from := c.Query("from"); from != "" {
+			if t, err := time.Parse("2006-01-02", from); err == nil {
+				q = q.Where("date >= ?", t)
+			}
+		}
+
+		if to := c.Query("to"); to != "" {
+			if t, err := time.Parse("2006-01-02", to); err == nil {
+				q = q.Where("date <= ?", t)
+			}
+		}
+
+		// Only apply the "upcoming only" filter when explicitly requested via
+		// ?upcoming=true. By default, show ALL events (newest first) so the
+		// frontend can decide how to display them. Previously this defaulted
+		// to filtering out past events, which hid all existing DB records.
+		if c.Query("upcoming") == "true" {
+			q = q.Where("date >= ? OR date IS NULL", time.Now())
+		}
+
+		return q
+	}
+}
+
 func (h *EventHandler) ListEvents(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -70,48 +109,30 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 	}
 	offset := (page - 1) * limit
 
-	// Use Model-based queries so GORM handles soft-delete and scanning properly.
-	query := h.db.Model(&models.Event{}).Order("date ASC")
+	filters := h.applyEventFilters(c)
 
-	if cid := c.Query("club_id"); cid != "" {
-		if _, err := uuid.Parse(cid); err == nil {
-			query = query.Where("club_id = ?", cid)
-		}
-	}
-
-	if c.Query("featured") == "true" {
-		query = query.Where("is_featured = ?", true)
-	}
-
-	if from := c.Query("from"); from != "" {
-		if t, err := time.Parse("2006-01-02", from); err == nil {
-			query = query.Where("date >= ?", t)
-		}
-	}
-
-	if to := c.Query("to"); to != "" {
-		if t, err := time.Parse("2006-01-02", to); err == nil {
-			query = query.Where("date <= ?", t)
-		}
-	}
-
-	// Default: show upcoming events only (unless an explicit date range is given).
-	if c.Query("from") == "" && c.Query("to") == "" {
-		query = query.Where("date >= ? OR date IS NULL", time.Now())
-	}
-
-	// Count total matching rows (on a separate query instance).
+	// Count and Find MUST use separate query instances. In GORM, Count()
+	// mutates the SELECT clause in place (replaces it with COUNT(*)).
+	// If you call Count then Find on the same query object, Find gets
+	// a corrupted SELECT and returns zero rows.
 	var total int64
-	query.Count(&total)
+	h.db.Model(&models.Event{}).Scopes(filters).Count(&total)
 
-	// Fetch the events with their associated Club preloaded.
 	var events []models.Event
-	if err := query.Preload("Club").Offset(offset).Limit(limit).Find(&events).Error; err != nil {
+	err := h.db.Model(&models.Event{}).
+		Scopes(filters).
+		Preload("Club").
+		Order("date DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(&events).Error
+
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
 
-	// Build a flat response with club fields at the top level.
+	// Build flat response; guarantee JSON [] not null for empty results.
 	results := make([]EventResponse, 0, len(events))
 	for _, e := range events {
 		results = append(results, eventToResponse(e))
