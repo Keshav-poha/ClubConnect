@@ -231,3 +231,17 @@ func (s *DiscoveryService) saveLog(clubID uuid.UUID, status string, found, saved
 		Error:        msg,
 	})
 }
+
+// GetLastScrapeTime retrieves the timestamp of the most recent scrape log.
+func (s *DiscoveryService) GetLastScrapeTime() (time.Time, error) {
+	var lastLog models.ScrapeLog
+	err := s.db.Order("scraped_at DESC").First(&lastLog).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return time.Time{}, nil
+		}
+		return time.Time{}, err
+	}
+	return lastLog.ScrapedAt, nil
+}
+

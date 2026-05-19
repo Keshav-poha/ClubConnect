@@ -35,8 +35,19 @@ func main() {
 
 	// background scraper
 	go func() {
+		// Small startup delay to let the HTTP server bind first
 		time.Sleep(10 * time.Second)
 		for {
+			lastScraped, err := discovery.GetLastScrapeTime()
+			if err == nil && !lastScraped.IsZero() {
+				nextScrape := lastScraped.Add(cfg.ScrapeInterval)
+				if time.Now().Before(nextScrape) {
+					sleepDuration := time.Until(nextScrape)
+					log.Printf("Last scrape was at %v. Next scrape scheduled in %v", lastScraped, sleepDuration)
+					time.Sleep(sleepDuration)
+					continue
+				}
+			}
 			discovery.RunDiscoveryCycle()
 			time.Sleep(cfg.ScrapeInterval)
 		}

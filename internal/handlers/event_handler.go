@@ -74,24 +74,33 @@ func (h *EventHandler) applyEventFilters(c *gin.Context) func(*gorm.DB) *gorm.DB
 			q = q.Where("is_featured = ?", true)
 		}
 
+		hasExplicitDateFilter := false
+
 		if from := c.Query("from"); from != "" {
 			if t, err := time.Parse("2006-01-02", from); err == nil {
 				q = q.Where("date >= ?", t)
+				hasExplicitDateFilter = true
 			}
 		}
 
 		if to := c.Query("to"); to != "" {
 			if t, err := time.Parse("2006-01-02", to); err == nil {
 				q = q.Where("date <= ?", t)
+				hasExplicitDateFilter = true
 			}
 		}
 
-		// Only apply the "upcoming only" filter when explicitly requested via
-		// ?upcoming=true. By default, show ALL events (newest first) so the
-		// frontend can decide how to display them. Previously this defaulted
-		// to filtering out past events, which hid all existing DB records.
-		if c.Query("upcoming") == "true" {
-			q = q.Where("date >= ? OR date IS NULL", time.Now())
+		// Default behavior: show upcoming events starting from today (00:00:00 Asia/Kolkata).
+		// This avoids filtering out today's events and solves timezone discrepancies.
+		// If they explicitly pass ?all=true, this filter is bypassed to show all events.
+		if c.Query("all") != "true" && !hasExplicitDateFilter {
+			loc, err := time.LoadLocation("Asia/Kolkata")
+			if err != nil {
+				loc = time.FixedZone("IST", 5.5*60*60) // Fallback to UTC+5:30
+			}
+			now := time.Now().In(loc)
+			todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
+			q = q.Where("date >= ? OR date IS NULL", todayStart)
 		}
 
 		return q
