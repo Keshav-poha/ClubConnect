@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { ScreenContainer, Text, LoadingIndicator, ErrorState } from '@/components';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard } from '@/components';
 import { useStore } from '@/store';
 
 export const HomeScreen = () => {
@@ -22,9 +22,17 @@ export const HomeScreen = () => {
         <ErrorState message={errorEvents} onRetry={fetchFeaturedEvents} />
       )}
       
-      <ScrollView>
-        {/* Film Strip will go here */}
-      </ScrollView>
+      <FlatList
+        data={featuredEvents}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <View style={styles.filmStripItem}>
+            <EventCard event={item} />
+          </View>
+        )}
+      />
     </ScreenContainer>
   );
 };
