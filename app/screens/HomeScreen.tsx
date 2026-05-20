@@ -10,6 +10,15 @@ export const HomeScreen = () => {
     fetchFeaturedEvents();
   }, []);
 
+  const [activeIndex, setActiveIndex] = React.useState(0);
+
+  const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 50 }).current;
+  const onViewableItemsChanged = React.useRef(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      setActiveIndex(viewableItems[0].index);
+    }
+  }).current;
+
   return (
     <ScreenContainer style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>Archive</Text>
@@ -30,8 +39,10 @@ export const HomeScreen = () => {
         snapToInterval={336} // 320 width + 16 marginLeft
         decelerationRate="fast"
         snapToAlignment="start"
-        renderItem={({ item }) => (
-          <View style={styles.filmStripItem}>
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        renderItem={({ item, index }) => (
+          <View style={[styles.filmStripItem, index === activeIndex && styles.activeFilmStripItem]}>
             <View style={styles.featuredBadge}>
               <Badge label="Featured" variant="accent" />
             </View>
@@ -58,6 +69,12 @@ const styles = StyleSheet.create({
     width: 320,
     marginRight: 16,
     marginLeft: 16,
+    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
+  },
+  activeFilmStripItem: {
+    opacity: 1,
+    transform: [{ scale: 1 }],
   },
   featuredBadge: {
     position: 'absolute',
