@@ -30,19 +30,41 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
       <View style={styles.content}>
         <Text variant="h2" numberOfLines={2}>{event.title}</Text>
         <Text variant="body" color="textMuted" numberOfLines={2}>{event.description}</Text>
-        <DateTag date={event.date} />
-        <LocationTag location={event.location} />
-        {event.club && (
-          <ClubAvatar name={event.club.name} url={event.club.avatar_url} />
-        )}
+        <View style={styles.metaContainer}>
+          <DateTag date={event.date} />
+          <LocationTag location={event.location} />
+          {event.club && (
+            <ClubAvatar name={event.club.name} url={event.club.avatar_url} />
+          )}
+        </View>
       </View>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
-  pressed: {},
-  image: {},
-  content: {},
+  container: {
+    marginBottom: 24,
+    borderWidth: 1,
+  },
+  pressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  image: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+  },
+  content: {
+    padding: 16,
+  },
+  metaContainer: {
+    flexDirection: 'row',
+    marginTop: 12,
+    gap: 12,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
 });
