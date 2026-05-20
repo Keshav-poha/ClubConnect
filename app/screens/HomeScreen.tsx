@@ -48,4 +48,9 @@ const styles = StyleSheet.create({
   center: {
     marginTop: 100,
   },
+  filmStripItem: {
+    width: 320,
+    marginRight: 16,
+    marginLeft: 16,
+  },
 });
