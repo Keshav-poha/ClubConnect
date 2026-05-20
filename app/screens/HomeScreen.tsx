@@ -27,6 +27,9 @@ export const HomeScreen = () => {
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
+        snapToInterval={336} // 320 width + 16 marginLeft
+        decelerationRate="fast"
+        snapToAlignment="start"
         renderItem={({ item }) => (
           <View style={styles.filmStripItem}>
             <EventCard event={item} />
