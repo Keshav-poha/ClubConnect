@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard } from '@/components';
+import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard, Badge } from '@/components';
 import { useStore } from '@/store';
 
 export const HomeScreen = () => {
@@ -32,6 +32,9 @@ export const HomeScreen = () => {
         snapToAlignment="start"
         renderItem={({ item }) => (
           <View style={styles.filmStripItem}>
+            <View style={styles.featuredBadge}>
+              <Badge label="Featured" variant="accent" />
+            </View>
             <EventCard event={item} />
           </View>
         )}
@@ -55,5 +58,11 @@ const styles = StyleSheet.create({
     width: 320,
     marginRight: 16,
     marginLeft: 16,
+  },
+  featuredBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    zIndex: 10,
   },
 });
