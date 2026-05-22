@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { Event } from '@/types';
 import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList, FeedSkeleton } from '@/components';
@@ -12,7 +12,7 @@ interface UpcomingFeedProps {
   onLoadMore?: () => void;
 }
 
-export const UpcomingFeed = ({
+export const UpcomingFeed = React.memo(({
   events,
   isLoading,
   hasMore,
@@ -28,6 +28,10 @@ export const UpcomingFeed = ({
     await onRefresh();
     setRefreshing(false);
   };
+
+  const renderItem = useCallback(({ item }: { item: Event }) => (
+    <EventCard event={item} />
+  ), []);
 
   if (isLoading && events.length === 0 && !refreshing) {
     return <FeedSkeleton />;
@@ -67,10 +71,10 @@ export const UpcomingFeed = ({
           <EndOfList />
         ) : null
       }
-      renderItem={({ item }) => <EventCard event={item} />}
+      renderItem={renderItem}
     />
   );
-};
+});
 
 const styles = StyleSheet.create({
   contentContainer: {
