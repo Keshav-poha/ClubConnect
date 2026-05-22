@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { Event } from '@/types';
-import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList } from '@/components';
+import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList, FeedSkeleton } from '@/components';
 
 interface UpcomingFeedProps {
   events: Event[];
@@ -30,7 +30,7 @@ export const UpcomingFeed = ({
   };
 
   if (isLoading && events.length === 0 && !refreshing) {
-    return <LoadingIndicator style={styles.center} />;
+    return <FeedSkeleton />;
   }
 
   if (error && events.length === 0) {
