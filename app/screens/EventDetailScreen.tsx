@@ -1,0 +1,89 @@
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton } from '@/components';
+import { colors, typography } from '@/theme';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
+
+export const EventDetailScreen = ({ route, navigation }: Props) => {
+  const { event } = route.params;
+
+  return (
+    <ScreenContainer style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.imageContainer}>
+          <Image source={event.image_url} style={styles.heroImage} />
+          <View style={styles.backButton}>
+            <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
+          </View>
+        </View>
+
+        <View style={styles.content}>
+          <Text variant="h1" style={styles.title}>{event.title}</Text>
+          
+          <View style={styles.metaRow}>
+            <DateTag date={event.date} time={event.time} />
+            <LocationTag location={event.location} />
+          </View>
+
+          <View style={styles.clubContainer}>
+            <Text variant="small" color="textMuted">Hosted by</Text>
+            <Text variant="h3">{event.club.name}</Text>
+          </View>
+
+          <Text variant="body" color="textSecondary" style={styles.description}>
+            {event.description}
+          </Text>
+        </View>
+      </ScrollView>
+    </ScreenContainer>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 0, // override ScreenContainer padding for full-bleed image
+    paddingHorizontal: 0,
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  imageContainer: {
+    width: '100%',
+    height: 400,
+    position: 'relative',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 60,
+    left: 16,
+    zIndex: 10,
+  },
+  content: {
+    padding: 24,
+  },
+  title: {
+    marginBottom: 16,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 32,
+    flexWrap: 'wrap',
+  },
+  clubContainer: {
+    marginBottom: 32,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.primary,
+    paddingLeft: 16,
+  },
+  description: {
+    lineHeight: 24,
+  },
+});
