@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton } from '@/components';
+import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak } from '@/components';
 import { colors, typography } from '@/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
@@ -36,22 +36,28 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
           </View>
         </View>
 
-        <View style={styles.content}>
-          <Text variant="h1" style={styles.title}>{event.title}</Text>
-          
-          <View style={styles.metaRow}>
-            <DateTag date={event.date} time={event.time} />
-            <LocationTag location={event.location} />
+        <View style={styles.contentWrapper}>
+          <View style={styles.lightLeakContainer}>
+             <LightLeak color={colors.primary} intensity={0.15} />
           </View>
 
-          <View style={styles.clubContainer}>
-            <Text variant="small" color="textMuted">Hosted by</Text>
-            <Text variant="h3">{event.club.name}</Text>
-          </View>
+          <View style={styles.content}>
+            <Text variant="h1" style={styles.title}>{event.title}</Text>
+            
+            <View style={styles.metaRow}>
+              <DateTag date={event.date} time={event.time} />
+              <LocationTag location={event.location} />
+            </View>
 
-          <Text variant="body" color="textSecondary" style={styles.description}>
-            {event.description}
-          </Text>
+            <View style={styles.clubContainer}>
+              <Text variant="small" color="textMuted">Hosted by</Text>
+              <Text variant="h3">{event.club.name}</Text>
+            </View>
+
+            <Text variant="body" color="textSecondary" style={styles.description}>
+              {event.description}
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </ScreenContainer>
@@ -87,6 +93,18 @@ const styles = StyleSheet.create({
   iconButtonWrapper: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 24,
+  },
+  contentWrapper: {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  lightLeakContainer: {
+    position: 'absolute',
+    top: -100,
+    left: -100,
+    width: '150%',
+    height: '150%',
+    opacity: 0.5,
   },
   content: {
     padding: 24,
