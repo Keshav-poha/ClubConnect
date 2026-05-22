@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak } from '@/components';
@@ -14,6 +14,15 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const handleBookmark = () => {
     // In the future this will sync with local storage or backend
     setIsBookmarked(!isBookmarked);
+  };
+
+  const handleOpenInstagram = () => {
+    const clubHandle = event.club.name.toLowerCase().replace(/\s+/g, '');
+    const url = `instagram://user?username=${clubHandle}`;
+    Linking.openURL(url).catch(() => {
+      // Fallback to web browser if app is not installed
+      Linking.openURL(`https://instagram.com/${clubHandle}`);
+    });
   };
 
   return (
@@ -57,6 +66,14 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             <Text variant="body" color="textSecondary" style={styles.description}>
               {event.description}
             </Text>
+
+            <View style={styles.actionContainer}>
+              <Button 
+                label="View on Instagram" 
+                variant="outline" 
+                onPress={handleOpenInstagram} 
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -126,5 +143,11 @@ const styles = StyleSheet.create({
   },
   description: {
     lineHeight: 24,
+  },
+  actionContainer: {
+    marginTop: 40,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
   },
 });
