@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard, Badge } from '@/components';
+import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard, Badge, EmptyState } from '@/components';
+import { FeaturedSkeleton } from '@/components/FeaturedSkeleton';
 import { useStore } from '@/store';
 
 export const HomeScreen = () => {
@@ -24,7 +25,13 @@ export const HomeScreen = () => {
       <Text variant="h1" style={styles.headerTitle}>Archive</Text>
       
       {isLoadingEvents && !featuredEvents.length && (
-        <LoadingIndicator style={styles.center} />
+        <View style={styles.skeletonContainer}>
+          <FeaturedSkeleton />
+        </View>
+      )}
+
+      {!isLoadingEvents && !errorEvents && featuredEvents.length === 0 && (
+        <EmptyState title="No Featured Events" message="Check back later for curated events." style={styles.center} />
       )}
       
       {errorEvents && (
@@ -64,6 +71,9 @@ const styles = StyleSheet.create({
   },
   center: {
     marginTop: 100,
+  },
+  skeletonContainer: {
+    flexDirection: 'row',
   },
   filmStripItem: {
     width: 320,
