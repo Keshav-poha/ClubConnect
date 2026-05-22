@@ -16,6 +16,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1.1)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -29,8 +30,13 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
         duration: 500,
         useNativeDriver: true,
       }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
     ]).start();
-  }, [slideAnim, fadeAnim]);
+  }, [slideAnim, fadeAnim, scaleAnim]);
 
   const handleBookmark = () => {
     toggleBookmark(event);
@@ -68,7 +74,9 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
     <ScreenContainer style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.imageContainer}>
-          <Image source={event.image_url} style={styles.heroImage} />
+          <Animated.View style={[styles.heroImageWrapper, { transform: [{ scale: scaleAnim }] }]}>
+            <Image source={event.image_url} style={styles.heroImage} />
+          </Animated.View>
           
           <View style={styles.headerControls}>
             <View style={styles.iconButtonWrapper}>
@@ -145,6 +153,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 400,
     position: 'relative',
+    overflow: 'hidden', // to contain scale
+  },
+  heroImageWrapper: {
+    width: '100%',
+    height: '100%',
   },
   heroImage: {
     width: '100%',
