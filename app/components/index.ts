@@ -21,3 +21,4 @@ export * from './EventCard';
 export * from './BottomSheet';
 export * from './FeaturedFilmStrip';
 export * from './UpcomingFeed';
+export * from './EndOfList';
