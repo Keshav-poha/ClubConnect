@@ -1,0 +1,89 @@
+import React from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { Event } from '@/types';
+import { EventCard, Badge, EmptyState } from '@/components';
+import { FeaturedSkeleton } from './FeaturedSkeleton';
+
+interface FeaturedFilmStripProps {
+  events: Event[];
+  isLoading: boolean;
+  error: string | null;
+}
+
+export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStripProps) => {
+  const [activeIndex, setActiveIndex] = React.useState(0);
+
+  const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 50 }).current;
+  const onViewableItemsChanged = React.useRef(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      setActiveIndex(viewableItems[0].index);
+    }
+  }).current;
+
+  if (isLoading && !events.length) {
+    return (
+      <View style={styles.skeletonContainer}>
+        <FeaturedSkeleton />
+      </View>
+    );
+  }
+
+  if (!isLoading && !error && events.length === 0) {
+    return (
+      <EmptyState
+        title="No Featured Events"
+        message="Check back later for curated events."
+        style={styles.center}
+      />
+    );
+  }
+
+  return (
+    <FlatList
+      data={events}
+      keyExtractor={(item) => item.id}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      snapToInterval={336}
+      decelerationRate="fast"
+      snapToAlignment="start"
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={viewabilityConfig}
+      renderItem={({ item, index }) => (
+        <View style={[styles.filmStripItem, index === activeIndex && styles.activeFilmStripItem]}>
+          <View style={styles.featuredBadge}>
+            <Badge label="Featured" variant="accent" />
+          </View>
+          <EventCard event={item} />
+        </View>
+      )}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  skeletonContainer: {
+    flexDirection: 'row',
+  },
+  center: {
+    marginTop: 40,
+    marginBottom: 40,
+  },
+  filmStripItem: {
+    width: 320,
+    marginRight: 16,
+    marginLeft: 16,
+    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
+  },
+  activeFilmStripItem: {
+    opacity: 1,
+    transform: [{ scale: 1 }],
+  },
+  featuredBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    zIndex: 10,
+  },
+});
