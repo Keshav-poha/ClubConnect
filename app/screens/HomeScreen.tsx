@@ -43,7 +43,7 @@ export const HomeScreen = () => {
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        snapToInterval={336} // 320 width + 16 marginLeft
+        snapToInterval={336}
         decelerationRate="fast"
         snapToAlignment="start"
         onViewableItemsChanged={onViewableItemsChanged}
@@ -57,6 +57,10 @@ export const HomeScreen = () => {
           </View>
         )}
       />
+
+      <View style={styles.sectionHeader}>
+        <Text variant="h2">Upcoming Events</Text>
+      </View>
     </ScreenContainer>
   );
 };
@@ -91,5 +95,10 @@ const styles = StyleSheet.create({
     top: 12,
     right: 12,
     zIndex: 10,
+  },
+  sectionHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 32,
+    paddingBottom: 16,
   },
 });
