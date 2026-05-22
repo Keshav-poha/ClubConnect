@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking, Platform, Share } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak } from '@/components';
@@ -31,6 +31,17 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
     Linking.openURL(calUrl).catch(() => {
       console.warn('Calendar not supported');
     });
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out ${event.title} hosted by ${event.club.name} on ${event.date}!`,
+        url: `https://clubconnect.app/event/${event.id}`, // Placeholder
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -86,6 +97,11 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
                 label="View on Instagram" 
                 variant="outline" 
                 onPress={handleOpenInstagram} 
+              />
+              <Button 
+                label="Share Event" 
+                variant="outline" 
+                onPress={handleShare} 
               />
             </View>
           </View>
