@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet, ScrollView, Linking, Platform, Share } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak } from '@/components';
+import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button } from '@/components';
+import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
 export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { event } = route.params;
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { isBookmarked: checkBookmarked, toggleBookmark } = useStore();
+  
+  const isBookmarked = checkBookmarked(event.id);
 
   const handleBookmark = () => {
-    // In the future this will sync with local storage or backend
-    setIsBookmarked(!isBookmarked);
+    toggleBookmark(event);
   };
 
   const handleOpenInstagram = () => {
