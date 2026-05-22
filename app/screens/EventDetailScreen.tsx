@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Linking } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak } from '@/components';
@@ -22,6 +22,14 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
     Linking.openURL(url).catch(() => {
       // Fallback to web browser if app is not installed
       Linking.openURL(`https://instagram.com/${clubHandle}`);
+    });
+  };
+
+  const handleAddToCalendar = () => {
+    // Basic cross platform calendar deep link
+    const calUrl = Platform.OS === 'ios' ? 'calshow://' : 'content://com.android.calendar/time/';
+    Linking.openURL(calUrl).catch(() => {
+      console.warn('Calendar not supported');
     });
   };
 
@@ -68,6 +76,12 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             </Text>
 
             <View style={styles.actionContainer}>
+              <Button 
+                label="Add to Calendar" 
+                variant="primary" 
+                onPress={handleAddToCalendar} 
+                style={styles.actionButton}
+              />
               <Button 
                 label="View on Instagram" 
                 variant="outline" 
@@ -149,5 +163,9 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    gap: 12,
+  },
+  actionButton: {
+    width: '100%',
   },
 });
