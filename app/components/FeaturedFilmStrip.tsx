@@ -1,5 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 import { Event } from '@/types';
 import { EventCard, Badge, EmptyState } from '@/components';
 import { FeaturedSkeleton } from './FeaturedSkeleton';
@@ -12,6 +15,11 @@ interface FeaturedFilmStripProps {
 
 export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStripProps) => {
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const handlePress = React.useCallback((event: Event) => {
+    navigation.navigate('EventDetail', { event });
+  }, [navigation]);
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 50 }).current;
   const onViewableItemsChanged = React.useRef(({ viewableItems }: any) => {
@@ -54,7 +62,7 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
           <View style={styles.featuredBadge}>
             <Badge label="Featured" variant="accent" />
           </View>
-          <EventCard event={item} />
+          <EventCard event={item} onPress={handlePress} />
         </View>
       )}
     />

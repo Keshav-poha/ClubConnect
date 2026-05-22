@@ -1,5 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 import { Event } from '@/types';
 import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList, FeedSkeleton } from '@/components';
 
@@ -21,6 +24,7 @@ export const UpcomingFeed = React.memo(({
   onLoadMore,
 }: UpcomingFeedProps) => {
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleRefresh = async () => {
     if (!onRefresh) return;
@@ -29,9 +33,14 @@ export const UpcomingFeed = React.memo(({
     setRefreshing(false);
   };
 
-  const renderItem = useCallback(({ item }: { item: Event }) => (
-    <EventCard event={item} />
-  ), []);
+  const renderItem = useCallback(({ item }: { item: Event }) => {
+    return (
+      <EventCard 
+        event={item} 
+        onPress={(event) => navigation.navigate('EventDetail', { event })} 
+      />
+    );
+  }, [navigation]);
 
   if (isLoading && events.length === 0 && !refreshing) {
     return <FeedSkeleton />;
