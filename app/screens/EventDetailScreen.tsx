@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
@@ -9,14 +9,30 @@ type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
 export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { event } = route.params;
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const handleBookmark = () => {
+    // In the future this will sync with local storage or backend
+    setIsBookmarked(!isBookmarked);
+  };
 
   return (
     <ScreenContainer style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.imageContainer}>
           <Image source={event.image_url} style={styles.heroImage} />
-          <View style={styles.backButton}>
-            <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
+          
+          <View style={styles.headerControls}>
+            <View style={styles.iconButtonWrapper}>
+              <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
+            </View>
+            <View style={styles.iconButtonWrapper}>
+              <IconButton 
+                icon="bookmark" 
+                color={isBookmarked ? colors.accent : colors.textPrimary} 
+                onPress={handleBookmark} 
+              />
+            </View>
           </View>
         </View>
 
@@ -59,11 +75,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  backButton: {
+  headerControls: {
     position: 'absolute',
     top: 60,
     left: 16,
+    right: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     zIndex: 10,
+  },
+  iconButtonWrapper: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 24,
   },
   content: {
     padding: 24,
