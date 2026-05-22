@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Pressable, StyleSheet, ViewStyle } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Pressable, StyleSheet, ViewStyle, Animated } from 'react-native';
 import { Event } from '@/types';
 import { Image } from './Image';
 import { Text } from './Text';
@@ -15,8 +15,19 @@ interface EventCardProps {
 }
 
 export const EventCard = ({ event, onPress, style }: EventCardProps) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
   return (
-    <Pressable
+    <Animated.View style={{ opacity: fadeAnim }}>
+      <Pressable
       onPress={() => onPress?.(event)}
       style={({ pressed }) => [
         styles.container,
@@ -37,8 +48,9 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
             <ClubAvatar name={event.club.name} url={event.club.avatar_url} />
           )}
         </View>
-      </View>
-    </Pressable>
+        </View>
+      </Pressable>
+    </Animated.View>
   );
 };
 
