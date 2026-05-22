@@ -19,3 +19,5 @@ export * from './ErrorState';
 export * from './IconButton';
 export * from './EventCard';
 export * from './BottomSheet';
+export * from './FeaturedFilmStrip';
+export * from './UpcomingFeed';
