@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput, Pressable } from 'react-native';
+import { X } from 'lucide-react-native';
 import { ScreenContainer, Text, EmptyState, UpcomingFeed } from '@/components';
 import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
@@ -37,6 +38,11 @@ export const DiscoverScreen = () => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+        {searchQuery.length > 0 && (
+          <Pressable onPress={() => setSearchQuery('')} style={styles.clearButton}>
+            <X color={colors.textMuted} size={20} />
+          </Pressable>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -77,13 +83,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 24,
     backgroundColor: colors.backgroundCard,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   searchInput: {
+    flex: 1,
     height: 56,
     paddingHorizontal: 16,
     color: colors.textPrimary,
     fontFamily: typography.fonts.mono,
     fontSize: typography.sizes.base,
+  },
+  clearButton: {
+    padding: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,
