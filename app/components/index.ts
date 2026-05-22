@@ -22,3 +22,4 @@ export * from './BottomSheet';
 export * from './FeaturedFilmStrip';
 export * from './UpcomingFeed';
 export * from './EndOfList';
+export * from './FeedSkeleton';
