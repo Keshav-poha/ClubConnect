@@ -1,10 +1,23 @@
 import { create } from 'zustand';
-import { createEventSlice, EventSlice } from './eventSlice';
-import { createClubSlice, ClubSlice } from './clubSlice';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { EventSlice, createEventSlice } from './eventSlice';
+import { ClubSlice, createClubSlice } from './clubSlice';
+import { BookmarkSlice, createBookmarkSlice } from './bookmarkSlice';
 
-export type StoreState = EventSlice & ClubSlice;
+export type StoreState = EventSlice & ClubSlice & BookmarkSlice;
 
-export const useStore = create<StoreState>()((...a) => ({
-  ...createEventSlice(...a),
-  ...createClubSlice(...a),
-}));
+export const useStore = create<StoreState>()(
+  persist(
+    (...a) => ({
+      ...createEventSlice(...a),
+      ...createClubSlice(...a),
+      ...createBookmarkSlice(...a),
+    }),
+    {
+      name: 'clubconnect-storage',
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({ bookmarkedEvents: state.bookmarkedEvents }), // Only persist bookmarks
+    }
+  )
+);
