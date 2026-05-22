@@ -67,6 +67,13 @@ export const UpcomingFeed = React.memo(({
       ListFooterComponent={
         isLoading && events.length > 0 ? (
           <LoadingIndicator size="small" style={styles.footerLoading} />
+        ) : error && events.length > 0 ? (
+          <ErrorState 
+            title="Failed to load more" 
+            message="Check your connection and try again." 
+            onRetry={onLoadMore}
+            style={styles.footerLoading} 
+          />
         ) : !hasMore && events.length > 0 ? (
           <EndOfList />
         ) : null
