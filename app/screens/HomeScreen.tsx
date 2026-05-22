@@ -5,10 +5,11 @@ import { FeaturedSkeleton } from '@/components/FeaturedSkeleton';
 import { useStore } from '@/store';
 
 export const HomeScreen = () => {
-  const { featuredEvents, isLoadingEvents, errorEvents, fetchFeaturedEvents } = useStore();
+  const { featuredEvents, isLoadingEvents, errorEvents, fetchFeaturedEvents, clubs, fetchClubs } = useStore();
 
   useEffect(() => {
     fetchFeaturedEvents();
+    fetchClubs();
   }, []);
 
   const [activeIndex, setActiveIndex] = React.useState(0);
