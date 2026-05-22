@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, Linking, Platform, Share } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, ScrollView, Linking, Platform, Share, Animated } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button } from '@/components';
@@ -13,6 +13,24 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { isBookmarked: checkBookmarked, toggleBookmark } = useStore();
   
   const isBookmarked = checkBookmarked(event.id);
+
+  const slideAnim = useRef(new Animated.Value(20)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [slideAnim, fadeAnim]);
 
   const handleBookmark = () => {
     toggleBookmark(event);
@@ -72,14 +90,16 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
           </View>
 
           <View style={styles.content}>
-            <Text variant="h1" style={styles.title}>{event.title}</Text>
+            <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+              <Text variant="h1" style={styles.title}>{event.title}</Text>
+            </Animated.View>
             
-            <View style={styles.metaRow}>
+            <Animated.View style={[styles.metaRow, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <DateTag date={event.date} time={event.time} />
               <LocationTag location={event.location} />
-            </View>
+            </Animated.View>
 
-            <View style={styles.clubContainer}>
+            <Animated.View style={[styles.clubContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <Text variant="small" color="textMuted">Hosted by</Text>
               <Text variant="h3">{event.club.name}</Text>
             </View>
