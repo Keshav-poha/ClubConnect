@@ -7,6 +7,7 @@ import { DateTag } from './DateTag';
 import { LocationTag } from './LocationTag';
 import { ClubAvatar } from './ClubAvatar';
 import { globalStyles } from '@/styles/global';
+import { triggerLightHaptic } from '@/utils/haptics';
 
 interface EventCardProps {
   event: Event;
@@ -25,10 +26,15 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
     }).start();
   }, [fadeAnim]);
 
+  const handlePress = () => {
+    triggerLightHaptic();
+    onPress?.(event);
+  };
+
   return (
     <Animated.View style={{ opacity: fadeAnim }}>
       <Pressable
-      onPress={() => onPress?.(event)}
+      onPress={handlePress}
       style={({ pressed }) => [
         styles.container,
         globalStyles.cardSurface,
