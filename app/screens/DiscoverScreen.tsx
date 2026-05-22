@@ -21,7 +21,7 @@ export const DiscoverScreen = () => {
     const query = searchQuery.toLowerCase();
     return events.filter(event => 
       event.title.toLowerCase().includes(query) || 
-      event.club.name.toLowerCase().includes(query) ||
+      event.club?.name.toLowerCase().includes(query) ||
       event.description.toLowerCase().includes(query)
     );
   }, [events, searchQuery]);
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: 16,
     color: colors.textPrimary,
-    fontFamily: typography.fonts.mono,
-    fontSize: typography.sizes.base,
+    fontFamily: typography.mono.fontFamily,
+    fontSize: typography.mono.fontSize,
   },
   clearButton: {
     padding: 16,

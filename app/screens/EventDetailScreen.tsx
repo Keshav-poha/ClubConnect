@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Linking, Platform, Share, Animated } from 'react-native';
+import { ArrowLeft, Bookmark as BookmarkIcon } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button } from '@/components';
@@ -43,7 +44,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   };
 
   const handleOpenInstagram = () => {
-    const clubHandle = event.club.name.toLowerCase().replace(/\s+/g, '');
+    const clubHandle = event.club?.name?.toLowerCase().replace(/\s+/g, '') || '';
     const url = `instagram://user?username=${clubHandle}`;
     Linking.openURL(url).catch(() => {
       // Fallback to web browser if app is not installed
@@ -62,7 +63,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out ${event.title} hosted by ${event.club.name} on ${event.date}!`,
+        message: `Check out ${event.title} hosted by ${event.club?.name || 'them'} on ${event.date}!`,
         url: `https://clubconnect.app/event/${event.id}`, // Placeholder
       });
     } catch (error) {
@@ -75,17 +76,17 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.imageContainer}>
           <Animated.View style={[styles.heroImageWrapper, { transform: [{ scale: scaleAnim }] }]}>
-            <Image source={event.image_url} style={styles.heroImage} />
+            <Image source={event.image_url ? { uri: event.image_url } : undefined} style={styles.heroImage} />
           </Animated.View>
           
           <View style={styles.headerControls}>
             <View style={styles.iconButtonWrapper}>
-              <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
+              <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.iconButtonWrapper}>
               <IconButton 
-                icon="bookmark" 
-                color={isBookmarked ? colors.accent : colors.textPrimary} 
+                Icon={BookmarkIcon} 
+                color={isBookmarked ? colors.accentCyan : colors.textPrimary} 
                 onPress={handleBookmark} 
               />
             </View>
@@ -94,7 +95,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
         <View style={styles.contentWrapper}>
           <View style={styles.lightLeakContainer}>
-             <LightLeak color={colors.primary} intensity={0.15} />
+             <LightLeak color={colors.accentCyan} />
           </View>
 
           <View style={styles.content}>
@@ -103,16 +104,16 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             </Animated.View>
             
             <Animated.View style={[styles.metaRow, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-              <DateTag date={event.date} time={event.time} />
+              <DateTag date={event.date} />
               <LocationTag location={event.location} />
             </Animated.View>
 
             <Animated.View style={[styles.clubContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-              <Text variant="small" color="textMuted">Hosted by</Text>
-              <Text variant="h3">{event.club.name}</Text>
-            </View>
+              <Text variant="caption" color="textMuted">Hosted by</Text>
+              <Text variant="h3">{event.club?.name}</Text>
+            </Animated.View>
 
-            <Text variant="body" color="textSecondary" style={styles.description}>
+            <Text variant="body" color="textMuted" style={styles.description}>
               {event.description}
             </Text>
 
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
   clubContainer: {
     marginBottom: 32,
     borderLeftWidth: 2,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.accentCyan,
     paddingLeft: 16,
   },
   description: {

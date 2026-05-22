@@ -15,7 +15,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="EventDetail" component={EventDetailScreen} />
       </Stack.Navigator>
-      <FilmGrain opacity={0.03} />
+      <FilmGrain />
     </View>
   );
 };
