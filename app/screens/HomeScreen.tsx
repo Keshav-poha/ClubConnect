@@ -12,6 +12,7 @@ export const HomeScreen = () => {
     errorEvents,
     fetchFeaturedEvents,
     fetchEvents,
+    loadMoreEvents,
     clubs,
     fetchClubs
   } = useStore();
@@ -66,6 +67,7 @@ export const HomeScreen = () => {
         isLoading={isLoadingEvents}
         error={errorEvents}
         onRefresh={() => fetchEvents(1, 20, activeFilter)}
+        onLoadMore={() => loadMoreEvents(20, activeFilter)}
       />
     </ScreenContainer>
   );
