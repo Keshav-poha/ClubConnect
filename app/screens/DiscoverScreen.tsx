@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import { ScreenContainer, Text, EmptyState } from '@/components';
+import { ScreenContainer, Text, EmptyState, UpcomingFeed } from '@/components';
+import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
 import { globalStyles } from '@/styles/global';
 
 export const DiscoverScreen = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const { events, isLoadingEvents, errorEvents, fetchEvents, loadMoreEvents, hasMore } = useStore();
+
+  React.useEffect(() => {
+    if (events.length === 0) {
+      fetchEvents();
+    }
+  }, []);
+
+  const filteredEvents = useMemo(() => {
+    if (!searchQuery.trim()) return events;
+    const query = searchQuery.toLowerCase();
+    return events.filter(event => 
+      event.title.toLowerCase().includes(query) || 
+      event.club.name.toLowerCase().includes(query) ||
+      event.description.toLowerCase().includes(query)
+    );
+  }, [events, searchQuery]);
 
   return (
     <ScreenContainer style={styles.container}>
@@ -22,10 +40,22 @@ export const DiscoverScreen = () => {
       </View>
 
       <View style={styles.content}>
-        <EmptyState 
-          title="Search" 
-          message="Type to find upcoming campus events and clubs."
-        />
+        {searchQuery.trim() && filteredEvents.length === 0 ? (
+          <EmptyState 
+            title="No Results" 
+            message="Try searching for something else."
+            style={styles.emptyContainer}
+          />
+        ) : (
+          <UpcomingFeed 
+            events={filteredEvents}
+            isLoading={isLoadingEvents}
+            hasMore={searchQuery ? false : hasMore} // Don't show footer loading during search
+            error={errorEvents}
+            onRefresh={() => fetchEvents()}
+            onLoadMore={() => !searchQuery && loadMoreEvents()}
+          />
+        )}
       </View>
     </ScreenContainer>
   );
@@ -53,7 +83,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  emptyContainer: {
+    marginTop: 100,
   },
 });
