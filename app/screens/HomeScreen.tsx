@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard, Badge, EmptyState } from '@/components';
+import { ScreenContainer, Text, LoadingIndicator, ErrorState, EventCard, Badge, EmptyState, FilterRow } from '@/components';
 import { FeaturedSkeleton } from '@/components/FeaturedSkeleton';
 import { useStore } from '@/store';
 
@@ -14,6 +14,13 @@ export const HomeScreen = () => {
 
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [activeFilter, setActiveFilter] = React.useState<string>('all');
+
+  const filterOptions = React.useMemo(() => {
+    return [
+      { id: 'all', label: 'All' },
+      ...clubs.map(club => ({ id: club.id, label: club.name }))
+    ];
+  }, [clubs]);
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 50 }).current;
   const onViewableItemsChanged = React.useRef(({ viewableItems }: any) => {
@@ -63,6 +70,13 @@ export const HomeScreen = () => {
       <View style={styles.sectionHeader}>
         <Text variant="h2">Upcoming Events</Text>
       </View>
+
+      <FilterRow
+        options={filterOptions}
+        activeId={activeFilter}
+        onSelect={setActiveFilter}
+        style={styles.filterRow}
+      />
     </ScreenContainer>
   );
 };
@@ -102,5 +116,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 32,
     paddingBottom: 16,
+  },
+  filterRow: {
+    marginBottom: 16,
   },
 });
