@@ -1,18 +1,31 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { ScreenContainer, Text, ErrorState, FilterRow } from '@/components';
+import { ScreenContainer, Text, ErrorState, FilterRow, UpcomingFeed } from '@/components';
 import { FeaturedFilmStrip } from '@/components/FeaturedFilmStrip';
 import { useStore } from '@/store';
 
 export const HomeScreen = () => {
-  const { featuredEvents, isLoadingEvents, errorEvents, fetchFeaturedEvents, clubs, fetchClubs } = useStore();
+  const {
+    featuredEvents,
+    events,
+    isLoadingEvents,
+    errorEvents,
+    fetchFeaturedEvents,
+    fetchEvents,
+    clubs,
+    fetchClubs
+  } = useStore();
+
+  const [activeFilter, setActiveFilter] = React.useState<string>('all');
 
   useEffect(() => {
     fetchFeaturedEvents();
     fetchClubs();
   }, []);
 
-  const [activeFilter, setActiveFilter] = React.useState<string>('all');
+  useEffect(() => {
+    fetchEvents(1, 20, activeFilter);
+  }, [activeFilter]);
 
   const filterOptions = React.useMemo(() => {
     return [
@@ -46,6 +59,13 @@ export const HomeScreen = () => {
         activeId={activeFilter}
         onSelect={setActiveFilter}
         style={styles.filterRow}
+      />
+
+      <UpcomingFeed
+        events={events}
+        isLoading={isLoadingEvents}
+        error={errorEvents}
+        onRefresh={() => fetchEvents(1, 20, activeFilter)}
       />
     </ScreenContainer>
   );
