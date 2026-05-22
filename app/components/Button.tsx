@@ -3,6 +3,7 @@ import { Pressable, PressableProps, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors } from '@/theme';
 import { globalStyles } from '@/styles/global';
+import { triggerLightHaptic } from '@/utils/haptics';
 
 interface ButtonProps extends PressableProps {
   label: string;
@@ -14,6 +15,8 @@ export const Button = ({
   label,
   variant = 'primary',
   style,
+  onPress,
+  disabled,
   ...props
 }: ButtonProps) => {
   const getVariantStyles = (pressed: boolean): ViewStyle => {
@@ -41,8 +44,16 @@ export const Button = ({
     return 'textPrimary';
   };
 
+  const handlePress = () => {
+    if (disabled) return;
+    triggerLightHaptic();
+    onPress?.({} as any);
+  };
+
   return (
     <Pressable
+      onPress={handlePress}
+      disabled={disabled}
       style={({ pressed }) => [
         styles.base,
         globalStyles.brutalistBorder,
