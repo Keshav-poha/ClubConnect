@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { Event } from '@/types';
 import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList } from '@/components';
 
@@ -20,7 +20,16 @@ export const UpcomingFeed = ({
   onRefresh,
   onLoadMore,
 }: UpcomingFeedProps) => {
-  if (isLoading && events.length === 0) {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    if (!onRefresh) return;
+    setRefreshing(true);
+    await onRefresh();
+    setRefreshing(false);
+  };
+
+  if (isLoading && events.length === 0 && !refreshing) {
     return <LoadingIndicator style={styles.center} />;
   }
 
@@ -35,6 +44,13 @@ export const UpcomingFeed = ({
       contentContainerStyle={styles.contentContainer}
       onEndReached={onLoadMore}
       onEndReachedThreshold={0.5}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor="#00EEFF"
+        />
+      }
       ListEmptyComponent={
         !isLoading ? (
           <EmptyState
