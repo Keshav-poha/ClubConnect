@@ -13,6 +13,7 @@ export const HomeScreen = () => {
   }, []);
 
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const [activeFilter, setActiveFilter] = React.useState<string>('all');
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 50 }).current;
   const onViewableItemsChanged = React.useRef(({ viewableItems }: any) => {
