@@ -10,6 +10,7 @@ export const HomeScreen = () => {
     events,
     isLoadingEvents,
     errorEvents,
+    hasMore,
     fetchFeaturedEvents,
     fetchEvents,
     loadMoreEvents,
@@ -65,6 +66,7 @@ export const HomeScreen = () => {
       <UpcomingFeed
         events={events}
         isLoading={isLoadingEvents}
+        hasMore={hasMore}
         error={errorEvents}
         onRefresh={() => fetchEvents(1, 20, activeFilter)}
         onLoadMore={() => loadMoreEvents(20, activeFilter)}

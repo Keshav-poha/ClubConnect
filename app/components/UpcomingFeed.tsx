@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Event } from '@/types';
-import { EventCard, EmptyState, ErrorState, LoadingIndicator } from '@/components';
+import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList } from '@/components';
 
 interface UpcomingFeedProps {
   events: Event[];
   isLoading: boolean;
+  hasMore: boolean;
   error: string | null;
   onRefresh?: () => void;
   onLoadMore?: () => void;
@@ -14,6 +15,7 @@ interface UpcomingFeedProps {
 export const UpcomingFeed = ({
   events,
   isLoading,
+  hasMore,
   error,
   onRefresh,
   onLoadMore,
@@ -45,6 +47,8 @@ export const UpcomingFeed = ({
       ListFooterComponent={
         isLoading && events.length > 0 ? (
           <LoadingIndicator size="small" style={styles.footerLoading} />
+        ) : !hasMore && events.length > 0 ? (
+          <EndOfList />
         ) : null
       }
       renderItem={({ item }) => <EventCard event={item} />}
