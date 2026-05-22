@@ -53,7 +53,11 @@ export const DiscoverScreen = () => {
             hasMore={searchQuery ? false : hasMore} // Don't show footer loading during search
             error={errorEvents}
             onRefresh={() => fetchEvents()}
-            onLoadMore={() => !searchQuery && loadMoreEvents()}
+            onLoadMore={() => {
+              if (!searchQuery) {
+                loadMoreEvents();
+              }
+            }}
           />
         )}
       </View>
