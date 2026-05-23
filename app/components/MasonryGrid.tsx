@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, ScrollView, StyleProp, ViewStyle, RefreshControl, RefreshControlProps } from 'react-native';
+import React from 'react';
+import { StyleSheet, FlatList, StyleProp, ViewStyle, RefreshControlProps, View } from 'react-native';
 
 interface MasonryGridProps<T> {
   data: T[];
@@ -24,49 +24,32 @@ export function MasonryGrid<T>({
   ListHeaderComponent,
   ListFooterComponent,
 }: MasonryGridProps<T>) {
-  const columns = useMemo(() => {
-    const cols: T[][] = Array.from({ length: numColumns }, () => []);
-    data.forEach((item, index) => {
-      cols[index % numColumns].push(item);
-    });
-    return cols;
-  }, [data, numColumns]);
-
-  const handleScroll = (event: any) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
-    if (isCloseToBottom && onEndReached) {
-      onEndReached();
-    }
-  };
-
   return (
-    <ScrollView
+    <FlatList
+      data={data}
+      numColumns={numColumns}
+      keyExtractor={(_, index) => `grid-item-${index}`}
+      renderItem={({ item, index }) => (
+        <View style={styles.itemContainer}>
+          {renderItem(item, index)}
+        </View>
+      )}
       style={[styles.container, style]}
       contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
-      onScroll={handleScroll}
-      scrollEventThrottle={16}
+      columnWrapperStyle={styles.columnWrapper}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.3}
       refreshControl={refreshControl}
       showsVerticalScrollIndicator={false}
-    >
-      {ListHeaderComponent}
-      <View style={styles.gridContainer}>
-        {columns.map((col, colIndex) => (
-          <View key={`col-${colIndex}`} style={styles.column}>
-            {col.map((item, itemIndex) => {
-              // Calculate global index if needed
-              const globalIndex = itemIndex * numColumns + colIndex;
-              return (
-                <View key={`item-${globalIndex}`} style={styles.itemContainer}>
-                  {renderItem(item, globalIndex)}
-                </View>
-              );
-            })}
-          </View>
-        ))}
-      </View>
-      {ListFooterComponent}
-    </ScrollView>
+      ListHeaderComponent={ListHeaderComponent as React.ComponentType<any>}
+      ListFooterComponent={ListFooterComponent as React.ComponentType<any>}
+      // Performance props per js-lists-flatlist-flashlist skill
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      updateCellsBatchingPeriod={50}
+      initialNumToRender={8}
+      windowSize={5}
+    />
   );
 }
 
@@ -76,17 +59,14 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 20,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    width: '100%',
     paddingHorizontal: 8,
   },
-  column: {
-    flex: 1,
-    paddingHorizontal: 8,
+  columnWrapper: {
+    justifyContent: 'space-between',
   },
   itemContainer: {
+    flex: 1,
+    paddingHorizontal: 8,
     marginBottom: 16,
   },
 });
