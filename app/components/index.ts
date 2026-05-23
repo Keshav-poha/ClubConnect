@@ -27,3 +27,4 @@ export * from './FeedSkeleton';
 export * from './SettingsRow';
 export * from './MasonryGrid';
 export * from './Tooltip';
+export * from './AnimatedNumber';
