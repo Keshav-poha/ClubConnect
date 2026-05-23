@@ -11,7 +11,7 @@ interface FilterPillProps {
   style?: ViewStyle;
 }
 
-export const FilterPill = ({ label, isActive = false, onPress, style }: FilterPillProps) => {
+export const FilterPill = React.memo(({ label, isActive = false, onPress, style }: FilterPillProps) => {
   return (
     <Pressable
       onPress={onPress}
@@ -31,7 +31,7 @@ export const FilterPill = ({ label, isActive = false, onPress, style }: FilterPi
       </Text>
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
