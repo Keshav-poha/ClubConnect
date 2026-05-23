@@ -25,3 +25,4 @@ export * from './Toast';
 export * from './EndOfList';
 export * from './FeedSkeleton';
 export * from './SettingsRow';
+export * from './MasonryGrid';
