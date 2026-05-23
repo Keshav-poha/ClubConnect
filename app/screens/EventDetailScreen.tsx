@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Linking, Platform, Share, Animated } from 'react-native';
 import { ArrowLeft, Bookmark as BookmarkIcon } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '@/navigation/types';
 import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button } from '@/components';
 import { useStore } from '@/store';
@@ -11,6 +12,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
 export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { event } = route.params;
+  const insets = useSafeAreaInsets();
   const { isBookmarked: checkBookmarked, toggleBookmark } = useStore();
   
   const isBookmarked = checkBookmarked(event.id);
@@ -79,7 +81,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             <Image source={event.image_url ? { uri: event.image_url } : undefined} style={styles.heroImage} />
           </Animated.View>
           
-          <View style={styles.headerControls}>
+          <View style={[styles.headerControls, { top: Math.max(insets.top, 20) }]}>
             <View style={styles.iconButtonWrapper}>
               <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
             </View>
@@ -166,7 +168,6 @@ const styles = StyleSheet.create({
   },
   headerControls: {
     position: 'absolute',
-    top: 60,
     left: 16,
     right: 16,
     flexDirection: 'row',
