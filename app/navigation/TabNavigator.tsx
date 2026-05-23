@@ -1,7 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Compass, Bookmark, Film, Settings } from 'lucide-react-native';
-import { HomeScreen, DiscoverScreen, SavedScreen, SettingsScreen } from '@/screens';
+import { HomeScreen } from '@/screens/HomeScreen';
+import { DiscoverScreen } from '@/screens/DiscoverScreen';
+import { SavedScreen } from '@/screens/SavedScreen';
+import { SettingsScreen } from '@/screens/SettingsScreen';
 import { colors } from '@/theme';
 
 const Tab = createBottomTabNavigator();

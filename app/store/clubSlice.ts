@@ -17,7 +17,7 @@ export const createClubSlice: StateCreator<ClubSlice> = (set) => ({
     set({ isLoadingClubs: true, errorClubs: null });
     try {
       const response = await api.get('/clubs');
-      set({ clubs: response.data.data, isLoadingClubs: false });
+      set({ clubs: response.data.clubs || [], isLoadingClubs: false });
     } catch (error: any) {
       set({ errorClubs: error.message, isLoadingClubs: false });
     }

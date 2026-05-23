@@ -1,6 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { ScreenContainer, Text, Button, Badge, Divider } from '@/components';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
+import { Badge } from '@/components/Badge';
+import { Divider } from '@/components/Divider';
 import { colors } from '@/theme';
 
 export const UIPlaygroundScreen = () => {

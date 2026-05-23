@@ -19,27 +19,41 @@ func NewEventHandler(db *gorm.DB) *EventHandler {
 	return &EventHandler{db}
 }
 
+// ClubResponse represents a nested club inside an event.
+type ClubResponse struct {
+	Name      string `json:"name"`
+	Handle    string `json:"handle"`
+	AvatarURL string `json:"avatar_url"`
+}
+
 // EventResponse is the JSON shape returned for each event in the API.
 type EventResponse struct {
-	ID           uuid.UUID  `json:"id"`
-	ClubID       uuid.UUID  `json:"club_id"`
-	Title        string     `json:"title"`
-	Description  string     `json:"description"`
-	Date         *time.Time `json:"date"`
-	Location     string     `json:"location"`
-	ImageURL     string     `json:"image_url"`
-	InstagramURL string     `json:"instagram_url"`
-	PostID       string     `json:"post_id"`
-	IsFeatured   bool       `json:"is_featured"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
+	ID           uuid.UUID     `json:"id"`
+	ClubID       uuid.UUID     `json:"club_id"`
+	Title        string        `json:"title"`
+	Description  string        `json:"description"`
+	Date         *time.Time    `json:"date"`
+	Location     string        `json:"location"`
+	ImageURL     string        `json:"image_url"`
+	InstagramURL string        `json:"instagram_url"`
+	PostID       string        `json:"post_id"`
+	IsFeatured   bool          `json:"is_featured"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
 
-	ClubName   string `json:"club_name"`
-	ClubHandle string `json:"club_handle"`
-	ClubAvatar string `json:"club_avatar"`
+	Club *ClubResponse `json:"club,omitempty"`
 }
 
 func eventToResponse(e models.Event) EventResponse {
+	var clubResp *ClubResponse
+	if e.Club.ID != uuid.Nil {
+		clubResp = &ClubResponse{
+			Name:      e.Club.Name,
+			Handle:    e.Club.Handle,
+			AvatarURL: e.Club.AvatarURL,
+		}
+	}
+
 	return EventResponse{
 		ID:           e.ID,
 		ClubID:       e.ClubID,
@@ -53,9 +67,7 @@ func eventToResponse(e models.Event) EventResponse {
 		IsFeatured:   e.IsFeatured,
 		CreatedAt:    e.CreatedAt,
 		UpdatedAt:    e.UpdatedAt,
-		ClubName:     e.Club.Name,
-		ClubHandle:   e.Club.Handle,
-		ClubAvatar:   e.Club.AvatarURL,
+		Club:         clubResp,
 	}
 }
 

@@ -41,8 +41,8 @@ export function MasonryGrid<T>({
       onEndReachedThreshold={0.3}
       refreshControl={refreshControl}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={ListHeaderComponent as React.ComponentType<any>}
-      ListFooterComponent={ListFooterComponent as React.ComponentType<any>}
+      ListHeaderComponent={ListHeaderComponent ? <>{ListHeaderComponent}</> : null}
+      ListFooterComponent={ListFooterComponent ? <>{ListFooterComponent}</> : null}
       // Performance props per js-lists-flatlist-flashlist skill
       removeClippedSubviews={true}
       maxToRenderPerBatch={10}

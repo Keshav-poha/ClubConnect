@@ -31,7 +31,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
         params.club_id = clubId;
       }
       const response = await api.get('/events', { params });
-      const newEvents = response.data.data;
+      const newEvents = response.data.events || [];
       set({ 
         events: newEvents, 
         isLoadingEvents: false,
@@ -54,7 +54,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
         params.club_id = clubId;
       }
       const response = await api.get('/events', { params });
-      const moreEvents = response.data.data;
+      const moreEvents = response.data.events || [];
       
       set({ 
         events: [...events, ...moreEvents],
@@ -71,7 +71,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
     set({ isLoadingEvents: true, errorEvents: null });
     try {
       const response = await api.get('/events', { params: { featured: true } });
-      set({ featuredEvents: response.data.data, isLoadingEvents: false });
+      set({ featuredEvents: response.data.events || [], isLoadingEvents: false });
     } catch (error: any) {
       set({ errorEvents: error.message, isLoadingEvents: false });
     }
