@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Compass, Bookmark, Film } from 'lucide-react-native';
-import { HomeScreen, DiscoverScreen, SavedScreen } from '@/screens';
+import { Compass, Bookmark, Film, Settings } from 'lucide-react-native';
+import { HomeScreen, DiscoverScreen, SavedScreen, SettingsScreen } from '@/screens';
 import { colors } from '@/theme';
 
 const Tab = createBottomTabNavigator();
@@ -45,6 +45,15 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Bookmark color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Settings color={color} size={size} />
           ),
         }}
       />
