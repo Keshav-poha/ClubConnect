@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Pressable, Switch } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { Text } from './Text';
+import { BrutalistSwitch } from './BrutalistSwitch';
 import { colors } from '@/theme';
 
 interface SettingsRowProps {
@@ -37,11 +38,9 @@ export const SettingsRow = ({
       </View>
       <View style={styles.rightContent}>
         {isSwitch ? (
-          <Switch
-            value={switchValue}
-            onValueChange={onSwitchChange}
-            trackColor={{ false: colors.border, true: colors.accentCyan }}
-            thumbColor={colors.textPrimary}
+          <BrutalistSwitch
+            value={!!switchValue}
+            onValueChange={onSwitchChange || (() => {})}
           />
         ) : (
           <>
