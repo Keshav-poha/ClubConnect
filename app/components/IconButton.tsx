@@ -7,6 +7,8 @@ import { globalStyles } from '@/styles/global';
 interface IconButtonProps {
   Icon: LucideIcon;
   onPress?: () => void;
+  onLongPress?: () => void;
+  onPressOut?: () => void;
   size?: number;
   color?: string;
   style?: ViewStyle;
@@ -15,6 +17,8 @@ interface IconButtonProps {
 export const IconButton = ({
   Icon,
   onPress,
+  onLongPress,
+  onPressOut,
   size = 24,
   color = colors.textPrimary,
   style,
@@ -22,6 +26,8 @@ export const IconButton = ({
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
+      onPressOut={onPressOut}
       style={({ pressed }) => [
         styles.container,
         globalStyles.brutalistBorder,

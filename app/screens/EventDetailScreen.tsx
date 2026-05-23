@@ -4,7 +4,7 @@ import { ArrowLeft, Bookmark as BookmarkIcon } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '@/navigation/types';
-import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button } from '@/components';
+import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button, Tooltip } from '@/components';
 import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
 
@@ -16,6 +16,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { isBookmarked: checkBookmarked, toggleBookmark, showToast } = useStore();
   
   const isBookmarked = checkBookmarked(event.id);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -96,8 +97,11 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               <IconButton 
                 Icon={BookmarkIcon} 
                 color={isBookmarked ? colors.accentCyan : colors.textPrimary} 
-                onPress={handleBookmark} 
+                onPress={handleBookmark}
+                onLongPress={() => setShowTooltip(true)}
+                onPressOut={() => setShowTooltip(false)}
               />
+              <Tooltip label="Save Event" visible={showTooltip} position="bottom" />
             </View>
           </View>
         </View>
