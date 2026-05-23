@@ -19,7 +19,11 @@ export const useStore = create<StoreState>()(
     {
       name: 'clubconnect-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({ bookmarkedEvents: state.bookmarkedEvents }), // Only persist bookmarks
+      partialize: (state) => ({ 
+        bookmarkedEvents: state.bookmarkedEvents,
+        events: state.events.slice(0, 20), // Cache first page of events
+        featuredEvents: state.featuredEvents,
+      }),
     }
   )
 );
