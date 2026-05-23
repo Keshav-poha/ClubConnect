@@ -1,9 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { ScreenContainer, Text, Divider } from '@/components';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Linking } from 'react-native';
+import { Bell, Moon, Shield, CircleHelp, LogOut } from 'lucide-react-native';
+import { ScreenContainer, Text, SettingsRow } from '@/components';
 import { colors } from '@/theme';
 
 export const SettingsScreen = () => {
+  const [pushEnabled, setPushEnabled] = useState(false);
+
   return (
     <ScreenContainer style={styles.container}>
       <View style={styles.header}>
@@ -14,14 +17,37 @@ export const SettingsScreen = () => {
         <View style={styles.section}>
           <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>App Preferences</Text>
           <View style={styles.card}>
-            {/* Settings rows will go here */}
+            <SettingsRow 
+              icon={Bell}
+              label="Push Notifications"
+              isSwitch
+              switchValue={pushEnabled}
+              onSwitchChange={setPushEnabled}
+            />
+            <SettingsRow 
+              icon={Moon}
+              label="Theme"
+              value="Noir Brutalism"
+              showDivider={false}
+              onPress={() => {}}
+            />
           </View>
         </View>
 
         <View style={styles.section}>
           <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>About</Text>
           <View style={styles.card}>
-            {/* About rows will go here */}
+            <SettingsRow 
+              icon={Shield}
+              label="Privacy Policy"
+              onPress={() => Linking.openURL('https://clubconnect.app/privacy')}
+            />
+            <SettingsRow 
+              icon={CircleHelp}
+              label="Help & Support"
+              onPress={() => Linking.openURL('https://clubconnect.app/support')}
+              showDivider={false}
+            />
           </View>
         </View>
       </ScrollView>
