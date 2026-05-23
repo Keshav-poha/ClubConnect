@@ -10,20 +10,32 @@ interface AnimatedNumberProps {
 export const AnimatedNumber = ({ value, duration = 1000 }: AnimatedNumberProps) => {
   const [displayValue, setDisplayValue] = useState(0);
   const animValue = useRef(new Animated.Value(0)).current;
+  const animRef = useRef<Animated.CompositeAnimation | null>(null);
 
+  // Stable listener — added once, cleaned up once
   useEffect(() => {
-    animValue.addListener((v) => {
+    const id = animValue.addListener((v) => {
       setDisplayValue(Math.round(v.value));
     });
+    return () => {
+      animValue.removeListener(id);
+    };
+  }, [animValue]);
 
-    Animated.timing(animValue, {
+  // Animation effect — stops previous before starting new
+  useEffect(() => {
+    if (animRef.current) {
+      animRef.current.stop();
+    }
+    animRef.current = Animated.timing(animValue, {
       toValue: value,
       duration,
-      useNativeDriver: false, // Cannot use native driver for text value updates
-    }).start();
+      useNativeDriver: false,
+    });
+    animRef.current.start();
 
     return () => {
-      animValue.removeAllListeners();
+      animRef.current?.stop();
     };
   }, [value, duration, animValue]);
 

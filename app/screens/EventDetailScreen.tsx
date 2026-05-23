@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Linking, Platform, Share, Animated } from 'react-native';
 import { ArrowLeft, Bookmark as BookmarkIcon } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -28,6 +28,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);
+  const attendeeCount = useMemo(() => Math.floor(Math.random() * 500) + 50, [event.id]);
 
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -128,7 +129,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             </Animated.View>
             
             <View style={styles.attendeesContainer}>
-              <AnimatedNumber value={Math.floor(Math.random() * 500) + 50} duration={1500} />
+              <AnimatedNumber value={attendeeCount} duration={1500} />
               <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
             </View>
 
