@@ -28,3 +28,4 @@ export * from './SettingsRow';
 export * from './MasonryGrid';
 export * from './Tooltip';
 export * from './AnimatedNumber';
+export * from './BrutalistSwitch';
