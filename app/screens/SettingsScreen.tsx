@@ -104,6 +104,10 @@ export const SettingsScreen = () => {
             />
           </View>
         </View>
+
+        <View style={styles.versionContainer}>
+          <Text variant="caption" color="textMuted">ClubConnect Version 1.0.0</Text>
+        </View>
       </ScrollView>
     </ScreenContainer>
   );
@@ -135,5 +139,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 0,
+  },
+  versionContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 40,
   },
 });
