@@ -4,7 +4,16 @@ import { ArrowLeft, Bookmark as BookmarkIcon } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '@/navigation/types';
-import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button, Tooltip, AnimatedNumber } from '@/components';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { Text } from '@/components/Text';
+import { Image } from '@/components/Image';
+import { DateTag } from '@/components/DateTag';
+import { LocationTag } from '@/components/LocationTag';
+import { IconButton } from '@/components/IconButton';
+import { LightLeak } from '@/components/LightLeak';
+import { Button } from '@/components/Button';
+import { Tooltip } from '@/components/Tooltip';
+import { AnimatedNumber } from '@/components/AnimatedNumber';
 import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
 

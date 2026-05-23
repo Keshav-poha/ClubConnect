@@ -4,7 +4,9 @@ import { Bell, Moon, Shield, CircleHelp, Trash2, Code } from 'lucide-react-nativ
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ScreenContainer, Text, SettingsRow } from '@/components';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { Text } from '@/components/Text';
+import { SettingsRow } from '@/components/SettingsRow';
 import { RootStackParamList } from '@/navigation/types';
 import { useStore } from '@/store';
 import { colors } from '@/theme';

@@ -4,7 +4,13 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Event } from '@/types';
-import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList, FeedSkeleton, MasonryGrid } from '@/components';
+import { EventCard } from '@/components/EventCard';
+import { EmptyState } from '@/components/EmptyState';
+import { ErrorState } from '@/components/ErrorState';
+import { LoadingIndicator } from '@/components/LoadingIndicator';
+import { EndOfList } from '@/components/EndOfList';
+import { FeedSkeleton } from '@/components/FeedSkeleton';
+import { MasonryGrid } from '@/components/MasonryGrid';
 
 interface UpcomingFeedProps {
   events: Event[];

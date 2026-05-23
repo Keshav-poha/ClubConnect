@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, TextInput, Pressable } from 'react-native';
 import { X } from 'lucide-react-native';
-import { ScreenContainer, Text, EmptyState, UpcomingFeed } from '@/components';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { Text } from '@/components/Text';
+import { EmptyState } from '@/components/EmptyState';
+import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
 import { globalStyles } from '@/styles/global';

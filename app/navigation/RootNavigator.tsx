@@ -4,7 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
 import { EventDetailScreen } from '@/screens/EventDetailScreen';
 import { UIPlaygroundScreen } from '@/screens/UIPlaygroundScreen';
-import { FilmGrain, Toast } from '@/components';
+import { FilmGrain } from '@/components/FilmGrain';
+import { Toast } from '@/components/Toast';
 import { useStore } from '@/store';
 import { RootStackParamList } from './types';
 

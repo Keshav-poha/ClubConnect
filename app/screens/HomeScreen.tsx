@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { ScreenContainer, Text, ErrorState, FilterRow, UpcomingFeed } from '@/components';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { Text } from '@/components/Text';
+import { ErrorState } from '@/components/ErrorState';
+import { FilterRow } from '@/components/FilterRow';
+import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { FeaturedFilmStrip } from '@/components/FeaturedFilmStrip';
 import { useStore } from '@/store';
 

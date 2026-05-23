@@ -4,7 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Event } from '@/types';
-import { EventCard, Badge, EmptyState } from '@/components';
+import { EventCard } from '@/components/EventCard';
+import { Badge } from '@/components/Badge';
+import { EmptyState } from '@/components/EmptyState';
 import { FeaturedSkeleton } from './FeaturedSkeleton';
 
 interface FeaturedFilmStripProps {

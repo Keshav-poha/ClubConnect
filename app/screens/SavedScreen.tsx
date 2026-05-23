@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ScreenContainer, Text, EmptyState, UpcomingFeed } from '@/components';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { Text } from '@/components/Text';
+import { EmptyState } from '@/components/EmptyState';
+import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { useStore } from '@/store';
 import { colors } from '@/theme';
 
