@@ -3,12 +3,15 @@ import { View, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
 import { EventDetailScreen } from '@/screens/EventDetailScreen';
-import { FilmGrain } from '@/components/FilmGrain';
+import { FilmGrain, Toast } from '@/components';
+import { useStore } from '@/store';
 import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
+  const { toast, hideToast } = useStore();
+
   return (
     <View style={styles.container}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -16,6 +19,12 @@ export const RootNavigator = () => {
         <Stack.Screen name="EventDetail" component={EventDetailScreen} />
       </Stack.Navigator>
       <FilmGrain />
+      <Toast 
+        visible={!!toast} 
+        message={toast?.message || ''} 
+        type={toast?.type} 
+        onHide={hideToast} 
+      />
     </View>
   );
 };
