@@ -47,5 +47,12 @@ npx expo start
   - `app/store`: Zustand state management with AsyncStorage persistence
   - `app/navigation`: React Navigation stack and bottom tabs
 
+## Features
+
+- **Noir Brutalism Design:** High-contrast, sharp UI with micro-animations.
+- **Cinematic Experience:** Film grain overlays, custom fonts, hero typography.
+- **Offline Capable:** Bookmarks and first-page API feed cached via AsyncStorage.
+- **Masonry Layout:** Staggered event grid with infinite scroll.
+
 ## License
 MIT
