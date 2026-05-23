@@ -77,12 +77,21 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingTop: 12,
   },
   metaContainer: {
     flexDirection: 'row',
-    marginTop: 12,
-    gap: 12,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap',
+    marginBottom: 10,
+  },
+  title: {
+    marginBottom: 6,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
   },
 });
