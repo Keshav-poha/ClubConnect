@@ -8,7 +8,12 @@ import { globalStyles } from '@/styles/global';
 
 export const DiscoverScreen = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
-  const { events, isLoadingEvents, errorEvents, fetchEvents, loadMoreEvents, hasMore } = useStore();
+  const events = useStore((s) => s.events);
+  const isLoadingEvents = useStore((s) => s.isLoadingEvents);
+  const errorEvents = useStore((s) => s.errorEvents);
+  const fetchEvents = useStore((s) => s.fetchEvents);
+  const loadMoreEvents = useStore((s) => s.loadMoreEvents);
+  const hasMore = useStore((s) => s.hasMore);
 
   React.useEffect(() => {
     if (events.length === 0) {

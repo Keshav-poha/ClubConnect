@@ -11,7 +11,8 @@ import { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
-  const { toast, hideToast } = useStore();
+  const toast = useStore((s) => s.toast);
+  const hideToast = useStore((s) => s.hideToast);
 
   return (
     <View style={styles.container}>

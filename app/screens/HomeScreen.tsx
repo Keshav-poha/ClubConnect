@@ -5,18 +5,16 @@ import { FeaturedFilmStrip } from '@/components/FeaturedFilmStrip';
 import { useStore } from '@/store';
 
 export const HomeScreen = () => {
-  const {
-    featuredEvents,
-    events,
-    isLoadingEvents,
-    errorEvents,
-    hasMore,
-    fetchFeaturedEvents,
-    fetchEvents,
-    loadMoreEvents,
-    clubs,
-    fetchClubs
-  } = useStore();
+  const featuredEvents = useStore((s) => s.featuredEvents);
+  const events = useStore((s) => s.events);
+  const isLoadingEvents = useStore((s) => s.isLoadingEvents);
+  const errorEvents = useStore((s) => s.errorEvents);
+  const hasMore = useStore((s) => s.hasMore);
+  const fetchFeaturedEvents = useStore((s) => s.fetchFeaturedEvents);
+  const fetchEvents = useStore((s) => s.fetchEvents);
+  const loadMoreEvents = useStore((s) => s.loadMoreEvents);
+  const clubs = useStore((s) => s.clubs);
+  const fetchClubs = useStore((s) => s.fetchClubs);
 
   const [activeFilter, setActiveFilter] = React.useState<string>('all');
 

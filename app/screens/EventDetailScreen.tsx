@@ -13,7 +13,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { event } = route.params;
   const insets = useSafeAreaInsets();
-  const { isBookmarked: checkBookmarked, toggleBookmark, showToast } = useStore();
+  const checkBookmarked = useStore((s) => s.isBookmarked);
+  const toggleBookmark = useStore((s) => s.toggleBookmark);
+  const showToast = useStore((s) => s.showToast);
   
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);

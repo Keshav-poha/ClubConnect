@@ -11,7 +11,7 @@ import { colors } from '@/theme';
 
 export const SettingsScreen = () => {
   const [pushEnabled, setPushEnabled] = useState(false);
-  const { showToast } = useStore();
+  const showToast = useStore((s) => s.showToast);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleClearCache = () => {

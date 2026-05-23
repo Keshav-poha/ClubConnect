@@ -5,7 +5,7 @@ import { useStore } from '@/store';
 import { colors } from '@/theme';
 
 export const SavedScreen = () => {
-  const { bookmarkedEvents } = useStore();
+  const bookmarkedEvents = useStore((s) => s.bookmarkedEvents);
 
   return (
     <ScreenContainer style={styles.container}>
