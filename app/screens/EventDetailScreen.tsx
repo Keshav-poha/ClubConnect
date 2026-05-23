@@ -62,7 +62,10 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
     // Basic cross platform calendar deep link
     const calUrl = Platform.OS === 'ios' ? 'calshow://' : 'content://com.android.calendar/time/';
     Linking.openURL(calUrl).catch(() => {
-      console.warn('Calendar not supported');
+      showToast({
+        message: 'Calendar integration not supported on this device.',
+        type: 'error',
+      });
     });
   };
 
