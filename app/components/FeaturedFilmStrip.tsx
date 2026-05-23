@@ -48,6 +48,15 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
     );
   }
 
+  const renderFilmStripItem = React.useCallback(({ item, index }: { item: Event; index: number }) => (
+    <View style={[styles.filmStripItem, index === activeIndex && styles.activeFilmStripItem]}>
+      <View style={styles.featuredBadge}>
+        <Badge label="Featured" variant="accent" />
+      </View>
+      <EventCard event={item} onPress={handlePress} />
+    </View>
+  ), [activeIndex, handlePress]);
+
   return (
     <FlatList
       data={events}
@@ -59,14 +68,7 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
       snapToAlignment="start"
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
-      renderItem={({ item, index }) => (
-        <View style={[styles.filmStripItem, index === activeIndex && styles.activeFilmStripItem]}>
-          <View style={styles.featuredBadge}>
-            <Badge label="Featured" variant="accent" />
-          </View>
-          <EventCard event={item} onPress={handlePress} />
-        </View>
-      )}
+      renderItem={renderFilmStripItem}
     />
   );
 };
