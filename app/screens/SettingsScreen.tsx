@@ -1,11 +1,36 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Linking } from 'react-native';
-import { Bell, Moon, Shield, CircleHelp, LogOut } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView, Linking, Alert } from 'react-native';
+import { Bell, Moon, Shield, CircleHelp, Trash2 } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScreenContainer, Text, SettingsRow } from '@/components';
+import { useStore } from '@/store';
 import { colors } from '@/theme';
 
 export const SettingsScreen = () => {
   const [pushEnabled, setPushEnabled] = useState(false);
+  const { showToast } = useStore();
+
+  const handleClearCache = () => {
+    Alert.alert(
+      'Clear Cache',
+      'Are you sure you want to clear your local data? This will remove your saved bookmarks.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Clear', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('clubconnect-storage');
+              showToast({ message: 'Local cache cleared successfully', type: 'success' });
+            } catch (e) {
+              showToast({ message: 'Failed to clear cache', type: 'error' });
+            }
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <ScreenContainer style={styles.container}>
@@ -47,6 +72,19 @@ export const SettingsScreen = () => {
               label="Help & Support"
               onPress={() => Linking.openURL('https://clubconnect.app/support')}
               showDivider={false}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>Data Management</Text>
+          <View style={styles.card}>
+            <SettingsRow 
+              icon={Trash2}
+              label="Clear Cache & Data"
+              onPress={handleClearCache}
+              showDivider={false}
+              danger
             />
           </View>
         </View>
