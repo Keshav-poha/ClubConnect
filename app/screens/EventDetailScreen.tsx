@@ -13,7 +13,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { event } = route.params;
   const insets = useSafeAreaInsets();
-  const { isBookmarked: checkBookmarked, toggleBookmark } = useStore();
+  const { isBookmarked: checkBookmarked, toggleBookmark, showToast } = useStore();
   
   const isBookmarked = checkBookmarked(event.id);
 
@@ -43,6 +43,10 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
   const handleBookmark = () => {
     toggleBookmark(event);
+    showToast({
+      message: isBookmarked ? 'Event removed from bookmarks' : 'Event saved to bookmarks',
+      type: isBookmarked ? 'info' : 'success',
+    });
   };
 
   const handleOpenInstagram = () => {
