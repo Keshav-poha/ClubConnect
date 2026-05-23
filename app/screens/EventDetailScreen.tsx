@@ -4,7 +4,7 @@ import { ArrowLeft, Bookmark as BookmarkIcon } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '@/navigation/types';
-import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button, Tooltip } from '@/components';
+import { ScreenContainer, Text, Image, DateTag, LocationTag, IconButton, LightLeak, Button, Tooltip, AnimatedNumber } from '@/components';
 import { useStore } from '@/store';
 import { colors, typography } from '@/theme';
 
@@ -116,7 +116,12 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               <Text variant="h1" style={styles.title}>{event.title}</Text>
             </Animated.View>
             
-            <Animated.View style={[styles.metaRow, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            <View style={styles.attendeesContainer}>
+              <AnimatedNumber value={Math.floor(Math.random() * 500) + 50} duration={1500} />
+              <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
+            </View>
+
+            <Animated.View style={[styles.tagsContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <DateTag date={event.date} />
               <LocationTag location={event.location} />
             </Animated.View>
@@ -206,8 +211,19 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 16,
+    color: colors.textPrimary,
   },
-  metaRow: {
+  attendeesContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+    marginBottom: 24,
+  },
+  attendeesLabel: {
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  tagsContainer: {
     flexDirection: 'row',
     gap: 12,
     marginBottom: 32,
