@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, ScrollView, StyleProp, ViewStyle, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, StyleProp, ViewStyle, RefreshControl, RefreshControlProps } from 'react-native';
 
 interface MasonryGridProps<T> {
   data: T[];
@@ -8,7 +8,7 @@ interface MasonryGridProps<T> {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   onEndReached?: () => void;
-  refreshControl?: React.ReactElement<typeof RefreshControl>;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
   ListHeaderComponent?: React.ReactNode;
   ListFooterComponent?: React.ReactNode;
 }

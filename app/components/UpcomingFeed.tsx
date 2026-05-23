@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Event } from '@/types';
-import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList, FeedSkeleton } from '@/components';
+import { EventCard, EmptyState, ErrorState, LoadingIndicator, EndOfList, FeedSkeleton, MasonryGrid } from '@/components';
 
 interface UpcomingFeedProps {
   events: Event[];
@@ -33,7 +33,7 @@ export const UpcomingFeed = React.memo(({
     setRefreshing(false);
   };
 
-  const renderItem = useCallback(({ item }: { item: Event }) => {
+  const renderItem = useCallback((item: Event, index: number) => {
     return (
       <EventCard 
         event={item} 
@@ -50,28 +50,28 @@ export const UpcomingFeed = React.memo(({
     return <ErrorState message={error} onRetry={onRefresh} style={styles.center} />;
   }
 
+  if (events.length === 0 && !isLoading && !refreshing) {
+    return (
+      <EmptyState
+        title="No Upcoming Events"
+        message="There are no events matching your filter."
+        style={styles.center}
+      />
+    );
+  }
+
   return (
-    <FlatList
+    <MasonryGrid
       data={events}
-      keyExtractor={(item) => item.id}
+      numColumns={2}
       contentContainerStyle={styles.contentContainer}
       onEndReached={onLoadMore}
-      onEndReachedThreshold={0.5}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={handleRefresh}
           tintColor="#00EEFF"
         />
-      }
-      ListEmptyComponent={
-        !isLoading ? (
-          <EmptyState
-            title="No Upcoming Events"
-            message="There are no events matching your filter."
-            style={styles.center}
-          />
-        ) : null
       }
       ListFooterComponent={
         isLoading && events.length > 0 ? (

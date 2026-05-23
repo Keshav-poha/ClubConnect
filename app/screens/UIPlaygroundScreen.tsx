@@ -37,8 +37,8 @@ export const UIPlaygroundScreen = () => {
           <Text variant="h2" style={styles.sectionTitle}>Badges</Text>
           <View style={styles.row}>
             <Badge label="Tech" />
-            <Badge label="Workshop" color={colors.accentCyan} />
-            <Badge label="Social" color={colors.accentGreen} />
+            <Badge label="Workshop" />
+            <Badge label="Social" />
           </View>
         </View>
       </ScrollView>
