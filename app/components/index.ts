@@ -21,5 +21,6 @@ export * from './EventCard';
 export * from './BottomSheet';
 export * from './FeaturedFilmStrip';
 export * from './UpcomingFeed';
+export * from './Toast';
 export * from './EndOfList';
 export * from './FeedSkeleton';
