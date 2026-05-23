@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
 import { EventDetailScreen } from '@/screens/EventDetailScreen';
+import { UIPlaygroundScreen } from '@/screens/UIPlaygroundScreen';
 import { FilmGrain, Toast } from '@/components';
 import { useStore } from '@/store';
 import { RootStackParamList } from './types';
@@ -17,6 +18,7 @@ export const RootNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="EventDetail" component={EventDetailScreen} />
+        <Stack.Screen name="UIPlayground" component={UIPlaygroundScreen} />
       </Stack.Navigator>
       <FilmGrain />
       <Toast 
