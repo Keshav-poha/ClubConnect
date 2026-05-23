@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Linking, Alert } from 'react-native';
-import { Bell, Moon, Shield, CircleHelp, Trash2 } from 'lucide-react-native';
+import { Bell, Moon, Shield, CircleHelp, Trash2, Code } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenContainer, Text, SettingsRow } from '@/components';
+import { RootStackParamList } from '@/navigation/types';
 import { useStore } from '@/store';
 import { colors } from '@/theme';
 
 export const SettingsScreen = () => {
   const [pushEnabled, setPushEnabled] = useState(false);
   const { showToast } = useStore();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleClearCache = () => {
     Alert.alert(
@@ -85,6 +89,18 @@ export const SettingsScreen = () => {
               onPress={handleClearCache}
               showDivider={false}
               danger
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>Developer</Text>
+          <View style={styles.card}>
+            <SettingsRow 
+              icon={Code}
+              label="UI Playground"
+              onPress={() => navigation.navigate('UIPlayground')}
+              showDivider={false}
             />
           </View>
         </View>
