@@ -14,7 +14,7 @@ interface FilterRowProps {
   style?: ViewStyle;
 }
 
-export const FilterRow = ({ options, activeId, onSelect, style }: FilterRowProps) => {
+export const FilterRow = React.memo(({ options, activeId, onSelect, style }: FilterRowProps) => {
   return (
     <ScrollView
       horizontal
@@ -32,7 +32,7 @@ export const FilterRow = ({ options, activeId, onSelect, style }: FilterRowProps
       ))}
     </ScrollView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
