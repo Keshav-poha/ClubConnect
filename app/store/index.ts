@@ -4,8 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EventSlice, createEventSlice } from './eventSlice';
 import { ClubSlice, createClubSlice } from './clubSlice';
 import { BookmarkSlice, createBookmarkSlice } from './bookmarkSlice';
+import { UiSlice, createUiSlice } from './uiSlice';
 
-export type StoreState = EventSlice & ClubSlice & BookmarkSlice;
+export type StoreState = EventSlice & ClubSlice & BookmarkSlice & UiSlice;
 
 export const useStore = create<StoreState>()(
   persist(
@@ -13,6 +14,7 @@ export const useStore = create<StoreState>()(
       ...createEventSlice(...a),
       ...createClubSlice(...a),
       ...createBookmarkSlice(...a),
+      ...createUiSlice(...a),
     }),
     {
       name: 'clubconnect-storage',
