@@ -26,3 +26,4 @@ export * from './EndOfList';
 export * from './FeedSkeleton';
 export * from './SettingsRow';
 export * from './MasonryGrid';
+export * from './Tooltip';
