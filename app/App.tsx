@@ -6,6 +6,10 @@ import { useFonts } from 'expo-font';
 import { PlayfairDisplay_700Bold } from '@expo-google-fonts/playfair-display';
 import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { JetBrainsMono_400Regular } from '@expo-google-fonts/jetbrains-mono';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { RootNavigator } from './navigation/RootNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { colors } from './theme';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -28,20 +32,21 @@ export default function App() {
     return null;
   }
 
+  const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: colors.backgroundPrimary,
+      text: colors.textPrimary,
+    },
+  };
+
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24, color: '#E5E5E5' }}>Club Connect</Text>
-      <Text style={{ fontFamily: 'Inter_400Regular', color: '#6b6b6b' }}>Noir Brutalism</Text>
-      <StatusBar style="light" />
-    </View>
+    <SafeAreaProvider onLayout={onLayoutRootView}>
+      <NavigationContainer theme={MyTheme}>
+        <RootNavigator />
+        <StatusBar style="light" />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#080808',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
