@@ -1,6 +1,8 @@
 package router
 
 import (
+	"os"
+
 	"github.com/clubconnect/clubconnect/internal/handlers"
 	"github.com/clubconnect/clubconnect/internal/middleware"
 	"github.com/clubconnect/clubconnect/internal/services"
@@ -36,6 +38,22 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 		admin.POST("/clubs", adH.AddClub)
 		admin.POST("/scrape", adH.TriggerScrape)
 	}
+
+	// Serve the React Native Web SPA
+	r.NoRoute(func(c *gin.Context) {
+		path := c.Request.URL.Path
+		if len(path) >= 4 && path[:4] == "/api" {
+			c.JSON(404, gin.H{"error": "api route not found"})
+			return
+		}
+
+		filePath := "./public" + path
+		if _, err := os.Stat(filePath); err == nil && path != "/" {
+			c.File(filePath)
+			return
+		}
+		c.File("./public/index.html")
+	})
 
 	return r
 }
