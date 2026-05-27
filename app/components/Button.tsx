@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, PressableProps, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors } from '@/theme';
+import { colors, borderRadius } from '@/theme';
 import { globalStyles } from '@/styles/global';
 import { triggerLightHaptic } from '@/utils/haptics';
 
@@ -75,5 +75,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: borderRadius.md,
   },
 });

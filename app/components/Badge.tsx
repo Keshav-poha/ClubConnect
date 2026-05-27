@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors } from '@/theme';
+import { colors, borderRadius } from '@/theme';
 
 interface BadgeProps {
   label: string;
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderWidth: 1,
-    borderRadius: 0, // Brutalist sharp edge
+    borderRadius: borderRadius.sm, // Rounded style
   },
   dot: {
     width: 6,

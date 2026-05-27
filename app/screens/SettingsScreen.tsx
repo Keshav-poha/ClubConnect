@@ -9,7 +9,7 @@ import { Text } from '@/components/Text';
 import { SettingsRow } from '@/components/SettingsRow';
 import { RootStackParamList } from '@/navigation/types';
 import { useStore } from '@/store';
-import { colors } from '@/theme';
+import { colors, borderRadius } from '@/theme';
 
 export const SettingsScreen = () => {
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -54,13 +54,7 @@ export const SettingsScreen = () => {
               isSwitch
               switchValue={pushEnabled}
               onSwitchChange={setPushEnabled}
-            />
-            <SettingsRow 
-              icon={Moon}
-              label="Theme"
-              value="Noir Brutalism"
               showDivider={false}
-              onPress={() => {}}
             />
           </View>
         </View>
@@ -140,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundCard,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 0,
+    borderRadius: borderRadius.md,
   },
   versionContainer: {
     alignItems: 'center',

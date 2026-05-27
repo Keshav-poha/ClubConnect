@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: 16,
     color: colors.textPrimary,
-    fontFamily: typography.mono.fontFamily,
-    fontSize: typography.mono.fontSize,
+    fontFamily: typography.body.fontFamily,
+    fontSize: typography.body.fontSize,
   },
   clearButton: {
     padding: 16,

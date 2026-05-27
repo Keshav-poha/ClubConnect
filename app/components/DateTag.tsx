@@ -9,12 +9,28 @@ interface DateTagProps {
   style?: ViewStyle;
 }
 
+const formatDate = (dateString?: string) => {
+  if (!dateString) return 'TBA';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  } catch (e) {
+    return dateString;
+  }
+};
+
 export const DateTag = ({ date, style }: DateTagProps) => {
   return (
     <View style={[styles.container, style]}>
       <Calendar color={colors.textMuted} size={14} style={styles.icon} />
       <Text variant="mono" color="textPrimary" style={styles.text}>
-        {date}
+        {formatDate(date)}
       </Text>
     </View>
   );

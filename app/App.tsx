@@ -3,8 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { PlayfairDisplay_700Bold } from '@expo-google-fonts/playfair-display';
-import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
+import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { JetBrainsMono_400Regular } from '@expo-google-fonts/jetbrains-mono';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { RootNavigator } from './navigation/RootNavigator';
@@ -16,9 +15,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    PlayfairDisplay_700Bold,
     Inter_400Regular,
     Inter_600SemiBold,
+    Inter_700Bold,
     JetBrainsMono_400Regular,
   });
 

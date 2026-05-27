@@ -12,7 +12,7 @@ export const UIPlaygroundScreen = () => {
     <ScreenContainer style={styles.container}>
       <View style={styles.header}>
         <Text variant="h1">UI Playground</Text>
-        <Text variant="bodyMedium" color="textMuted">Noir Brutalism Components</Text>
+        <Text variant="bodyMedium" color="textMuted">Premium Sans-Serif Components</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>

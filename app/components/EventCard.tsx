@@ -42,11 +42,10 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
         style,
       ]}
     >
-      {/* Content will be styled in the next commit */}
       <Image source={{ uri: event.image_url }} style={styles.image} />
       <View style={styles.content}>
-        <Text variant="h2" numberOfLines={2}>{event.title}</Text>
-        <Text variant="body" color="textMuted" numberOfLines={2}>{event.description}</Text>
+        <Text variant="h3" style={styles.title} numberOfLines={2}>{event.title}</Text>
+        <Text variant="body" color="textMuted" style={styles.description} numberOfLines={2}>{event.description}</Text>
         <View style={styles.metaContainer}>
           <DateTag date={event.date} />
           <LocationTag location={event.location} />
@@ -64,6 +63,7 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 24,
     borderWidth: 1,
+    overflow: 'hidden',
   },
   pressed: {
     opacity: 0.9,
@@ -87,6 +87,9 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 6,
+  },
+  description: {
+    marginBottom: 12,
   },
   footer: {
     flexDirection: 'row',

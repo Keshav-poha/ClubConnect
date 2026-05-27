@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors } from '@/theme';
+import { colors, borderRadius } from '@/theme';
 import { globalStyles } from '@/styles/global';
 
 interface FilterPillProps {
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginRight: 8,
+    borderRadius: borderRadius.pill, // Capsule look
   },
   activeContainer: {
     backgroundColor: colors.textPrimary,

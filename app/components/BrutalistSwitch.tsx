@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Pressable, Animated } from 'react-native';
-import { colors } from '@/theme';
+import { colors, borderRadius } from '@/theme';
 
 interface BrutalistSwitchProps {
   value: boolean;
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     justifyContent: 'center',
-    borderRadius: 0, // Brutalist stark edges
+    borderRadius: borderRadius.pill, // Rounded edges
   },
   thumb: {
     width: 16,
@@ -54,6 +54,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     position: 'absolute',
-    borderRadius: 0,
+    borderRadius: borderRadius.pill,
   },
 });

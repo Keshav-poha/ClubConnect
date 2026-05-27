@@ -2,6 +2,14 @@ import { StateCreator } from 'zustand';
 import { Event } from '@/types';
 import { api } from '@/services/api';
 
+const getTodayDateString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export interface EventSlice {
   events: Event[];
   featuredEvents: Event[];
@@ -10,7 +18,9 @@ export interface EventSlice {
   errorEvents: string | null;
   currentPage: number;
   hasMore: boolean;
-  fetchEvents: (page?: number, limit?: number, clubId?: string) => Promise<void>;
+  timeFilter: 'upcoming' | 'past';
+  setTimeFilter: (filter: 'upcoming' | 'past') => void;
+  fetchEvents: (page?: number, limit?: number, clubId?: string, timeFilter?: 'upcoming' | 'past') => Promise<void>;
   loadMoreEvents: (limit?: number, clubId?: string) => Promise<void>;
   fetchFeaturedEvents: () => Promise<void>;
 }
@@ -23,12 +33,18 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
   errorEvents: null,
   currentPage: 1,
   hasMore: true,
-  fetchEvents: async (page = 1, limit = 20, clubId?: string) => {
-    set({ isLoadingEvents: true, errorEvents: null, currentPage: page });
+  timeFilter: 'upcoming',
+  setTimeFilter: (timeFilter) => set({ timeFilter }),
+  fetchEvents: async (page = 1, limit = 20, clubId?: string, timeFilter?: 'upcoming' | 'past') => {
+    const activeTimeFilter = timeFilter !== undefined ? timeFilter : get().timeFilter;
+    set({ isLoadingEvents: true, errorEvents: null, currentPage: page, timeFilter: activeTimeFilter });
     try {
       const params: any = { page, limit };
       if (clubId && clubId !== 'all') {
         params.club_id = clubId;
+      }
+      if (activeTimeFilter === 'past') {
+        params.to = getTodayDateString();
       }
       const response = await api.get('/events', { params });
       const newEvents = response.data.events || [];
@@ -42,7 +58,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
     }
   },
   loadMoreEvents: async (limit = 20, clubId?: string) => {
-    const { currentPage, isFetchingMore, hasMore, events } = get();
+    const { currentPage, isFetchingMore, hasMore, events, timeFilter } = get();
     if (isFetchingMore || !hasMore) return;
 
     set({ isFetchingMore: true });
@@ -52,6 +68,9 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
       const params: any = { page: nextPage, limit };
       if (clubId && clubId !== 'all') {
         params.club_id = clubId;
+      }
+      if (timeFilter === 'past') {
+        params.to = getTodayDateString();
       }
       const response = await api.get('/events', { params });
       const moreEvents = response.data.events || [];
@@ -77,3 +96,4 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
     }
   },
 });
+

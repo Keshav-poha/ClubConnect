@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Image } from './Image';
 import { Text } from './Text';
-import { colors } from '@/theme';
+import { colors, borderRadius } from '@/theme';
 
 interface ClubAvatarProps {
   url?: string;
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundCard,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 0, // Brutalist sharp square
+    borderRadius: borderRadius.pill, // Rounded avatar
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
