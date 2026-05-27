@@ -34,6 +34,9 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@babel/plugin-transform-class-properties": "^7.29.7",
+    "@babel/plugin-transform-private-methods": "^7.29.7",
+    "@babel/plugin-transform-private-property-in-object": "^7.29.7",
     "@types/react": "~19.1.0",
     "babel-plugin-transform-import-meta": "^2.3.3",
     "babel-preset-expo": "^56.0.11",

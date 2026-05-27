@@ -39,7 +39,7 @@ export const SettingsScreen = () => {
   };
 
   return (
-    <ScreenContainer hasSidebar={true} style={styles.container}>
+    <ScreenContainer style={styles.container}>
       <View style={styles.header}>
         <Text variant="h1">Settings</Text>
       </View>

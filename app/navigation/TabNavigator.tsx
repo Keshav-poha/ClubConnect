@@ -7,13 +7,13 @@ import { SavedScreen } from '@/screens/SavedScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { colors } from '@/theme';
 
-import { useWindowDimensions, Platform, View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
-const CustomTabBar = ({ state, descriptors, navigation, isDesktop }: BottomTabBarProps & { isDesktop: boolean }) => {
+const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   return (
-    <View style={isDesktop ? styles.sidebarContainer : styles.tabBarContainer}>
+    <View style={styles.tabBarContainer}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -48,10 +48,7 @@ const CustomTabBar = ({ state, descriptors, navigation, isDesktop }: BottomTabBa
             testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={[
-              styles.tabItem,
-              isDesktop ? styles.desktopTabItem : styles.mobileTabItem,
-            ]}
+            style={styles.tabItem}
           >
             {Icon && Icon({
               focused: isFocused,
@@ -66,12 +63,9 @@ const CustomTabBar = ({ state, descriptors, navigation, isDesktop }: BottomTabBa
 };
 
 export const TabNavigator = () => {
-  const { width } = useWindowDimensions();
-  const isDesktop = width >= 768;
-
   return (
     <Tab.Navigator
-      tabBar={(props) => <CustomTabBar {...props} isDesktop={isDesktop} />}
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
       }}
@@ -117,21 +111,6 @@ export const TabNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-  sidebarContainer: {
-    position: (Platform.OS === 'web' ? 'fixed' : 'absolute') as any,
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 80,
-    backgroundColor: colors.backgroundPrimary,
-    borderRightColor: colors.border,
-    borderRightWidth: 1,
-    flexDirection: 'column',
-    paddingTop: 40,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    zIndex: 100,
-  },
   tabBarContainer: {
     flexDirection: 'row',
     height: 60,
@@ -140,18 +119,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
+    width: '100%',
   },
   tabItem: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  desktopTabItem: {
-    height: 60,
-    width: 80,
-    marginBottom: 16,
-  },
-  mobileTabItem: {
     flex: 1,
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

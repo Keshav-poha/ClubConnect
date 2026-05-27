@@ -10,6 +10,23 @@ import { RootNavigator } from './navigation/RootNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors } from './theme';
 
+import { Platform } from 'react-native';
+
+// Inject global styles for Web to ensure root container takes full height
+if (Platform.OS === 'web') {
+  const style = document.createElement('style');
+  style.textContent = `
+    html, body, #root {
+      height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
