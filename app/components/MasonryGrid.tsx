@@ -40,7 +40,7 @@ export function MasonryGrid<T>({
       )}
       style={[styles.container, style]}
       contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
-      columnWrapperStyle={styles.columnWrapper}
+      columnWrapperStyle={cols > 1 ? styles.columnWrapper : undefined}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.3}
       refreshControl={refreshControl}
