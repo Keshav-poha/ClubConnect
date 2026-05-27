@@ -11,7 +11,7 @@ export const SavedScreen = () => {
   const bookmarkedEvents = useStore((s) => s.bookmarkedEvents);
 
   return (
-    <ScreenContainer style={styles.container}>
+    <ScreenContainer hasSidebar={true} style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>Bookmarks</Text>
       
       <View style={styles.content}>

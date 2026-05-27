@@ -35,7 +35,7 @@ export const DiscoverScreen = () => {
   }, [events, searchQuery]);
 
   return (
-    <ScreenContainer style={styles.container}>
+    <ScreenContainer hasSidebar={true} style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>Discover</Text>
       
       <View style={[styles.searchContainer, globalStyles.brutalistBorder]}>

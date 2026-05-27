@@ -1,5 +1,5 @@
 # --- Node Build Stage ---
-FROM node:18 AS frontend-builder
+FROM node:20 AS frontend-builder
 WORKDIR /workspace
 COPY app/package*.json ./app/
 RUN cd app && npm ci

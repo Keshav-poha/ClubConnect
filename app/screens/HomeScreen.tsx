@@ -42,7 +42,7 @@ export const HomeScreen = () => {
   }, [clubs]);
 
   return (
-    <ScreenContainer style={styles.container}>
+    <ScreenContainer hasSidebar={true} style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>ClubConnect</Text>
       
       <View style={styles.segmentContainer}>

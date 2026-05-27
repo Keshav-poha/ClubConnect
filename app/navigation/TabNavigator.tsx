@@ -20,8 +20,7 @@ export const TabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: isDesktop ? {
-          ...(Platform.OS === 'web' && { position: 'fixed' }),
-          position: 'absolute',
+          position: (Platform.OS === 'web' ? 'fixed' : 'absolute') as any,
           left: 0,
           top: 0,
           bottom: 0,
