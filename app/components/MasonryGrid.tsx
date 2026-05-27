@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, FlatList, StyleProp, ViewStyle, RefreshControlProps, View } from 'react-native';
+import { StyleSheet, FlatList, StyleProp, ViewStyle, RefreshControlProps, View, useWindowDimensions } from 'react-native';
 
 interface MasonryGridProps<T> {
   data: T[];
@@ -16,7 +16,7 @@ interface MasonryGridProps<T> {
 export function MasonryGrid<T>({
   data,
   renderItem,
-  numColumns = 2,
+  numColumns,
   style,
   contentContainerStyle,
   onEndReached,
@@ -24,10 +24,14 @@ export function MasonryGrid<T>({
   ListHeaderComponent,
   ListFooterComponent,
 }: MasonryGridProps<T>) {
+  const { width } = useWindowDimensions();
+  const cols = numColumns || Math.max(1, Math.floor(width / 350));
+
   return (
     <FlatList
+      key={`grid-${cols}`}
       data={data}
-      numColumns={numColumns}
+      numColumns={cols}
       keyExtractor={(_, index) => `grid-item-${index}`}
       renderItem={({ item, index }) => (
         <View style={styles.itemContainer}>

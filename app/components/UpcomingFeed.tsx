@@ -69,7 +69,6 @@ export const UpcomingFeed = React.memo(({
   return (
     <MasonryGrid
       data={events}
-      numColumns={2}
       contentContainerStyle={styles.contentContainer}
       onEndReached={onLoadMore}
       refreshControl={
