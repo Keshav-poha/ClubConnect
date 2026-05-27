@@ -63,12 +63,29 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   };
 
   const handleOpenInstagram = () => {
-    const clubHandle = event.club?.name?.toLowerCase().replace(/\s+/g, '') || '';
-    const url = `instagram://user?username=${clubHandle}`;
-    Linking.openURL(url).catch(() => {
-      // Fallback to web browser if app is not installed
-      Linking.openURL(`https://instagram.com/${clubHandle}`);
-    });
+    if (event.instagram_url) {
+      Linking.openURL(event.instagram_url).catch(() => {
+        showToast({
+          message: 'Could not open Instagram link.',
+          type: 'error',
+        });
+      });
+    } else {
+      const clubHandle = event.club?.handle || '';
+      if (clubHandle) {
+        Linking.openURL(`https://instagram.com/${clubHandle}`).catch(() => {
+          showToast({
+            message: 'Could not open Instagram link.',
+            type: 'error',
+          });
+        });
+      } else {
+        showToast({
+          message: 'Instagram link not available.',
+          type: 'error',
+        });
+      }
+    }
   };
 
   const handleAddToCalendar = () => {
@@ -95,29 +112,21 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
   return (
     <ScreenContainer style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        <View style={styles.imageContainer}>
-          <Animated.View style={[styles.heroImageWrapper, { transform: [{ scale: scaleAnim }] }]}>
-            <Image source={event.image_url ? { uri: event.image_url } : undefined} style={styles.heroImage} />
-          </Animated.View>
-          
-          <View style={[styles.headerControls, { top: Math.max(insets.top, 20) }]}>
-            <View style={styles.iconButtonWrapper}>
-              <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
-            </View>
-            <View style={styles.iconButtonWrapper}>
-              <IconButton 
-                Icon={BookmarkIcon} 
-                color={isBookmarked ? colors.accentCyan : colors.textPrimary} 
-                onPress={handleBookmark}
-                onLongPress={() => setShowTooltip(true)}
-                onPressOut={() => setShowTooltip(false)}
-              />
-              <Tooltip label="Save Event" visible={showTooltip} position="bottom" />
-            </View>
-          </View>
+      <View style={[styles.headerBar, { paddingTop: Math.max(insets.top, 16) }]}>
+        <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
+        <View style={styles.headerRight}>
+          <IconButton 
+            Icon={BookmarkIcon} 
+            color={isBookmarked ? colors.accentCyan : colors.textPrimary} 
+            onPress={handleBookmark}
+            onLongPress={() => setShowTooltip(true)}
+            onPressOut={() => setShowTooltip(false)}
+          />
+          <Tooltip label="Save Event" visible={showTooltip} position="bottom" />
         </View>
+      </View>
 
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.contentWrapper}>
           <View style={styles.lightLeakContainer}>
              <LightLeak color={colors.accentCyan} />
@@ -125,7 +134,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
           <View style={styles.content}>
             <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-              <Text variant="h1" style={styles.title}>{event.title}</Text>
+              <Text variant="h1" style={styles.title}>{event.title || 'Untitled Event'}</Text>
             </Animated.View>
             
             <View style={styles.attendeesContainer}>
@@ -135,7 +144,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
             <Animated.View style={[styles.tagsContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <DateTag date={event.date} />
-              <LocationTag location={event.location} />
+              {event.location ? <LocationTag location={event.location} /> : null}
             </Animated.View>
 
             <Animated.View style={[styles.clubContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
@@ -174,37 +183,25 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 0, // override ScreenContainer padding for full-bleed image
+    paddingTop: 0,
     paddingHorizontal: 0,
+  },
+  headerBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.backgroundPrimary,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    position: 'relative',
   },
   scrollContent: {
     paddingBottom: 40,
-  },
-  imageContainer: {
-    width: '100%',
-    height: 400,
-    position: 'relative',
-    overflow: 'hidden', // to contain scale
-  },
-  heroImageWrapper: {
-    width: '100%',
-    height: '100%',
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-  },
-  headerControls: {
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    zIndex: 10,
-  },
-  iconButtonWrapper: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 24,
   },
   contentWrapper: {
     position: 'relative',

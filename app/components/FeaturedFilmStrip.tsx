@@ -50,9 +50,6 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
 
   const renderFilmStripItem = React.useCallback(({ item, index }: { item: Event; index: number }) => (
     <View style={[styles.filmStripItem, index === activeIndex && styles.activeFilmStripItem]}>
-      <View style={styles.featuredBadge}>
-        <Badge label="Featured" variant="accent" />
-      </View>
       <EventCard event={item} onPress={handlePress} />
     </View>
   ), [activeIndex, handlePress]);
@@ -91,11 +88,5 @@ const styles = StyleSheet.create({
   activeFilmStripItem: {
     opacity: 1,
     transform: [{ scale: 1 }],
-  },
-  featuredBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    zIndex: 10,
   },
 });

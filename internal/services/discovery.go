@@ -30,6 +30,7 @@ type PostData struct {
 	InstagramURL string
 	ImageURL     string
 	Caption      string
+	PostedAt     time.Time
 }
 
 func NewDiscoveryService(db *gorm.DB, parser *ParserService, cfg *config.Config, workers int) *DiscoveryService {
@@ -129,6 +130,7 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			ImageURL:     p.ImageURL,
 			InstagramURL: p.InstagramURL,
 			PostID:       p.PostID,
+			CreatedAt:    p.PostedAt,
 		}
 
 		if err := s.db.Create(&event).Error; err != nil {
@@ -184,8 +186,9 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 		Result struct {
 			Edges []struct {
 				Node struct {
-					Code    string `json:"code"`
-					Caption struct {
+					Code             string `json:"code"`
+					TakenAtTimestamp int64  `json:"taken_at_timestamp"`
+					Caption          struct {
 						Text string `json:"text"`
 					} `json:"caption"`
 					ImageVersions2 struct {
@@ -215,6 +218,7 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 			Caption:      p.Caption.Text,
 			ImageURL:     imgURL,
 			InstagramURL: fmt.Sprintf("https://instagram.com/p/%s/", p.Code),
+			PostedAt:     time.Unix(p.TakenAtTimestamp, 0),
 		})
 	}
 
