@@ -41,7 +41,7 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider onLayout={onLayoutRootView}>
+    <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NavigationContainer theme={MyTheme}>
         <RootNavigator />
         <StatusBar style="light" />
