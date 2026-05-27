@@ -44,10 +44,12 @@ func (s *ClubService) SeedDefaults() error {
 	defaults := []models.Club{
 		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut"},
 		{Name: "IEEE NSUT", Handle: "ieee_nsut"},
+		{Name: "Junoon", Handle: "junoon.nsut"},
+		{Name: "Ares Robotics", Handle: "aresrobotics.nsut"},
 	}
 
 	// Remove clubs that are not in our defaults
-	handles := []string{"thedebuggingsocietynsut", "ieee_nsut"}
+	handles := []string{"thedebuggingsocietynsut", "ieee_nsut", "junoon.nsut", "aresrobotics.nsut"}
 	s.db.Unscoped().Where("handle NOT IN ?", handles).Delete(&models.Club{})
 
 	for _, d := range defaults {
