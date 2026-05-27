@@ -37,6 +37,7 @@ RUN python3 -c 'from transformers import AutoModelForCausalLM, AutoTokenizer; \
     AutoModelForCausalLM.from_pretrained(model_name)'
 
 WORKDIR /app
+RUN chmod 777 /app
 COPY --from=builder /app/main .
 COPY internal/services/extract.py internal/services/extract.py
 COPY --from=frontend-builder /workspace/app/dist ./public

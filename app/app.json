@@ -23,7 +23,8 @@
       },
       "package": "com.keshav.clubconnect",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "jsEngine": "jsc"
     },
     "web": {
       "favicon": "./assets/favicon.png"

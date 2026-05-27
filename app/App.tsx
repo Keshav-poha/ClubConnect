@@ -17,7 +17,8 @@ if (Platform.OS === 'web') {
   const style = document.createElement('style');
   style.textContent = `
     html, body, #root {
-      height: 100vh;
+      height: 100%;
+      min-height: 100dvh;
       width: 100vw;
       overflow-x: hidden;
       display: flex;
