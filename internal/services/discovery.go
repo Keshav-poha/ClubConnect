@@ -121,11 +121,16 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			continue
 		}
 
+		eventDate := extracted.Date
+		if eventDate.IsZero() {
+			eventDate = p.PostedAt
+		}
+
 		event := models.Event{
 			ClubID:       club.ID,
 			Title:        extracted.Title,
 			Description:  p.Caption,
-			Date:         &extracted.Date,
+			Date:         &eventDate,
 			Location:     extracted.Location,
 			ImageURL:     p.ImageURL,
 			InstagramURL: p.InstagramURL,
@@ -188,6 +193,7 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 				Node struct {
 					Code             string `json:"code"`
 					TakenAtTimestamp int64  `json:"taken_at_timestamp"`
+					TakenAt          int64  `json:"taken_at"`
 					Caption          struct {
 						Text string `json:"text"`
 					} `json:"caption"`
@@ -213,12 +219,20 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 			imgURL = p.ImageVersions2.Candidates[0].URL
 		}
 
+		ts := p.TakenAtTimestamp
+		if ts == 0 {
+			ts = p.TakenAt
+		}
+		if ts == 0 {
+			ts = time.Now().Unix()
+		}
+
 		posts = append(posts, PostData{
 			PostID:       p.Code,
 			Caption:      p.Caption.Text,
 			ImageURL:     imgURL,
 			InstagramURL: fmt.Sprintf("https://instagram.com/p/%s/", p.Code),
-			PostedAt:     time.Unix(p.TakenAtTimestamp, 0),
+			PostedAt:     time.Unix(ts, 0),
 		})
 	}
 

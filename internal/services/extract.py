@@ -43,7 +43,8 @@ INVALID post types (set is_event=false): {REJECT_PATTERNS}
 RULES:
 - is_event must be TRUE only for posts that explicitly invite students to do something on a specific or upcoming date.
 - is_event must be FALSE for greetings, wishes, announcements about people, past event recaps, memes, or generic club promotions.
-- If unsure, default to is_event=false.
+- If the post is introducing a person, team, or board members, set is_event=false.
+- If NO EXPLICIT EVENT DATE is mentioned in the caption, set "date" to an empty string "". Do NOT use today's date.
 - Today's date is {today}. If a date is mentioned but already passed, set is_event=false.
 
 Output ONLY valid JSON, nothing else.

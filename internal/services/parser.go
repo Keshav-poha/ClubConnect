@@ -78,7 +78,7 @@ func (s *ParserService) runPythonParser(caption string) (*ExtractedEvent, error)
 	}
 
 	// Parse the date string with multiple format fallbacks.
-	parsedDate := time.Now().AddDate(0, 0, 7) // default: 1 week from now
+	var parsedDate time.Time
 	dateStr := strings.TrimSpace(raw.Date)
 	if dateStr != "" {
 		formats := []string{
@@ -214,7 +214,7 @@ func hasEventSignal(caption string) bool {
 		"am ", "pm ", "a.m.", "p.m.",
 
 		// Venue indicators
-		"venue:", "location:", "at the auditorium", "at the",
+		"venue:", "location:", "at the auditorium",
 		"seminar hall", "conference room",
 	}
 
