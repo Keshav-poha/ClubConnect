@@ -17,7 +17,6 @@ export const FilterPill = React.memo(({ label, isActive = false, onPress, style 
       onPress={onPress}
       style={({ pressed }) => [
         styles.container,
-        globalStyles.brutalistBorder,
         isActive ? styles.activeContainer : styles.inactiveContainer,
         pressed && !isActive && styles.pressedContainer,
         style,
@@ -38,17 +37,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginRight: 8,
-    borderRadius: borderRadius.pill, // Capsule look
+    borderRadius: borderRadius.pill,
   },
   activeContainer: {
-    backgroundColor: colors.textPrimary,
-    borderColor: colors.textPrimary,
+    backgroundColor: colors.accentCyan,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1.5,
+    shadowColor: colors.accentCyan,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
   },
   inactiveContainer: {
     backgroundColor: colors.backgroundCard,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
   },
   pressedContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#222535',
   },
 });

@@ -89,14 +89,13 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 24,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   cardImage: {
     width: '100%',
     height: 180,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomWidth: 1.5,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   pressed: {
     opacity: 0.9,

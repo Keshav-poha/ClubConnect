@@ -9,10 +9,17 @@ interface ImageProps extends RNImageProps {
 }
 
 export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
+  const isSourceValid = source && typeof source === 'object' && 'uri' in source && source.uri;
+  const uri = isSourceValid ? source.uri : null;
+
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const isSourceValid = source && typeof source === 'object' && 'uri' in source && source.uri;
+  // Reset loading and error states only when the actual URI changes
+  React.useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+  }, [uri]);
 
   let imageSource = source;
   if (isSourceValid && source.uri && source.uri.startsWith('http') && !source.uri.includes('images.weserv.nl')) {
@@ -22,7 +29,6 @@ export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
     };
   }
 
-  const handleLoadStart = () => setIsLoading(true);
   const handleLoadEnd = () => setIsLoading(false);
   const handleError = () => {
     setHasError(true);
@@ -39,7 +45,6 @@ export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
         <RNImage
           source={imageSource}
           style={StyleSheet.absoluteFillObject}
-          onLoadStart={handleLoadStart}
           onLoadEnd={handleLoadEnd}
           onError={handleError}
           {...props}

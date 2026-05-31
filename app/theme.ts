@@ -25,13 +25,13 @@ const monoFont = Platform.select({
 });
 
 export const colors = {
-  backgroundPrimary: '#080808',
-  backgroundCard: '#0f0f0f',
-  textPrimary: '#E5E5E5',
-  textMuted: '#6b6b6b',
+  backgroundPrimary: '#0f111a',
+  backgroundCard: '#1a1d2e',
+  textPrimary: '#F0F2FA',
+  textMuted: '#8b92b0',
   accentCyan: '#00EEFF',
   accentGreen: '#CCFF00',
-  border: 'rgba(255, 255, 255, 0.06)',
+  border: 'rgba(255, 255, 255, 0.08)',
 };
 
 export const typography = {
@@ -45,9 +45,9 @@ export const typography = {
 };
 
 export const borderRadius = {
-  sm: 6,
-  md: 12,
-  lg: 16,
+  sm: 8,
+  md: 20,
+  lg: 28,
   pill: 9999,
 };
 

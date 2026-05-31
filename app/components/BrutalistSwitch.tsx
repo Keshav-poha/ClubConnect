@@ -21,7 +21,7 @@ export const BrutalistSwitch = ({ value, onValueChange }: BrutalistSwitchProps) 
 
   const translateX = switchAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [2, 22]
+    outputRange: [3, 23]
   });
 
   const backgroundColor = switchAnim.interpolate({
@@ -40,20 +40,23 @@ export const BrutalistSwitch = ({ value, onValueChange }: BrutalistSwitchProps) 
 
 const styles = StyleSheet.create({
   track: {
-    width: 44,
-    height: 24,
-    borderWidth: 2,
-    borderColor: colors.border,
+    width: 46,
+    height: 26,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     justifyContent: 'center',
-    borderRadius: borderRadius.pill, // Rounded edges
+    borderRadius: borderRadius.pill,
   },
   thumb: {
-    width: 16,
-    height: 16,
-    backgroundColor: colors.textPrimary,
-    borderWidth: 2,
-    borderColor: colors.border,
+    width: 18,
+    height: 18,
+    backgroundColor: '#ffffff',
     position: 'absolute',
     borderRadius: borderRadius.pill,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 3,
+    elevation: 3,
   },
 });

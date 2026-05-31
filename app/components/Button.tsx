@@ -23,18 +23,31 @@ export const Button = ({
     switch (variant) {
       case 'primary':
         return {
-          backgroundColor: pressed ? colors.accentCyan : colors.textPrimary,
-          borderColor: pressed ? colors.accentCyan : colors.textPrimary,
+          backgroundColor: pressed ? '#00D8F6' : colors.accentCyan,
+          borderColor: 'rgba(255, 255, 255, 0.25)',
+          borderWidth: 1.5,
+          shadowColor: colors.accentCyan,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: pressed ? 0.35 : 0.5,
+          shadowRadius: pressed ? 4 : 8,
+          elevation: pressed ? 3 : 6,
         };
       case 'secondary':
         return {
-          backgroundColor: pressed ? '#222' : colors.backgroundCard,
-          borderColor: colors.border,
+          backgroundColor: pressed ? '#222535' : colors.backgroundCard,
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          borderWidth: 1.5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: pressed ? 0.15 : 0.25,
+          shadowRadius: 6,
+          elevation: pressed ? 2 : 4,
         };
       case 'outline':
         return {
           backgroundColor: 'transparent',
-          borderColor: pressed ? colors.textPrimary : colors.border,
+          borderColor: pressed ? colors.textPrimary : 'rgba(255, 255, 255, 0.15)',
+          borderWidth: 1.5,
         };
     }
   };
@@ -56,7 +69,6 @@ export const Button = ({
       disabled={disabled}
       style={({ pressed }) => [
         styles.base,
-        globalStyles.brutalistBorder,
         getVariantStyles(pressed),
         style,
       ]}
@@ -75,6 +87,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.pill,
   },
 });
