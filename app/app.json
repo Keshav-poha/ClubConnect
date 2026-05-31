@@ -24,13 +24,14 @@
       "package": "com.keshav.clubconnect",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "jsEngine": "jsc"
+      "jsEngine": "hermes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "./withJitpackFix.js"
     ],
     "extra": {
       "eas": {

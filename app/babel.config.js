@@ -3,7 +3,21 @@ module.exports = function(api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
+      '@babel/plugin-transform-async-to-generator',
       'babel-plugin-transform-import-meta'
+    ],
+    overrides: [
+      {
+        test: /[\\/]node_modules[\\/]/,
+        plugins: [
+          '@babel/plugin-transform-typescript',
+          '@babel/plugin-transform-async-to-generator',
+          '@babel/plugin-transform-class-properties',
+          '@babel/plugin-transform-private-methods',
+          '@babel/plugin-transform-private-property-in-object',
+          '@babel/plugin-transform-classes'
+        ]
+      }
     ]
   };
 };
