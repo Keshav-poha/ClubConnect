@@ -66,7 +66,7 @@ func Load() (*Config, error) {
 		ScrapeInterval: scrapeInterval,
 		ScrapeWorkers:  scrapeWorkers,
 		GroqAPIKey:     getEnv("GROQ_API_KEY", ""),
-		GroqModel:      getEnv("GROQ_MODEL", "llama3-8b-8192"),
+		GroqModel:      getEnv("GROQ_MODEL", "llama-3.1-8b-instant"),
 	}
 
 	return cfg, nil

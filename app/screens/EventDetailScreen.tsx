@@ -132,6 +132,16 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
              <LightLeak color={colors.accentCyan} />
           </View>
 
+          {event.image_url ? (
+            <Animated.View style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}>
+              <Image
+                source={{ uri: event.image_url }}
+                style={styles.imageHeader}
+                resizeMode="cover"
+              />
+            </Animated.View>
+          ) : null}
+
           <View style={styles.content}>
             <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
               <Text variant="h1" style={styles.title}>{event.title || 'Untitled Event'}</Text>
@@ -213,6 +223,12 @@ const styles = StyleSheet.create({
   contentWrapper: {
     position: 'relative',
     overflow: 'hidden',
+  },
+  imageHeader: {
+    width: '100%',
+    height: 280,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   lightLeakContainer: {
     position: 'absolute',

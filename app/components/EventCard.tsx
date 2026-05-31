@@ -2,12 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { View, Pressable, StyleSheet, ViewStyle, Animated } from 'react-native';
 import { Event } from '@/types';
 import { Text } from './Text';
+import { Image } from './Image';
 import { DateTag } from './DateTag';
 import { LocationTag } from './LocationTag';
 import { ClubAvatar } from './ClubAvatar';
 import { Badge } from './Badge';
 import { globalStyles } from '@/styles/global';
 import { triggerLightHaptic } from '@/utils/haptics';
+import { colors } from '@/theme';
 
 interface EventCardProps {
   event: Event;
@@ -42,6 +44,13 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
           style,
         ]}
       >
+        {event.image_url ? (
+          <Image
+            source={{ uri: event.image_url }}
+            style={styles.cardImage}
+            resizeMode="cover"
+          />
+        ) : null}
         <View style={styles.content}>
           <View style={styles.headerRow}>
             {event.club && (
@@ -82,6 +91,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 1,
     overflow: 'hidden',
+  },
+  cardImage: {
+    width: '100%',
+    height: 180,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   pressed: {
     opacity: 0.9,
