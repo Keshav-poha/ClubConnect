@@ -14,6 +14,7 @@ export interface Event {
   description: string;
   date: string;
   location: string;
+  attendance?: string;
   image_url?: string;
   instagram_url?: string;
   post_id: string;

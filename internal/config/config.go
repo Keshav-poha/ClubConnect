@@ -28,6 +28,10 @@ type Config struct {
 	// Scraper
 	ScrapeInterval time.Duration
 	ScrapeWorkers  int
+
+	// Groq API
+	GroqAPIKey string
+	GroqModel  string
 }
 
 // Load env vars with defaults
@@ -61,6 +65,8 @@ func Load() (*Config, error) {
 		RapidAPIHost:   getEnv("RAPIDAPI_HOST", ""),
 		ScrapeInterval: scrapeInterval,
 		ScrapeWorkers:  scrapeWorkers,
+		GroqAPIKey:     getEnv("GROQ_API_KEY", ""),
+		GroqModel:      getEnv("GROQ_MODEL", "llama3-8b-8192"),
 	}
 
 	return cfg, nil

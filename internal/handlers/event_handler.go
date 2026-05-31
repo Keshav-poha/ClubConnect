@@ -34,6 +34,7 @@ type EventResponse struct {
 	Description  string        `json:"description"`
 	Date         *time.Time    `json:"date"`
 	Location     string        `json:"location"`
+	Attendance   string        `json:"attendance"`
 	ImageURL     string        `json:"image_url"`
 	InstagramURL string        `json:"instagram_url"`
 	PostID       string        `json:"post_id"`
@@ -61,6 +62,7 @@ func eventToResponse(e models.Event) EventResponse {
 		Description:  e.Description,
 		Date:         e.Date,
 		Location:     e.Location,
+		Attendance:   e.Attendance,
 		ImageURL:     e.ImageURL,
 		InstagramURL: e.InstagramURL,
 		PostID:       e.PostID,

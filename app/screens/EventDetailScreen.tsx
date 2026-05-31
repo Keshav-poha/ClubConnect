@@ -152,6 +152,13 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               <Text variant="h3">{event.club?.name}</Text>
             </Animated.View>
 
+            {event.attendance ? (
+              <Animated.View style={[styles.attendanceContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Text variant="caption" color="textMuted">Eligibility & Attendance</Text>
+                <Text variant="h3">{event.attendance}</Text>
+              </Animated.View>
+            ) : null}
+
             <Text variant="body" color="textMuted" style={styles.description}>
               {event.description}
             </Text>
@@ -239,6 +246,12 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   clubContainer: {
+    marginBottom: 32,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.accentCyan,
+    paddingLeft: 16,
+  },
+  attendanceContainer: {
     marginBottom: 32,
     borderLeftWidth: 2,
     borderLeftColor: colors.accentCyan,

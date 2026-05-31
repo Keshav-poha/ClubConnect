@@ -126,12 +126,18 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 			eventDate = p.PostedAt
 		}
 
+		description := extracted.Description
+		if description == "" {
+			description = p.Caption
+		}
+
 		event := models.Event{
 			ClubID:       club.ID,
 			Title:        extracted.Title,
-			Description:  p.Caption,
+			Description:  description,
 			Date:         &eventDate,
 			Location:     extracted.Location,
+			Attendance:   extracted.Attendance,
 			ImageURL:     p.ImageURL,
 			InstagramURL: p.InstagramURL,
 			PostID:       p.PostID,

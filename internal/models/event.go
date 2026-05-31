@@ -14,6 +14,7 @@ type Event struct {
 	Description  string         `gorm:"type:text" json:"description"`
 	Date         *time.Time     `json:"date"`
 	Location     string         `gorm:"type:varchar(500)" json:"location"`
+	Attendance   string         `gorm:"type:varchar(500)" json:"attendance"`
 	ImageURL     string         `gorm:"type:text" json:"image_url"`
 	InstagramURL string         `gorm:"type:text" json:"instagram_url"`
 	PostID       string         `gorm:"type:varchar(100);uniqueIndex;not null" json:"post_id"`
