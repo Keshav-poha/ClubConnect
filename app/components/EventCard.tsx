@@ -10,6 +10,7 @@ import { Badge } from './Badge';
 import { useGlobalStyles } from '@/styles/global';
 import { triggerLightHaptic } from '@/utils/haptics';
 import { useTheme } from '@/hooks/useTheme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 interface EventCardProps {
   event: Event;
@@ -21,6 +22,7 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const globalStyles = useGlobalStyles();
   const { colors } = useTheme();
+  const { isWideScreen } = useResponsive();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -36,7 +38,7 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
   };
 
   return (
-    <Animated.View style={{ opacity: fadeAnim }}>
+    <Animated.View style={[{ opacity: fadeAnim, flex: 1 }, isWideScreen && styles.flexContainer]}>
       <Pressable
         onPress={handlePress}
         style={({ pressed }) => [
@@ -72,10 +74,12 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
             {event.title || 'Untitled Event'}
           </Text>
           
-          <Text variant="body" color="textMuted" style={styles.description} numberOfLines={3}>
+          <Text variant="body" color="textMuted" style={styles.description} numberOfLines={isWideScreen ? 4 : 3}>
             {event.description}
           </Text>
           
+          <View style={styles.metaSpacer} />
+
           <View style={styles.metaContainer}>
             <View style={styles.tagsContainer}>
               <DateTag date={event.date} />
@@ -89,9 +93,13 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
 };
 
 const styles = StyleSheet.create({
+  flexContainer: {
+    height: '100%',
+  },
   container: {
     marginBottom: 24,
     overflow: 'hidden',
+    flex: 1,
   },
   cardImage: {
     width: '100%',
@@ -104,6 +112,9 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
   },
   headerRow: {
     flexDirection: 'row',
@@ -129,10 +140,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     lineHeight: 22,
   },
+  metaSpacer: {
+    flex: 1,
+  },
   metaContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 'auto',
   },
   tagsContainer: {
     flexDirection: 'row',
