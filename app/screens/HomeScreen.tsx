@@ -7,7 +7,7 @@ import { FilterRow } from '@/components/FilterRow';
 import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { FeaturedFilmStrip } from '@/components/FeaturedFilmStrip';
 import { useStore } from '@/store';
-import { colors, borderRadius } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export const HomeScreen = () => {
   const featuredEvents = useStore((s) => s.featuredEvents);
@@ -24,6 +24,7 @@ export const HomeScreen = () => {
   const setTimeFilter = useStore((s) => s.setTimeFilter);
 
   const [activeFilter, setActiveFilter] = React.useState<string>('all');
+  const { colors, borderRadius, isDark } = useTheme();
 
   useEffect(() => {
     fetchFeaturedEvents();
@@ -45,17 +46,32 @@ export const HomeScreen = () => {
     <ScreenContainer style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>ClubConnect</Text>
       
-      <View style={styles.segmentContainer}>
+      <View style={[
+        styles.segmentContainer,
+        {
+          backgroundColor: colors.backgroundCard,
+          borderColor: colors.border,
+          borderRadius: borderRadius.pill,
+          shadowColor: colors.shadow,
+        }
+      ]}>
         <Pressable
           style={[
             styles.segmentButton,
-            timeFilter === 'upcoming' && styles.segmentButtonActive,
+            { borderRadius: borderRadius.pill },
+            timeFilter === 'upcoming' && [
+              styles.segmentButtonActive,
+              {
+                backgroundColor: colors.accentCyan,
+                shadowColor: colors.accentCyan,
+              }
+            ],
           ]}
           onPress={() => setTimeFilter('upcoming')}
         >
           <Text
             variant="bodyMedium"
-            color={timeFilter === 'upcoming' ? 'backgroundPrimary' : 'textMuted'}
+            color={timeFilter === 'upcoming' ? (isDark ? 'textPrimary' : 'backgroundCard') : 'textMuted'}
           >
             Upcoming
           </Text>
@@ -63,13 +79,20 @@ export const HomeScreen = () => {
         <Pressable
           style={[
             styles.segmentButton,
-            timeFilter === 'past' && styles.segmentButtonActive,
+            { borderRadius: borderRadius.pill },
+            timeFilter === 'past' && [
+              styles.segmentButtonActive,
+              {
+                backgroundColor: colors.accentCyan,
+                shadowColor: colors.accentCyan,
+              }
+            ],
           ]}
           onPress={() => setTimeFilter('past')}
         >
           <Text
             variant="bodyMedium"
-            color={timeFilter === 'past' ? 'backgroundPrimary' : 'textMuted'}
+            color={timeFilter === 'past' ? (isDark ? 'textPrimary' : 'backgroundCard') : 'textMuted'}
           >
             Past
           </Text>
@@ -123,14 +146,10 @@ const styles = StyleSheet.create({
   },
   segmentContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.backgroundCard,
     padding: 4,
-    borderRadius: borderRadius.pill,
     marginHorizontal: 16,
     marginBottom: 24,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
@@ -141,11 +160,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.pill,
   },
   segmentButtonActive: {
-    backgroundColor: colors.accentCyan,
-    shadowColor: colors.accentCyan,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
