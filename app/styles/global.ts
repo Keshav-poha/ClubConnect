@@ -5,41 +5,119 @@ export const useGlobalStyles = () => {
   const { colors, borderRadius } = useTheme();
 
   return StyleSheet.create({
-    brutalistBorder: {
-      borderWidth: 1.5,
-      borderColor: colors.border,
-      borderRadius: borderRadius.md,
-    },
-    cardSurface: {
+    clayCard: {
       backgroundColor: colors.backgroundCard,
-      borderWidth: 1.5,
-      borderColor: colors.border,
       borderRadius: borderRadius.md,
+      borderTopWidth: 2,
+      borderLeftWidth: 2,
+      borderBottomWidth: 3,
+      borderRightWidth: 3,
+      borderTopColor: colors.clayHighlight,
+      borderLeftColor: colors.clayHighlight,
+      borderBottomColor: colors.clayShadow,
+      borderRightColor: colors.clayShadow,
       ...Platform.select({
         ios: {
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 8 },
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 6, height: 10 },
           shadowOpacity: 1,
           shadowRadius: 16,
         },
         android: {
           elevation: 6,
         },
+        web: {
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 6, height: 10 },
+          shadowOpacity: 1,
+          shadowRadius: 16,
+        },
+      }),
+    },
+    clayCardPressed: {
+      backgroundColor: colors.backgroundCard,
+      borderRadius: borderRadius.md,
+      borderTopWidth: 3,
+      borderLeftWidth: 3,
+      borderBottomWidth: 2,
+      borderRightWidth: 2,
+      borderTopColor: colors.clayShadow,
+      borderLeftColor: colors.clayShadow,
+      borderBottomColor: colors.clayHighlight,
+      borderRightColor: colors.clayHighlight,
+      ...Platform.select({
+        ios: {
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 2, height: 4 },
+          shadowOpacity: 0.8,
+          shadowRadius: 8,
+        },
+        android: {
+          elevation: 2,
+        },
+        web: {
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 2, height: 4 },
+          shadowOpacity: 0.8,
+          shadowRadius: 8,
+        },
       }),
     },
     clayButton: {
-      borderRadius: borderRadius.pill,
-      borderWidth: 1.5,
-      borderColor: colors.border,
+      backgroundColor: colors.backgroundCard,
+      borderRadius: borderRadius.sm,
+      borderTopWidth: 2,
+      borderLeftWidth: 2,
+      borderBottomWidth: 3,
+      borderRightWidth: 3,
+      borderTopColor: colors.clayHighlight,
+      borderLeftColor: colors.clayHighlight,
+      borderBottomColor: colors.clayShadow,
+      borderRightColor: colors.clayShadow,
       ...Platform.select({
         ios: {
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 6 },
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 4, height: 6 },
           shadowOpacity: 1,
-          shadowRadius: 12,
+          shadowRadius: 10,
         },
         android: {
           elevation: 4,
+        },
+        web: {
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 4, height: 6 },
+          shadowOpacity: 1,
+          shadowRadius: 10,
+        },
+      }),
+    },
+    clayButtonPressed: {
+      backgroundColor: colors.backgroundCard,
+      borderRadius: borderRadius.sm,
+      borderTopWidth: 3,
+      borderLeftWidth: 3,
+      borderBottomWidth: 2,
+      borderRightWidth: 2,
+      borderTopColor: colors.clayShadow,
+      borderLeftColor: colors.clayShadow,
+      borderBottomColor: colors.clayHighlight,
+      borderRightColor: colors.clayHighlight,
+      ...Platform.select({
+        ios: {
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 1, height: 2 },
+          shadowOpacity: 0.9,
+          shadowRadius: 4,
+        },
+        android: {
+          elevation: 1,
+        },
+        web: {
+          shadowColor: colors.shadowOuter,
+          shadowOffset: { width: 1, height: 2 },
+          shadowOpacity: 0.9,
+          shadowRadius: 4,
         },
       }),
     },
@@ -52,8 +130,9 @@ export const useGlobalStyles = () => {
 
 // Temporary fallback for un-migrated components
 export const globalStyles = StyleSheet.create({
-  brutalistBorder: {},
-  cardSurface: {},
+  clayCard: {},
+  clayCardPressed: {},
   clayButton: {},
+  clayButtonPressed: {},
   centerContent: { alignItems: 'center', justifyContent: 'center' },
 } as any);
