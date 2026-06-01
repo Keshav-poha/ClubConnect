@@ -122,8 +122,14 @@ func (h *EventHandler) applyEventFilters(c *gin.Context) func(*gorm.DB) *gorm.DB
 }
 
 func (h *EventHandler) ListEvents(c *gin.Context) {
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		page = 1
+	}
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	if err != nil {
+		limit = 20
+	}
 	if page < 1 {
 		page = 1
 	}
