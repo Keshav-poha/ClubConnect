@@ -1,16 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useGlobalStyles } from '@/styles/global';
 
 export const PrivacyPolicyScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const { isWideScreen } = useResponsive();
+  const globalStyles = useGlobalStyles();
 
   return (
     <ScreenContainer style={styles.container}>
@@ -26,7 +28,12 @@ export const PrivacyPolicyScreen = () => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        <View style={[styles.contentWrapper, isWideScreen && styles.centeredContent]}>
+        <View style={[
+          styles.contentWrapper, 
+          isWideScreen && styles.centeredContent,
+          globalStyles.clayCard,
+          styles.documentCard
+        ]}>
           <View style={styles.section}>
             <Text variant="h3" style={styles.sectionTitle}>1. Information We Collect</Text>
             <Text variant="body" color="textMuted" style={styles.paragraph}>
@@ -88,18 +95,26 @@ const styles = StyleSheet.create({
   contentWrapper: {
     width: '100%',
   },
+  documentCard: {
+    padding: 24,
+    ...Platform.select({
+      web: {
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
+  },
   centeredContent: {
     width: '100%',
     maxWidth: 800,
     alignSelf: 'center',
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 32,
   },
   sectionTitle: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   paragraph: {
-    lineHeight: 24,
+    lineHeight: 28, // Increased for better readability
   },
 });
