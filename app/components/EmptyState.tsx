@@ -2,7 +2,8 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Ghost } from 'lucide-react-native';
 import { Text } from './Text';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useGlobalStyles } from '@/styles/global';
 
 interface EmptyStateProps {
   title?: string;
@@ -15,10 +16,13 @@ export const EmptyState = ({
   message = 'Nothing to show here right now.',
   style,
 }: EmptyStateProps) => {
+  const { colors } = useTheme();
+  const globalStyles = useGlobalStyles();
+
   return (
-    <View style={[styles.container, style]}>
-      <Ghost color={colors.border} size={48} style={styles.icon} />
-      <Text variant="h3" color="textMuted">
+    <View style={[styles.container, globalStyles.clayCard, style]}>
+      <Ghost color={colors.textMuted} size={48} style={styles.icon} />
+      <Text variant="h3" color="textPrimary">
         {title}
       </Text>
       <Text variant="body" color="textMuted" style={styles.message}>
@@ -33,9 +37,11 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 16,
   },
   icon: {
     marginBottom: 16,
+    opacity: 0.5,
   },
   message: {
     marginTop: 8,

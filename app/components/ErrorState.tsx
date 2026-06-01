@@ -3,7 +3,8 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { AlertCircle } from 'lucide-react-native';
 import { Text } from './Text';
 import { Button } from './Button';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useGlobalStyles } from '@/styles/global';
 
 interface ErrorStateProps {
   title?: string;
@@ -18,8 +19,11 @@ export const ErrorState = ({
   onRetry,
   style,
 }: ErrorStateProps) => {
+  const { colors } = useTheme();
+  const globalStyles = useGlobalStyles();
+
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, globalStyles.clayCard, style]}>
       <AlertCircle color={colors.accentCyan} size={48} style={styles.icon} />
       <Text variant="h3" color="textPrimary">
         {title}
@@ -44,6 +48,7 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 16,
   },
   icon: {
     marginBottom: 16,
