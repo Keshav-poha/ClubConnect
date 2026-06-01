@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
 import { EventDetailScreen } from '@/screens/EventDetailScreen';
-import { UIPlaygroundScreen } from '@/screens/UIPlaygroundScreen';
+import { PrivacyPolicyScreen } from '@/screens/PrivacyPolicyScreen';
 import { FilmGrain } from '@/components/FilmGrain';
 import { Toast } from '@/components/Toast';
 import { useStore } from '@/store';
@@ -20,7 +20,7 @@ export const RootNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="EventDetail" component={EventDetailScreen} />
-        <Stack.Screen name="UIPlayground" component={UIPlaygroundScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       </Stack.Navigator>
       <FilmGrain />
       <Toast 

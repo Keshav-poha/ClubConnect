@@ -65,12 +65,7 @@ export const SettingsScreen = () => {
             <SettingsRow 
               icon={Shield}
               label="Privacy Policy"
-              onPress={() => Linking.openURL('https://clubconnect.app/privacy')}
-            />
-            <SettingsRow 
-              icon={CircleHelp}
-              label="Help & Support"
-              onPress={() => Linking.openURL('https://clubconnect.app/support')}
+              onPress={() => navigation.navigate('PrivacyPolicy')}
               showDivider={false}
             />
           </View>
@@ -89,17 +84,7 @@ export const SettingsScreen = () => {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>Developer</Text>
-          <View style={styles.card}>
-            <SettingsRow 
-              icon={Code}
-              label="UI Playground"
-              onPress={() => navigation.navigate('UIPlayground')}
-              showDivider={false}
-            />
-          </View>
-        </View>
+
 
         <View style={styles.versionContainer}>
           <Text variant="caption" color="textMuted">ClubConnect Version 1.0.0</Text>
