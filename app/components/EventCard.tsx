@@ -155,5 +155,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    flex: 1,
   },
 });
