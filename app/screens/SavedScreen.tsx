@@ -5,7 +5,6 @@ import { Text } from '@/components/Text';
 import { EmptyState } from '@/components/EmptyState';
 import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { useStore } from '@/store';
-import { colors } from '@/theme';
 
 export const SavedScreen = () => {
   const bookmarkedEvents = useStore((s) => s.bookmarkedEvents);

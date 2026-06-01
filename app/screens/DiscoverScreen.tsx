@@ -6,8 +6,8 @@ import { Text } from '@/components/Text';
 import { EmptyState } from '@/components/EmptyState';
 import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { useStore } from '@/store';
-import { colors, typography } from '@/theme';
-import { globalStyles } from '@/styles/global';
+import { useGlobalStyles } from '@/styles/global';
+import { useTheme } from '@/hooks/useTheme';
 
 export const DiscoverScreen = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -17,6 +17,9 @@ export const DiscoverScreen = () => {
   const fetchEvents = useStore((s) => s.fetchEvents);
   const loadMoreEvents = useStore((s) => s.loadMoreEvents);
   const hasMore = useStore((s) => s.hasMore);
+  
+  const globalStyles = useGlobalStyles();
+  const { colors, typography } = useTheme();
 
   React.useEffect(() => {
     if (events.length === 0) {
@@ -38,9 +41,9 @@ export const DiscoverScreen = () => {
     <ScreenContainer style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>Discover</Text>
       
-      <View style={[styles.searchContainer, globalStyles.brutalistBorder]}>
+      <View style={[styles.searchContainer, globalStyles.brutalistBorder, { backgroundColor: colors.backgroundCard, borderColor: colors.border }]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.body.fontFamily, fontSize: typography.body.fontSize }]}
           placeholder="Search clubs, events..."
           placeholderTextColor={colors.textMuted}
           value={searchQuery}
@@ -90,7 +93,6 @@ const styles = StyleSheet.create({
   searchContainer: {
     marginHorizontal: 16,
     marginBottom: 24,
-    backgroundColor: colors.backgroundCard,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -98,9 +100,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 56,
     paddingHorizontal: 16,
-    color: colors.textPrimary,
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.body.fontSize,
   },
   clearButton: {
     padding: 16,
