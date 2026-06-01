@@ -22,12 +22,7 @@ export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
   }, [uri]);
 
   let imageSource = source;
-  if (isSourceValid && source.uri && source.uri.startsWith('http') && !source.uri.includes('images.weserv.nl')) {
-    imageSource = {
-      ...source,
-      uri: `https://images.weserv.nl/?url=${encodeURIComponent(source.uri)}`,
-    };
-  }
+  // Removed unauthenticated weserv.nl proxy for security and privacy
 
   const handleLoadEnd = () => setIsLoading(false);
   const handleError = () => {
