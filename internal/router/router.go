@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/clubconnect/clubconnect/internal/handlers"
@@ -34,12 +35,22 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 	}
 
 	admin := r.Group("/api/admin")
+	admin.Use(func(c *gin.Context) {
+		apiKey := c.GetHeader("X-Admin-Key")
+		expectedKey := os.Getenv("ADMIN_API_KEY")
+		if expectedKey == "" || apiKey != expectedKey {
+			c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
+			return
+		}
+		c.Next()
+	})
 	{
 		admin.POST("/clubs", adH.AddClub)
 		admin.POST("/scrape", adH.TriggerScrape)
 	}
 
-	// Serve the React Native Web SPA
+	// Serve the React Native Web SPA securely using http.FileSystem
+	fs := http.Dir("./public")
 	r.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
 		if len(path) >= 4 && path[:4] == "/api" {
@@ -47,12 +58,13 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 			return
 		}
 
-		filePath := "./public" + path
-		if _, err := os.Stat(filePath); err == nil && path != "/" {
-			c.File(filePath)
+		f, err := fs.Open(path)
+		if err == nil && path != "/" {
+			f.Close()
+			c.FileFromFS(path, fs)
 			return
 		}
-		c.File("./public/index.html")
+		c.FileFromFS("/index.html", fs)
 	})
 
 	return r
