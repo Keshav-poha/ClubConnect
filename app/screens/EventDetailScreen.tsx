@@ -17,6 +17,7 @@ import { AnimatedNumber } from '@/components/AnimatedNumber';
 import { useStore } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useGlobalStyles } from '@/styles/global';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -28,6 +29,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const showToast = useStore((s) => s.showToast);
   const { colors, borderRadius } = useTheme();
   const { isWideScreen } = useResponsive();
+  const globalStyles = useGlobalStyles();
   
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -92,7 +94,6 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   };
 
   const handleAddToCalendar = () => {
-    // Basic cross platform calendar deep link
     const calUrl = Platform.OS === 'ios' ? 'calshow://' : 'content://com.android.calendar/time/';
     Linking.openURL(calUrl).catch(() => {
       showToast({
@@ -115,7 +116,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
   return (
     <ScreenContainer style={styles.container}>
-      <View style={[styles.headerBar, { paddingTop: Math.max(insets.top, 16), borderBottomColor: colors.border, backgroundColor: colors.backgroundPrimary }]}>
+      <View style={[styles.headerBar, { paddingTop: Math.max(insets.top, 16), backgroundColor: colors.backgroundPrimary }]}>
         <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
         <View style={styles.headerRight}>
           <IconButton 
@@ -138,52 +139,62 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
           {event.image_url ? (
             <Animated.View style={[
               { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-              isWideScreen && styles.imageContainerWide
+              isWideScreen ? styles.imageContainerWide : styles.imageContainer
             ]}>
-              <Image
-                source={{ uri: event.image_url }}
-                style={[
-                  styles.imageHeader, 
-                  { borderColor: colors.border },
-                  isWideScreen && [styles.imageHeaderWide, { borderRadius: borderRadius.lg }]
-                ]}
-                resizeMode="cover"
-              />
+              <View style={[globalStyles.clayCard, styles.imageClayContainer]}>
+                <Image
+                  source={{ uri: event.image_url }}
+                  style={[
+                    styles.imageHeader, 
+                    { borderRadius: borderRadius.md },
+                    isWideScreen && styles.imageHeaderWide
+                  ]}
+                  resizeMode="cover"
+                />
+              </View>
             </Animated.View>
           ) : null}
 
           <View style={[styles.content, isWideScreen && styles.contentWide]}>
-            <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+            <Animated.View style={[
+              globalStyles.clayCard, 
+              styles.infoPanel, 
+              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+            ]}>
               <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>{event.title || 'Untitled Event'}</Text>
+              
+              <View style={styles.attendeesContainer}>
+                <AnimatedNumber value={attendeeCount} duration={1500} />
+                <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
+              </View>
+
+              <View style={styles.tagsContainer}>
+                <DateTag date={event.date} />
+                {event.location ? <LocationTag location={event.location} /> : null}
+              </View>
+
+              <View style={[styles.clubContainer, { borderLeftColor: colors.accentCyan }]}>
+                <Text variant="caption" color="textMuted">Hosted by</Text>
+                <Text variant="h3">{event.club?.name}</Text>
+              </View>
+
+              {event.attendance ? (
+                <View style={[styles.attendanceContainer, { borderLeftColor: colors.accentCyan }]}>
+                  <Text variant="caption" color="textMuted">Eligibility & Attendance</Text>
+                  <Text variant="h3">{event.attendance}</Text>
+                </View>
+              ) : null}
+
+              <Text variant="body" color="textMuted" style={styles.description}>
+                {event.description}
+              </Text>
             </Animated.View>
-            
-            <View style={styles.attendeesContainer}>
-              <AnimatedNumber value={attendeeCount} duration={1500} />
-              <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
-            </View>
 
-            <Animated.View style={[styles.tagsContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-              <DateTag date={event.date} />
-              {event.location ? <LocationTag location={event.location} /> : null}
-            </Animated.View>
-
-            <Animated.View style={[styles.clubContainer, { borderLeftColor: colors.accentCyan, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-              <Text variant="caption" color="textMuted">Hosted by</Text>
-              <Text variant="h3">{event.club?.name}</Text>
-            </Animated.View>
-
-            {event.attendance ? (
-              <Animated.View style={[styles.attendanceContainer, { borderLeftColor: colors.accentCyan, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                <Text variant="caption" color="textMuted">Eligibility & Attendance</Text>
-                <Text variant="h3">{event.attendance}</Text>
-              </Animated.View>
-            ) : null}
-
-            <Text variant="body" color="textMuted" style={styles.description}>
-              {event.description}
-            </Text>
-
-            <View style={[styles.actionContainer, { borderTopColor: colors.border }]}>
+            <Animated.View style={[
+              globalStyles.clayCard, 
+              styles.actionPanel,
+              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+            ]}>
               <Button 
                 label="Add to Calendar" 
                 variant="primary" 
@@ -200,7 +211,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
                 variant="outline" 
                 onPress={handleShare} 
               />
-            </View>
+            </Animated.View>
           </View>
         </View>
       </ScrollView>
@@ -219,7 +230,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 16,
-    borderBottomWidth: 1,
+    zIndex: 10,
   },
   headerRight: {
     flexDirection: 'row',
@@ -230,7 +241,6 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     position: 'relative',
-    overflow: 'hidden',
     flexDirection: 'column',
   },
   contentWrapperWide: {
@@ -239,18 +249,23 @@ const styles = StyleSheet.create({
     padding: 32,
     gap: 32,
   },
+  imageContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 24,
+  },
   imageContainerWide: {
     flex: 1,
     maxWidth: 500,
   },
+  imageClayContainer: {
+    padding: 16, // Puffy border around image
+  },
   imageHeader: {
     width: '100%',
     height: 280,
-    borderBottomWidth: 1,
   },
   imageHeaderWide: {
     height: 400,
-    borderWidth: 1,
   },
   lightLeakContainer: {
     position: 'absolute',
@@ -261,11 +276,15 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   content: {
-    padding: 24,
+    paddingHorizontal: 16,
   },
   contentWide: {
     flex: 1,
-    padding: 0,
+    paddingHorizontal: 0,
+  },
+  infoPanel: {
+    padding: 24,
+    marginBottom: 24,
   },
   title: {
     marginBottom: 16,
@@ -288,22 +307,20 @@ const styles = StyleSheet.create({
   },
   clubContainer: {
     marginBottom: 32,
-    borderLeftWidth: 2,
+    borderLeftWidth: 3,
     paddingLeft: 16,
   },
   attendanceContainer: {
     marginBottom: 32,
-    borderLeftWidth: 2,
+    borderLeftWidth: 3,
     paddingLeft: 16,
   },
   description: {
     lineHeight: 24,
   },
-  actionContainer: {
-    marginTop: 40,
-    paddingTop: 24,
-    borderTopWidth: 1,
-    gap: 12,
+  actionPanel: {
+    padding: 24,
+    gap: 16,
   },
   actionButton: {
     width: '100%',
