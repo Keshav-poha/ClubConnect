@@ -50,7 +50,6 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 	}
 
 	// Serve the React Native Web SPA securely using http.FileSystem
-	fs := http.Dir("./public")
 	r.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
 		if len(path) >= 4 && path[:4] == "/api" {
@@ -58,13 +57,12 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 			return
 		}
 
-		f, err := fs.Open(path)
-		if err == nil && path != "/" {
-			f.Close()
-			c.FileFromFS(path, fs)
+		fi, err := os.Stat("./public" + path)
+		if err == nil && !fi.IsDir() && path != "/" {
+			c.File("./public" + path)
 			return
 		}
-		c.FileFromFS("/index.html", fs)
+		c.File("./public/index.html")
 	})
 
 	return r
