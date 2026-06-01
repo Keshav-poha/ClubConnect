@@ -15,7 +15,7 @@ import { Button } from '@/components/Button';
 import { Tooltip } from '@/components/Tooltip';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
 import { useStore } from '@/store';
-import { colors, typography } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -25,6 +25,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const checkBookmarked = useStore((s) => s.isBookmarked);
   const toggleBookmark = useStore((s) => s.toggleBookmark);
   const showToast = useStore((s) => s.showToast);
+  const { colors } = useTheme();
   
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -112,7 +113,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
   return (
     <ScreenContainer style={styles.container}>
-      <View style={[styles.headerBar, { paddingTop: Math.max(insets.top, 16) }]}>
+      <View style={[styles.headerBar, { paddingTop: Math.max(insets.top, 16), borderBottomColor: colors.border, backgroundColor: colors.backgroundPrimary }]}>
         <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
         <View style={styles.headerRight}>
           <IconButton 
@@ -136,7 +137,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             <Animated.View style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}>
               <Image
                 source={{ uri: event.image_url }}
-                style={styles.imageHeader}
+                style={[styles.imageHeader, { borderBottomColor: colors.border }]}
                 resizeMode="cover"
               />
             </Animated.View>
@@ -144,7 +145,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
           <View style={styles.content}>
             <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-              <Text variant="h1" style={styles.title}>{event.title || 'Untitled Event'}</Text>
+              <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>{event.title || 'Untitled Event'}</Text>
             </Animated.View>
             
             <View style={styles.attendeesContainer}>
@@ -157,13 +158,13 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               {event.location ? <LocationTag location={event.location} /> : null}
             </Animated.View>
 
-            <Animated.View style={[styles.clubContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            <Animated.View style={[styles.clubContainer, { borderLeftColor: colors.accentCyan, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <Text variant="caption" color="textMuted">Hosted by</Text>
               <Text variant="h3">{event.club?.name}</Text>
             </Animated.View>
 
             {event.attendance ? (
-              <Animated.View style={[styles.attendanceContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+              <Animated.View style={[styles.attendanceContainer, { borderLeftColor: colors.accentCyan, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
                 <Text variant="caption" color="textMuted">Eligibility & Attendance</Text>
                 <Text variant="h3">{event.attendance}</Text>
               </Animated.View>
@@ -173,7 +174,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               {event.description}
             </Text>
 
-            <View style={styles.actionContainer}>
+            <View style={[styles.actionContainer, { borderTopColor: colors.border }]}>
               <Button 
                 label="Add to Calendar" 
                 variant="primary" 
@@ -210,8 +211,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.backgroundPrimary,
   },
   headerRight: {
     flexDirection: 'row',
@@ -228,7 +227,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 280,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   lightLeakContainer: {
     position: 'absolute',
@@ -243,7 +241,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 16,
-    color: colors.textPrimary,
   },
   attendeesContainer: {
     flexDirection: 'row',
@@ -264,13 +261,11 @@ const styles = StyleSheet.create({
   clubContainer: {
     marginBottom: 32,
     borderLeftWidth: 2,
-    borderLeftColor: colors.accentCyan,
     paddingLeft: 16,
   },
   attendanceContainer: {
     marginBottom: 32,
     borderLeftWidth: 2,
-    borderLeftColor: colors.accentCyan,
     paddingLeft: 16,
   },
   description: {
@@ -280,7 +275,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     paddingTop: 24,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
     gap: 12,
   },
   actionButton: {
