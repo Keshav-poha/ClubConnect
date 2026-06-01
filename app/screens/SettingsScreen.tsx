@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 16,
-    paddingBottom: 40,
+    paddingBottom: 100, // Clearance for tab bar
   },
   contentWrapper: {
     width: '100%',

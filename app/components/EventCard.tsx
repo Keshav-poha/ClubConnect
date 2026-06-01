@@ -126,12 +126,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
   },
   clubAvatar: {
     marginRight: 0,
   },
   clubName: {
     fontSize: 14,
+    flexShrink: 1,
   },
   title: {
     marginBottom: 8,

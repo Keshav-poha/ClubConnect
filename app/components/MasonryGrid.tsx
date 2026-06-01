@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingBottom: 40,
+    paddingBottom: 100, // Clearance for tab bar
     paddingHorizontal: 8,
   },
   columnWrapper: {

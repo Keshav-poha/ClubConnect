@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 100, // Clearance for tab bar
   },
   contentWrapper: {
     position: 'relative',

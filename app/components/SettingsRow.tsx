@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    flex: 1,
   },
   rightContent: {
     flexDirection: 'row',
@@ -91,6 +92,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    flexShrink: 1,
   },
   value: {
     fontSize: 16,

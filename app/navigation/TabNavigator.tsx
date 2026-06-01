@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 16,
     right: 16,
+    overflow: 'hidden',
   },
   sidebarContainer: {
     flexDirection: 'column',
@@ -155,6 +156,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     gap: 32,
     zIndex: 10,
+    overflow: 'hidden',
   },
   tabItem: {
     flex: 1,
