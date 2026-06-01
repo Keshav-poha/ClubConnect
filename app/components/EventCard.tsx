@@ -7,9 +7,9 @@ import { DateTag } from './DateTag';
 import { LocationTag } from './LocationTag';
 import { ClubAvatar } from './ClubAvatar';
 import { Badge } from './Badge';
-import { globalStyles } from '@/styles/global';
+import { useGlobalStyles } from '@/styles/global';
 import { triggerLightHaptic } from '@/utils/haptics';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface EventCardProps {
   event: Event;
@@ -19,6 +19,8 @@ interface EventCardProps {
 
 export const EventCard = ({ event, onPress, style }: EventCardProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const globalStyles = useGlobalStyles();
+  const { colors } = useTheme();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -47,7 +49,7 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
         {event.image_url ? (
           <Image
             source={{ uri: event.image_url }}
-            style={styles.cardImage}
+            style={[styles.cardImage, { borderBottomColor: colors.border }]}
             resizeMode="cover"
           />
         ) : null}
@@ -95,7 +97,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 180,
     borderBottomWidth: 1.5,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   pressed: {
     opacity: 0.9,
