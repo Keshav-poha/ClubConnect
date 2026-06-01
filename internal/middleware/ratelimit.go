@@ -35,6 +35,9 @@ func NewRateLimiter(rate float64, burst int) *RateLimiter {
 					delete(rl.visitors, ip)
 				}
 			}
+			if len(rl.visitors) > 100000 {
+				rl.visitors = make(map[string]*visitor)
+			}
 			rl.mu.Unlock()
 		}
 	}()
