@@ -33,7 +33,8 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);
-  const attendeeCount = useMemo(() => Math.floor(Math.random() * 500) + 50, [event.id]);
+  // Stub for actual attendee count when backend supports it
+  const attendeeCount = 0;
 
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -163,10 +164,12 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             ]}>
               <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>{event.title || 'Untitled Event'}</Text>
               
-              <View style={styles.attendeesContainer}>
-                <AnimatedNumber value={attendeeCount} duration={1500} />
-                <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
-              </View>
+              {attendeeCount > 0 && (
+                <View style={styles.attendeesContainer}>
+                  <AnimatedNumber value={attendeeCount} duration={1500} />
+                  <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
+                </View>
+              )}
 
               <View style={styles.tagsContainer}>
                 <DateTag date={event.date} />
