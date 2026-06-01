@@ -49,7 +49,7 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
         {event.image_url ? (
           <Image
             source={{ uri: event.image_url }}
-            style={[styles.cardImage, { borderBottomColor: colors.border }]}
+            style={[styles.cardImage, { borderColor: colors.border }]}
             resizeMode="cover"
           />
         ) : null}

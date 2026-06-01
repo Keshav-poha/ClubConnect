@@ -137,7 +137,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             <Animated.View style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}>
               <Image
                 source={{ uri: event.image_url }}
-                style={[styles.imageHeader, { borderBottomColor: colors.border }]}
+                style={[styles.imageHeader, { borderColor: colors.border }]}
                 resizeMode="cover"
               />
             </Animated.View>
