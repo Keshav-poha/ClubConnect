@@ -7,28 +7,31 @@ const sansSemiBold = 'Montserrat_600SemiBold';
 const monoFont = 'JetBrainsMono_400Regular';
 
 export const lightColors = {
-  backgroundPrimary: '#F4F7FA', // Soft off-white
-  backgroundCard: '#FFFFFF',
-  textPrimary: '#1C398E',
-  textMuted: '#64748B',
-  accentCyan: '#3B82F6', // Primary Blue
+  backgroundPrimary: '#f5f7fb', // --bg-canvas
+  backgroundCard: '#ffffff', // --element-bg
+  textPrimary: '#1e293b', // --text-main
+  textMuted: '#64748b', // --text-muted
+  accentCyan: '#6366f1', // --primary-accent (Indigo)
   accentGreen: '#16A34A',
-  border: 'rgba(0, 0, 0, 0.06)',
-  shadow: 'rgba(59, 130, 246, 0.15)', // Blue tinted shadow
+  border: 'rgba(0, 0, 0, 0.04)', // subtle outline if needed
+  shadowOuter: 'rgba(166, 180, 200, 0.4)', // --clay-shadow-outer
+  clayHighlight: 'rgba(255, 255, 255, 0.9)', // top-left inset
+  clayShadow: 'rgba(0, 0, 0, 0.08)', // bottom-right inset
 };
 
 export const darkColors = {
-  backgroundPrimary: '#0f111a',
-  backgroundCard: '#1a1d2e',
-  textPrimary: '#F0F2FA',
-  textMuted: '#8b92b0',
-  accentCyan: '#3B82F6', // Primary Blue for consistency
+  backgroundPrimary: '#0f172a', // --bg-canvas
+  backgroundCard: '#1e293b', // --element-bg
+  textPrimary: '#f8fafc', // --text-main
+  textMuted: '#94a3b8', // --text-muted
+  accentCyan: '#818cf8', // --primary-accent (Indigo 400)
   accentGreen: '#16A34A',
-  border: 'rgba(255, 255, 255, 0.08)',
-  shadow: 'rgba(0, 0, 0, 0.5)',
+  border: 'rgba(255, 255, 255, 0.02)', // subtle outline if needed
+  shadowOuter: 'rgba(0, 0, 0, 0.4)', // --clay-shadow-outer
+  clayHighlight: 'rgba(255, 255, 255, 0.05)', // top-left inset
+  clayShadow: 'rgba(0, 0, 0, 0.4)', // bottom-right inset
 };
 
-// Default export for statically defined styles (will migrate to hook)
 export const colors = lightColors;
 
 export const typography = {
@@ -42,9 +45,8 @@ export const typography = {
 };
 
 export const borderRadius = {
-  sm: 8,
-  md: 20,
-  lg: 28,
+  sm: 16, // buttons
+  md: 24, // cards
+  lg: 32, // larger cards/modals
   pill: 9999,
 };
-
