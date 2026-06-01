@@ -8,6 +8,7 @@ import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { FeaturedFilmStrip } from '@/components/FeaturedFilmStrip';
 import { useStore } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export const HomeScreen = () => {
   const featuredEvents = useStore((s) => s.featuredEvents);
@@ -25,6 +26,7 @@ export const HomeScreen = () => {
 
   const [activeFilter, setActiveFilter] = React.useState<string>('all');
   const { colors, borderRadius, isDark } = useTheme();
+  const { isWideScreen } = useResponsive();
 
   useEffect(() => {
     fetchFeaturedEvents();
@@ -53,7 +55,8 @@ export const HomeScreen = () => {
           borderColor: colors.border,
           borderRadius: borderRadius.pill,
           shadowColor: colors.shadow,
-        }
+        },
+        isWideScreen && styles.segmentContainerWide
       ]}>
         <Pressable
           style={[
@@ -154,6 +157,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 3,
+  },
+  segmentContainerWide: {
+    width: 400, // Constrain width on wide screens
   },
   segmentButton: {
     flex: 1,
