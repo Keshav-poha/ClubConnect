@@ -33,7 +33,7 @@ export function MasonryGrid<T>({
       key={`grid-${cols}`}
       data={data}
       numColumns={cols}
-      keyExtractor={(_, index) => `grid-item-${index}`}
+      keyExtractor={(item: any, index) => item.id ? String(item.id) : `grid-item-${index}`}
       renderItem={({ item, index }) => (
         <View style={styles.itemContainer}>
           {renderItem(item, index)}
