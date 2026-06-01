@@ -45,7 +45,7 @@ export const DiscoverScreen = () => {
       
       <View style={[
         styles.searchContainer, 
-        globalStyles.brutalistBorder, 
+        globalStyles.clayCard, 
         { backgroundColor: colors.backgroundCard, borderColor: colors.border },
         isWideScreen && styles.searchContainerWide
       ]}>

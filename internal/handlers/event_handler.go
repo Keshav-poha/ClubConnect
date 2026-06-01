@@ -148,7 +148,7 @@ func (h *EventHandler) ListEvents(c *gin.Context) {
 	h.db.Model(&models.Event{}).Scopes(filters).Count(&total)
 
 	var events []models.Event
-	err := h.db.Model(&models.Event{}).
+	err = h.db.Model(&models.Event{}).
 		Scopes(filters).
 		Preload("Club").
 		Order("date DESC").
