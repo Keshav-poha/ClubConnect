@@ -1,7 +1,6 @@
 package router
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/clubconnect/clubconnect/internal/handlers"
