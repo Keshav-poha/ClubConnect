@@ -5,9 +5,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Event } from '@/types';
 import { EventCard } from '@/components/EventCard';
-import { Badge } from '@/components/Badge';
 import { EmptyState } from '@/components/EmptyState';
 import { FeaturedSkeleton } from './FeaturedSkeleton';
+import { useResponsive } from '@/hooks/useResponsive';
 
 interface FeaturedFilmStripProps {
   events: Event[];
@@ -18,6 +18,7 @@ interface FeaturedFilmStripProps {
 export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStripProps) => {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { isWideScreen } = useResponsive();
 
   const handlePress = React.useCallback((event: Event) => {
     navigation.navigate('EventDetail', { event });
@@ -49,23 +50,28 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
   }
 
   const renderFilmStripItem = React.useCallback(({ item, index }: { item: Event; index: number }) => (
-    <View style={[styles.filmStripItem, index === activeIndex && styles.activeFilmStripItem]}>
+    <View style={[
+      styles.filmStripItem, 
+      !isWideScreen && index === activeIndex && styles.activeFilmStripItem,
+      isWideScreen && styles.wideFilmStripItem
+    ]}>
       <EventCard event={item} onPress={handlePress} />
     </View>
-  ), [activeIndex, handlePress]);
+  ), [activeIndex, handlePress, isWideScreen]);
 
   return (
     <FlatList
       data={events}
       keyExtractor={(item) => item.id}
       horizontal
-      showsHorizontalScrollIndicator={false}
-      snapToInterval={336}
-      decelerationRate="fast"
+      showsHorizontalScrollIndicator={isWideScreen} // Show scrollbar on desktop
+      snapToInterval={isWideScreen ? undefined : 336}
+      decelerationRate={isWideScreen ? "normal" : "fast"}
       snapToAlignment="start"
-      onViewableItemsChanged={onViewableItemsChanged}
-      viewabilityConfig={viewabilityConfig}
+      onViewableItemsChanged={!isWideScreen ? onViewableItemsChanged : undefined}
+      viewabilityConfig={!isWideScreen ? viewabilityConfig : undefined}
       renderItem={renderFilmStripItem}
+      contentContainerStyle={styles.listContent}
     />
   );
 };
@@ -78,9 +84,11 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 40,
   },
+  listContent: {
+    paddingRight: 16, // Extra padding at end
+  },
   filmStripItem: {
     width: 320,
-    marginRight: 16,
     marginLeft: 16,
     opacity: 0.6,
     transform: [{ scale: 0.95 }],
@@ -89,4 +97,9 @@ const styles = StyleSheet.create({
     opacity: 1,
     transform: [{ scale: 1 }],
   },
+  wideFilmStripItem: {
+    width: 350,
+    opacity: 1, // On wide screens, don't dim inactive items
+    transform: [{ scale: 1 }], // Don't scale down
+  }
 });
