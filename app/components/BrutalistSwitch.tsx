@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Pressable, Animated } from 'react-native';
-import { colors, borderRadius } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface BrutalistSwitchProps {
   value: boolean;
@@ -9,6 +9,7 @@ interface BrutalistSwitchProps {
 
 export const BrutalistSwitch = ({ value, onValueChange }: BrutalistSwitchProps) => {
   const switchAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
+  const { colors, borderRadius, isDark } = useTheme();
 
   useEffect(() => {
     Animated.spring(switchAnim, {
@@ -31,8 +32,8 @@ export const BrutalistSwitch = ({ value, onValueChange }: BrutalistSwitchProps) 
 
   return (
     <Pressable onPress={() => onValueChange(!value)} accessible role="switch" aria-checked={value}>
-      <Animated.View style={[styles.track, { backgroundColor }]}>
-        <Animated.View style={[styles.thumb, { transform: [{ translateX }] }]} />
+      <Animated.View style={[styles.track, { backgroundColor, borderColor: colors.border, borderRadius: borderRadius.pill }]}>
+        <Animated.View style={[styles.thumb, { transform: [{ translateX }], borderRadius: borderRadius.pill }]} />
       </Animated.View>
     </Pressable>
   );
@@ -43,16 +44,13 @@ const styles = StyleSheet.create({
     width: 46,
     height: 26,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     justifyContent: 'center',
-    borderRadius: borderRadius.pill,
   },
   thumb: {
     width: 18,
     height: 18,
     backgroundColor: '#ffffff',
     position: 'absolute',
-    borderRadius: borderRadius.pill,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,
