@@ -5,15 +5,28 @@ import { HomeScreen } from '@/screens/HomeScreen';
 import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import { SavedScreen } from '@/screens/SavedScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Platform } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
 const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+  const { colors, borderRadius, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.tabBarContainer}>
+    <View style={[
+      styles.tabBarContainer, 
+      { 
+        backgroundColor: colors.backgroundCard,
+        borderColor: colors.border,
+        borderRadius: borderRadius.pill,
+        marginBottom: insets.bottom > 0 ? insets.bottom : 16,
+        shadowColor: colors.shadow,
+      }
+    ]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -50,9 +63,12 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
             onLongPress={onLongPress}
             style={styles.tabItem}
           >
+            {isFocused && (
+              <View style={[styles.activeIndicator, { backgroundColor: colors.accentCyan }]} />
+            )}
             {Icon && Icon({
               focused: isFocused,
-              color: isFocused ? colors.textPrimary : colors.textMuted,
+              color: isFocused ? colors.accentCyan : colors.textMuted,
               size: 24
             })}
           </Pressable>
@@ -113,18 +129,38 @@ export const TabNavigator = () => {
 const styles = StyleSheet.create({
   tabBarContainer: {
     flexDirection: 'row',
-    height: 60,
-    backgroundColor: colors.backgroundPrimary,
-    borderTopColor: colors.border,
-    borderTopWidth: 1,
+    height: 64,
+    borderWidth: 1.5,
     justifyContent: 'space-around',
     alignItems: 'center',
-    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 16,
+    right: 16,
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 1,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   tabItem: {
     flex: 1,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: 8,
+    width: 32,
+    height: 4,
+    borderRadius: 2,
+    opacity: 0.15,
   },
 });
