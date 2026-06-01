@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ViewProps, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ScreenContainerProps extends ViewProps {
   children: React.ReactNode;
@@ -15,11 +15,13 @@ export const ScreenContainer = ({
   ...props
 }: ScreenContainerProps) => {
   const Container = useSafeArea ? SafeAreaView : View;
+  const { colors } = useTheme();
 
   return (
     <Container 
       style={[
-        styles.container, 
+        styles.container,
+        { backgroundColor: colors.backgroundPrimary },
         style
       ]} 
       {...props}
@@ -32,7 +34,6 @@ export const ScreenContainer = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundPrimary,
     width: '100%',
     maxWidth: 1000,
     alignSelf: 'center',
