@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, FlatList, StyleProp, ViewStyle, RefreshControlProps, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, FlatList, StyleProp, ViewStyle, RefreshControlProps, View } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 
 interface MasonryGridProps<T> {
   data: T[];
@@ -16,7 +17,7 @@ interface MasonryGridProps<T> {
 export function MasonryGrid<T>({
   data,
   renderItem,
-  numColumns,
+  numColumns: propNumColumns,
   style,
   contentContainerStyle,
   onEndReached,
@@ -24,8 +25,8 @@ export function MasonryGrid<T>({
   ListHeaderComponent,
   ListFooterComponent,
 }: MasonryGridProps<T>) {
-  const { width } = useWindowDimensions();
-  const cols = numColumns || Math.max(1, Math.floor(width / 350));
+  const { numColumns } = useResponsive();
+  const cols = propNumColumns || numColumns;
 
   return (
     <FlatList
@@ -47,7 +48,6 @@ export function MasonryGrid<T>({
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={ListHeaderComponent ? <>{ListHeaderComponent}</> : null}
       ListFooterComponent={ListFooterComponent ? <>{ListFooterComponent}</> : null}
-      // Performance props per js-lists-flatlist-flashlist skill
       removeClippedSubviews={true}
       maxToRenderPerBatch={10}
       updateCellsBatchingPeriod={50}
