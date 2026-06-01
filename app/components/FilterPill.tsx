@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle, Platform } from 'react-native';
 import { Text } from './Text';
 import { useTheme } from '@/hooks/useTheme';
+import { useGlobalStyles } from '@/styles/global';
 
 interface FilterPillProps {
   label: string;
@@ -11,7 +12,8 @@ interface FilterPillProps {
 }
 
 export const FilterPill = React.memo(({ label, isActive = false, onPress, style }: FilterPillProps) => {
-  const { colors, borderRadius, isDark } = useTheme();
+  const { colors, isDark } = useTheme();
+  const globalStyles = useGlobalStyles();
 
   return (
     <Pressable
@@ -19,37 +21,31 @@ export const FilterPill = React.memo(({ label, isActive = false, onPress, style 
       style={({ pressed }) => [
         {
           paddingHorizontal: 16,
-          paddingVertical: 8,
+          paddingVertical: 10,
           marginRight: 8,
-          borderRadius: borderRadius.pill,
-          borderWidth: 1.5,
+          borderRadius: 9999, // Pill shape
+          ...Platform.select({
+            web: {
+              transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+            } as any,
+          }),
         },
-        isActive 
+        isActive || pressed 
           ? {
-              backgroundColor: colors.accentCyan,
-              borderColor: colors.border,
-              shadowColor: colors.accentCyan,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.35,
-              shadowRadius: 8,
-              elevation: 4,
+              ...globalStyles.clayButtonPressed,
+              backgroundColor: isActive ? colors.accentCyan : colors.backgroundCard,
+              borderTopColor: isActive ? 'rgba(0,0,0,0.1)' : colors.clayShadow,
+              borderLeftColor: isActive ? 'rgba(0,0,0,0.1)' : colors.clayShadow,
+              borderBottomColor: isActive ? 'rgba(255,255,255,0.2)' : colors.clayHighlight,
+              borderRightColor: isActive ? 'rgba(255,255,255,0.2)' : colors.clayHighlight,
             }
-          : {
-              backgroundColor: colors.backgroundCard,
-              borderColor: colors.border,
-              shadowColor: colors.shadow,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 4,
-              elevation: 2,
-            },
-        pressed && !isActive && { backgroundColor: isDark ? '#222535' : '#F1F5F9' },
+          : globalStyles.clayButton,
         style,
       ]}
     >
       <Text
         variant="bodyMedium"
-        color={isActive ? (isDark ? 'textPrimary' : 'backgroundCard') : 'textPrimary'}
+        color={isActive ? 'backgroundCard' : 'textPrimary'}
       >
         {label}
       </Text>
