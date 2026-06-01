@@ -1,40 +1,42 @@
 import React from 'react';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Compass, Bookmark, Film, Settings } from 'lucide-react-native';
+import { Bookmark, Film, Settings } from 'lucide-react-native';
 import { HomeScreen } from '@/screens/HomeScreen';
-import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import { SavedScreen } from '@/screens/SavedScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { useTheme } from '@/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useGlobalStyles } from '@/styles/global';
 
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
 const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
-  const { colors, borderRadius, isDark } = useTheme();
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const { isWideScreen } = useResponsive();
+  const globalStyles = useGlobalStyles();
 
   const containerStyle = isWideScreen 
-    ? [styles.sidebarContainer, { 
-        backgroundColor: colors.backgroundCard,
-        borderColor: colors.border,
-        borderRadius: borderRadius.lg,
-        shadowColor: colors.shadow,
-        marginLeft: insets.left > 0 ? insets.left : 16,
-        marginTop: insets.top > 0 ? insets.top + 16 : 32,
-        marginBottom: insets.bottom > 0 ? insets.bottom + 16 : 32,
-      }]
-    : [styles.tabBarContainer, { 
-        backgroundColor: colors.backgroundCard,
-        borderColor: colors.border,
-        borderRadius: borderRadius.pill,
-        marginBottom: insets.bottom > 0 ? insets.bottom : 16,
-        shadowColor: colors.shadow,
-      }];
+    ? [
+        styles.sidebarContainer, 
+        globalStyles.clayCard,
+        { 
+          marginLeft: insets.left > 0 ? insets.left : 16,
+          marginTop: insets.top > 0 ? insets.top + 16 : 32,
+          marginBottom: insets.bottom > 0 ? insets.bottom + 16 : 32,
+        }
+      ]
+    : [
+        styles.tabBarContainer, 
+        globalStyles.clayCard,
+        { 
+          borderRadius: 9999, // Pill shape for bottom bar
+          marginBottom: insets.bottom > 0 ? insets.bottom : 16,
+        }
+      ];
 
   return (
     <View style={containerStyle}>
@@ -110,15 +112,6 @@ export const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Discover"
-        component={DiscoverScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Compass color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Saved"
         component={SavedScreen}
         options={{
@@ -144,33 +137,16 @@ const styles = StyleSheet.create({
   tabBarContainer: {
     flexDirection: 'row',
     height: 64,
-    borderWidth: 1.5,
     justifyContent: 'space-around',
     alignItems: 'center',
     position: 'absolute',
     bottom: 0,
     left: 16,
     right: 16,
-    ...Platform.select({
-      ios: {
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 1,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 8,
-      },
-      web: {
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 1,
-        shadowRadius: 16,
-      }
-    }),
   },
   sidebarContainer: {
     flexDirection: 'column',
     width: 80,
-    borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
@@ -179,21 +155,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     gap: 32,
     zIndex: 10,
-    ...Platform.select({
-      ios: {
-        shadowOffset: { width: 4, height: 0 },
-        shadowOpacity: 1,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 8,
-      },
-      web: {
-        shadowOffset: { width: 4, height: 0 },
-        shadowOpacity: 1,
-        shadowRadius: 16,
-      }
-    }),
   },
   tabItem: {
     flex: 1,
