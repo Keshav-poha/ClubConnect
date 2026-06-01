@@ -7,6 +7,7 @@ import { SavedScreen } from '@/screens/SavedScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { useTheme } from '@/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useResponsive } from '@/hooks/useResponsive';
 
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
 
@@ -15,18 +16,28 @@ const Tab = createBottomTabNavigator();
 const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const { colors, borderRadius, isDark } = useTheme();
   const insets = useSafeAreaInsets();
+  const { isWideScreen } = useResponsive();
 
-  return (
-    <View style={[
-      styles.tabBarContainer, 
-      { 
+  const containerStyle = isWideScreen 
+    ? [styles.sidebarContainer, { 
+        backgroundColor: colors.backgroundCard,
+        borderColor: colors.border,
+        borderRadius: borderRadius.lg,
+        shadowColor: colors.shadow,
+        marginLeft: insets.left > 0 ? insets.left : 16,
+        marginTop: insets.top > 0 ? insets.top + 16 : 32,
+        marginBottom: insets.bottom > 0 ? insets.bottom + 16 : 32,
+      }]
+    : [styles.tabBarContainer, { 
         backgroundColor: colors.backgroundCard,
         borderColor: colors.border,
         borderRadius: borderRadius.pill,
         marginBottom: insets.bottom > 0 ? insets.bottom : 16,
         shadowColor: colors.shadow,
-      }
-    ]}>
+      }];
+
+  return (
+    <View style={containerStyle}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -61,10 +72,13 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
             testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={styles.tabItem}
+            style={isWideScreen ? styles.sidebarItem : styles.tabItem}
           >
             {isFocused && (
-              <View style={[styles.activeIndicator, { backgroundColor: colors.accentCyan }]} />
+              <View style={[
+                isWideScreen ? styles.activeIndicatorSidebar : styles.activeIndicator, 
+                { backgroundColor: colors.accentCyan }
+              ]} />
             )}
             {Icon && Icon({
               focused: isFocused,
@@ -146,6 +160,39 @@ const styles = StyleSheet.create({
       android: {
         elevation: 8,
       },
+      web: {
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 1,
+        shadowRadius: 16,
+      }
+    }),
+  },
+  sidebarContainer: {
+    flexDirection: 'column',
+    width: 80,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    gap: 32,
+    zIndex: 10,
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 4, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+      web: {
+        shadowOffset: { width: 4, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 16,
+      }
     }),
   },
   tabItem: {
@@ -155,11 +202,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
   },
+  sidebarItem: {
+    width: '100%',
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
   activeIndicator: {
     position: 'absolute',
     top: 8,
     width: 32,
     height: 4,
+    borderRadius: 2,
+    opacity: 0.15,
+  },
+  activeIndicatorSidebar: {
+    position: 'absolute',
+    left: 8,
+    width: 4,
+    height: 32,
     borderRadius: 2,
     opacity: 0.15,
   },
