@@ -107,8 +107,8 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 
 		extracted, err := s.parser.ParseCaption(p.Caption)
 
-		// Throttle between AI calls to avoid overloading the model.
-		time.Sleep(3 * time.Second)
+		// AI calls are processed sequentially without artificial delay.
+		// A production app should use a semaphore to rate-limit gracefully.
 
 		if err != nil {
 			log.Printf("parser fail [%s]: %v", p.PostID, err)
@@ -165,7 +165,11 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	url := fmt.Sprintf("https://%s/api/instagram/posts", s.cfg.RapidAPIHost)
-	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s", "maxId": ""}`, handle))
+	payloadBytes, _ := json.Marshal(map[string]string{
+		"username": handle,
+		"maxId":    "",
+	})
+	payload := strings.NewReader(string(payloadBytes))
 
 	req, err := http.NewRequest("POST", url, payload)
 	if err != nil {
