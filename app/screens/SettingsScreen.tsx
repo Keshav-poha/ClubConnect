@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { Bell, Moon, Shield, Trash2, Sun } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,7 @@ export const SettingsScreen = () => {
   const themeMode = useStore((s) => s.themeMode);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
-  const { colors, borderRadius, isDark } = useTheme();
+  const { colors, isDark } = useTheme();
   const globalStyles = useGlobalStyles();
   const { isWideScreen } = useResponsive();
 
@@ -56,7 +56,7 @@ export const SettingsScreen = () => {
         <View style={[styles.contentWrapper, isWideScreen && styles.centeredContent]}>
           <View style={styles.section}>
             <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>App Preferences</Text>
-            <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: colors.border, borderRadius: borderRadius.md }]}>
+            <View style={[globalStyles.clayCard, styles.card]}>
               <SettingsRow 
                 icon={Bell}
                 label="Push Notifications"
@@ -78,7 +78,7 @@ export const SettingsScreen = () => {
 
           <View style={styles.section}>
             <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>About</Text>
-            <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: colors.border, borderRadius: borderRadius.md }]}>
+            <View style={[globalStyles.clayCard, styles.card]}>
               <SettingsRow 
                 icon={Shield}
                 label="Privacy Policy"
@@ -90,7 +90,7 @@ export const SettingsScreen = () => {
 
           <View style={styles.section}>
             <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>Data Management</Text>
-            <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: colors.border, borderRadius: borderRadius.md }]}>
+            <View style={[globalStyles.clayCard, styles.card]}>
               <SettingsRow 
                 icon={Trash2}
                 label="Clear Cache & Data"
@@ -140,7 +140,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   card: {
-    borderWidth: 1,
+    overflow: 'hidden',
+    ...Platform.select({
+      web: {
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
   },
   versionContainer: {
     alignItems: 'center',
