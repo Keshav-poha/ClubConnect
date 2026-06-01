@@ -10,6 +10,8 @@ export interface UiSlice {
   toast: ToastConfig | null;
   showToast: (config: ToastConfig) => void;
   hideToast: () => void;
+  themeMode: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 export const createUiSlice: StateCreator<UiSlice> = (set) => ({
@@ -20,4 +22,6 @@ export const createUiSlice: StateCreator<UiSlice> = (set) => ({
   hideToast: () => {
     set({ toast: null });
   },
+  themeMode: 'light',
+  toggleTheme: () => set((state) => ({ themeMode: state.themeMode === 'light' ? 'dark' : 'light' })),
 });
