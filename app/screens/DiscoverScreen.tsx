@@ -8,6 +8,7 @@ import { UpcomingFeed } from '@/components/UpcomingFeed';
 import { useStore } from '@/store';
 import { useGlobalStyles } from '@/styles/global';
 import { useTheme } from '@/hooks/useTheme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export const DiscoverScreen = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -20,6 +21,7 @@ export const DiscoverScreen = () => {
   
   const globalStyles = useGlobalStyles();
   const { colors, typography } = useTheme();
+  const { isWideScreen } = useResponsive();
 
   React.useEffect(() => {
     if (events.length === 0) {
@@ -41,7 +43,12 @@ export const DiscoverScreen = () => {
     <ScreenContainer style={styles.container}>
       <Text variant="h1" style={styles.headerTitle}>Discover</Text>
       
-      <View style={[styles.searchContainer, globalStyles.brutalistBorder, { backgroundColor: colors.backgroundCard, borderColor: colors.border }]}>
+      <View style={[
+        styles.searchContainer, 
+        globalStyles.brutalistBorder, 
+        { backgroundColor: colors.backgroundCard, borderColor: colors.border },
+        isWideScreen && styles.searchContainerWide
+      ]}>
         <TextInput
           style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.body.fontFamily, fontSize: typography.body.fontSize }]}
           placeholder="Search clubs, events..."
@@ -95,6 +102,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  searchContainerWide: {
+    width: 400, // Constrain width on wide screens
   },
   searchInput: {
     flex: 1,
