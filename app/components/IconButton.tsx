@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle, Platform } from 'react-native';
 import { LucideIcon } from 'lucide-react-native';
-import { colors } from '@/theme';
-import { globalStyles } from '@/styles/global';
+import { useGlobalStyles } from '@/styles/global';
+import { useTheme } from '@/hooks/useTheme';
 
 interface IconButtonProps {
   Icon: LucideIcon;
@@ -20,9 +20,12 @@ export const IconButton = ({
   onLongPress,
   onPressOut,
   size = 24,
-  color = colors.textPrimary,
+  color,
   style,
 }: IconButtonProps) => {
+  const globalStyles = useGlobalStyles();
+  const { colors } = useTheme();
+
   return (
     <Pressable
       onPress={onPress}
@@ -30,24 +33,25 @@ export const IconButton = ({
       onPressOut={onPressOut}
       style={({ pressed }) => [
         styles.container,
-        globalStyles.brutalistBorder,
-        pressed && styles.pressed,
+        pressed ? globalStyles.clayButtonPressed : globalStyles.clayButton,
+        { borderRadius: 9999 }, // Ensure perfect circle for icon buttons
         style,
       ]}
     >
-      <Icon size={size} color={color} />
+      <Icon size={size} color={color || colors.textPrimary} />
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
-    backgroundColor: colors.backgroundCard,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  pressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    ...Platform.select({
+      web: {
+        transition: 'all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
   },
 });
