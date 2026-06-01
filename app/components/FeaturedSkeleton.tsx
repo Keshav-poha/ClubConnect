@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
-import { globalStyles } from '@/styles/global';
-import { colors } from '@/theme';
+import { useGlobalStyles } from '@/styles/global';
+import { useTheme } from '@/hooks/useTheme';
 
 export const FeaturedSkeleton = () => {
   const animatedValue = React.useRef(new Animated.Value(0.3)).current;
+  const globalStyles = useGlobalStyles();
+  const { colors } = useTheme();
 
   React.useEffect(() => {
     Animated.loop(
@@ -27,8 +29,8 @@ export const FeaturedSkeleton = () => {
     <Animated.View
       style={[
         styles.container,
-        globalStyles.cardSurface,
-        { opacity: animatedValue },
+        globalStyles.clayCard,
+        { backgroundColor: colors.border, opacity: animatedValue },
       ]}
     />
   );
@@ -40,6 +42,5 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
     marginRight: 16,
     marginLeft: 16,
-    backgroundColor: colors.border,
   },
 });

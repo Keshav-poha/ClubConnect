@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, Platform } from 'react-native';
 import { Text } from './Text';
-import { colors } from '@/theme';
-import { globalStyles } from '@/styles/global';
+import { useTheme } from '@/hooks/useTheme';
+import { useGlobalStyles } from '@/styles/global';
 
 interface TooltipProps {
   label: string;
@@ -12,6 +12,8 @@ interface TooltipProps {
 
 export const Tooltip = ({ label, visible, position = 'bottom' }: TooltipProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { colors, borderRadius, isDark } = useTheme();
+  const globalStyles = useGlobalStyles();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -26,11 +28,15 @@ export const Tooltip = ({ label, visible, position = 'bottom' }: TooltipProps) =
   return (
     <Animated.View style={[
       styles.container, 
-      globalStyles.brutalistBorder, 
-      { opacity: fadeAnim },
+      globalStyles.clayButton, 
+      { 
+        opacity: fadeAnim,
+        backgroundColor: colors.accentCyan,
+        borderRadius: borderRadius.md,
+      },
       position === 'top' ? styles.top : styles.bottom
     ]}>
-      <Text variant="caption" color="backgroundPrimary">{label}</Text>
+      <Text variant="caption" color={isDark ? "textPrimary" : "backgroundCard"}>{label}</Text>
     </Animated.View>
   );
 };
@@ -38,17 +44,21 @@ export const Tooltip = ({ label, visible, position = 'bottom' }: TooltipProps) =
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    backgroundColor: colors.accentCyan,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     zIndex: 50,
+    ...Platform.select({
+      web: {
+        transition: 'opacity 0.2s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
   },
   top: {
-    top: -40,
+    top: -48,
     alignSelf: 'center',
   },
   bottom: {
-    bottom: -40,
+    bottom: -48,
     alignSelf: 'center',
   },
 });

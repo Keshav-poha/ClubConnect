@@ -127,12 +127,3 @@ export const useGlobalStyles = () => {
     },
   });
 };
-
-// Temporary fallback for un-migrated components
-export const globalStyles = StyleSheet.create({
-  clayCard: {},
-  clayCardPressed: {},
-  clayButton: {},
-  clayButtonPressed: {},
-  centerContent: { alignItems: 'center', justifyContent: 'center' },
-} as any);

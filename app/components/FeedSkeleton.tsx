@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
-import { globalStyles } from '@/styles/global';
-import { colors } from '@/theme';
+import { useGlobalStyles } from '@/styles/global';
+import { useTheme } from '@/hooks/useTheme';
 
 export const FeedSkeleton = () => {
   const animatedValue = React.useRef(new Animated.Value(0.3)).current;
+  const globalStyles = useGlobalStyles();
+  const { colors } = useTheme();
 
   React.useEffect(() => {
     Animated.loop(
@@ -30,8 +32,8 @@ export const FeedSkeleton = () => {
           key={key}
           style={[
             styles.card,
-            globalStyles.cardSurface,
-            { opacity: animatedValue },
+            globalStyles.clayCard,
+            { backgroundColor: colors.border, opacity: animatedValue },
           ]}
         />
       ))}
@@ -47,7 +49,6 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     aspectRatio: 16 / 9,
-    backgroundColor: colors.border,
     marginBottom: 24,
   },
 });
