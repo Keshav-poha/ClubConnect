@@ -39,7 +39,7 @@ RUN python3 -c 'from transformers import AutoModelForCausalLM, AutoTokenizer; \
 WORKDIR /app
 RUN chmod 777 /app
 COPY --from=builder /app/main .
-COPY internal/services/extract.py internal/services/extract.py
+# Skipped extracting local python script
 COPY --from=frontend-builder /workspace/app/dist ./public
 
 ENV PORT=7860
