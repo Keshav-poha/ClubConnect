@@ -16,6 +16,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
 import { useStore } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -25,7 +26,8 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const checkBookmarked = useStore((s) => s.isBookmarked);
   const toggleBookmark = useStore((s) => s.toggleBookmark);
   const showToast = useStore((s) => s.showToast);
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
+  const { isWideScreen } = useResponsive();
   
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -128,22 +130,29 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        <View style={styles.contentWrapper}>
+        <View style={[styles.contentWrapper, isWideScreen && styles.contentWrapperWide]}>
           <View style={styles.lightLeakContainer}>
              <LightLeak color={colors.accentCyan} />
           </View>
 
           {event.image_url ? (
-            <Animated.View style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}>
+            <Animated.View style={[
+              { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
+              isWideScreen && styles.imageContainerWide
+            ]}>
               <Image
                 source={{ uri: event.image_url }}
-                style={[styles.imageHeader, { borderColor: colors.border }]}
+                style={[
+                  styles.imageHeader, 
+                  { borderColor: colors.border },
+                  isWideScreen && [styles.imageHeaderWide, { borderRadius: borderRadius.lg }]
+                ]}
                 resizeMode="cover"
               />
             </Animated.View>
           ) : null}
 
-          <View style={styles.content}>
+          <View style={[styles.content, isWideScreen && styles.contentWide]}>
             <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
               <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>{event.title || 'Untitled Event'}</Text>
             </Animated.View>
@@ -222,11 +231,26 @@ const styles = StyleSheet.create({
   contentWrapper: {
     position: 'relative',
     overflow: 'hidden',
+    flexDirection: 'column',
+  },
+  contentWrapperWide: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 32,
+    gap: 32,
+  },
+  imageContainerWide: {
+    flex: 1,
+    maxWidth: 500,
   },
   imageHeader: {
     width: '100%',
     height: 280,
     borderBottomWidth: 1,
+  },
+  imageHeaderWide: {
+    height: 400,
+    borderWidth: 1,
   },
   lightLeakContainer: {
     position: 'absolute',
@@ -238,6 +262,10 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
+  },
+  contentWide: {
+    flex: 1,
+    padding: 0,
   },
   title: {
     marginBottom: 16,
