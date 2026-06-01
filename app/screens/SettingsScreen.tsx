@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Linking, Alert } from 'react-native';
-import { Bell, Moon, Shield, CircleHelp, Trash2, Code } from 'lucide-react-native';
+import { Bell, Moon, Shield, CircleHelp, Trash2, Code, Sun } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,12 +9,18 @@ import { Text } from '@/components/Text';
 import { SettingsRow } from '@/components/SettingsRow';
 import { RootStackParamList } from '@/navigation/types';
 import { useStore } from '@/store';
-import { colors, borderRadius } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useGlobalStyles } from '@/styles/global';
 
 export const SettingsScreen = () => {
   const [pushEnabled, setPushEnabled] = useState(false);
   const showToast = useStore((s) => s.showToast);
+  const toggleTheme = useStore((s) => s.toggleTheme);
+  const themeMode = useStore((s) => s.themeMode);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  
+  const { colors, borderRadius, isDark } = useTheme();
+  const globalStyles = useGlobalStyles();
 
   const handleClearCache = () => {
     Alert.alert(
@@ -47,13 +53,21 @@ export const SettingsScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         <View style={styles.section}>
           <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>App Preferences</Text>
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: colors.border, borderRadius: borderRadius.md }]}>
             <SettingsRow 
               icon={Bell}
               label="Push Notifications"
               isSwitch
               switchValue={pushEnabled}
               onSwitchChange={setPushEnabled}
+              showDivider={true}
+            />
+            <SettingsRow 
+              icon={isDark ? Moon : Sun}
+              label="Dark Theme"
+              isSwitch
+              switchValue={isDark}
+              onSwitchChange={toggleTheme}
               showDivider={false}
             />
           </View>
@@ -61,7 +75,7 @@ export const SettingsScreen = () => {
 
         <View style={styles.section}>
           <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>About</Text>
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: colors.border, borderRadius: borderRadius.md }]}>
             <SettingsRow 
               icon={Shield}
               label="Privacy Policy"
@@ -73,7 +87,7 @@ export const SettingsScreen = () => {
 
         <View style={styles.section}>
           <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>Data Management</Text>
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: colors.border, borderRadius: borderRadius.md }]}>
             <SettingsRow 
               icon={Trash2}
               label="Clear Cache & Data"
@@ -83,8 +97,6 @@ export const SettingsScreen = () => {
             />
           </View>
         </View>
-
-
 
         <View style={styles.versionContainer}>
           <Text variant="caption" color="textMuted">ClubConnect Version 1.0.0</Text>
@@ -116,10 +128,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   card: {
-    backgroundColor: colors.backgroundCard,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: borderRadius.md,
   },
   versionContainer: {
     alignItems: 'center',

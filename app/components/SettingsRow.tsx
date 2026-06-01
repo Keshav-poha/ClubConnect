@@ -3,7 +3,7 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { Text } from './Text';
 import { BrutalistSwitch } from './BrutalistSwitch';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface SettingsRowProps {
   icon: LucideIcon;
@@ -28,11 +28,14 @@ export const SettingsRow = ({
   showDivider = true,
   danger = false,
 }: SettingsRowProps) => {
+  const { colors, isDark } = useTheme();
+  const dangerColor = isDark ? '#EF4444' : '#DC2626';
+
   const content = (
     <View style={styles.container}>
       <View style={styles.leftContent}>
-        <Icon color={danger ? '#FF4444' : colors.textPrimary} size={20} />
-        <Text variant="body" color={danger ? 'textPrimary' : 'textPrimary'} style={[styles.label, danger && { color: '#FF4444' }]}>
+        <Icon color={danger ? dangerColor : colors.textPrimary} size={20} />
+        <Text variant="bodyMedium" color={danger ? 'textPrimary' : 'textPrimary'} style={[styles.label, danger && { color: dangerColor }]}>
           {label}
         </Text>
       </View>
@@ -57,11 +60,11 @@ export const SettingsRow = ({
       {isSwitch ? (
         <View style={styles.wrapper}>{content}</View>
       ) : (
-        <Pressable onPress={onPress} style={({ pressed }) => [styles.wrapper, pressed && styles.pressed]}>
+        <Pressable onPress={onPress} style={({ pressed }) => [styles.wrapper, pressed && { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }]}>
           {content}
         </Pressable>
       )}
-      {showDivider && <View style={styles.divider} />}
+      {showDivider && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
     </>
   );
 };
@@ -70,9 +73,6 @@ const styles = StyleSheet.create({
   wrapper: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-  },
-  pressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
   },
   container: {
     flexDirection: 'row',
@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
     marginLeft: 48,
   },
 });

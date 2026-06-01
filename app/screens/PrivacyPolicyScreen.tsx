@@ -4,10 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export const PrivacyPolicyScreen = () => {
   const navigation = useNavigation();
+  const { colors } = useTheme();
 
   return (
     <ScreenContainer style={styles.container}>
