@@ -45,6 +45,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
     borderColor: colors.border,
+    flexShrink: 1,
+    maxWidth: '100%',
   },
   icon: {
     marginRight: 6,
