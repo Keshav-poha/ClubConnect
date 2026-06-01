@@ -1,8 +1,7 @@
 import React from 'react';
 import { Pressable, PressableProps, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors, borderRadius } from '@/theme';
-import { globalStyles } from '@/styles/global';
+import { useTheme } from '@/hooks/useTheme';
 import { triggerLightHaptic } from '@/utils/haptics';
 
 interface ButtonProps extends PressableProps {
@@ -19,12 +18,14 @@ export const Button = ({
   disabled,
   ...props
 }: ButtonProps) => {
+  const { colors, borderRadius, isDark } = useTheme();
+
   const getVariantStyles = (pressed: boolean): ViewStyle => {
     switch (variant) {
       case 'primary':
         return {
-          backgroundColor: pressed ? '#00D8F6' : colors.accentCyan,
-          borderColor: 'rgba(255, 255, 255, 0.25)',
+          backgroundColor: pressed ? (isDark ? '#2563EB' : '#1D4ED8') : colors.accentCyan,
+          borderColor: colors.border,
           borderWidth: 1.5,
           shadowColor: colors.accentCyan,
           shadowOffset: { width: 0, height: 4 },
@@ -34,10 +35,10 @@ export const Button = ({
         };
       case 'secondary':
         return {
-          backgroundColor: pressed ? '#222535' : colors.backgroundCard,
-          borderColor: 'rgba(255, 255, 255, 0.08)',
+          backgroundColor: pressed ? (isDark ? '#222535' : '#F1F5F9') : colors.backgroundCard,
+          borderColor: colors.border,
           borderWidth: 1.5,
-          shadowColor: '#000',
+          shadowColor: colors.shadow,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: pressed ? 0.15 : 0.25,
           shadowRadius: 6,
@@ -46,14 +47,14 @@ export const Button = ({
       case 'outline':
         return {
           backgroundColor: 'transparent',
-          borderColor: pressed ? colors.textPrimary : 'rgba(255, 255, 255, 0.15)',
+          borderColor: pressed ? colors.textPrimary : colors.border,
           borderWidth: 1.5,
         };
     }
   };
 
   const getTextColor = () => {
-    if (variant === 'primary') return 'backgroundPrimary';
+    if (variant === 'primary') return isDark ? 'textPrimary' : 'backgroundCard';
     return 'textPrimary';
   };
 
@@ -68,7 +69,13 @@ export const Button = ({
       onPress={handlePress}
       disabled={disabled}
       style={({ pressed }) => [
-        styles.base,
+        {
+          paddingVertical: 12,
+          paddingHorizontal: 24,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: borderRadius.pill,
+        },
         getVariantStyles(pressed),
         style,
       ]}
@@ -80,13 +87,3 @@ export const Button = ({
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  base: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.pill,
-  },
-});
