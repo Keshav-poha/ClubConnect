@@ -3,7 +3,16 @@ import { StatusBar } from 'expo-status-bar';
 
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
+import { 
+  Montserrat_400Regular, 
+  Montserrat_500Medium, 
+  Montserrat_600SemiBold, 
+  Montserrat_700Bold 
+} from '@expo-google-fonts/montserrat';
+import { 
+  Poppins_600SemiBold, 
+  Poppins_700Bold 
+} from '@expo-google-fonts/poppins';
 import { JetBrainsMono_400Regular } from '@expo-google-fonts/jetbrains-mono';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { RootNavigator } from './navigation/RootNavigator';
@@ -33,9 +42,12 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    Inter_400Regular,
-    Inter_600SemiBold,
-    Inter_700Bold,
+    Montserrat_400Regular,
+    Montserrat_500Medium,
+    Montserrat_600SemiBold,
+    Montserrat_700Bold,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
     JetBrainsMono_400Regular,
   });
 
