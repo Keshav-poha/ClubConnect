@@ -107,7 +107,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
     try {
       await Share.share({
         message: `Check out ${event.title} hosted by ${event.club?.name || 'them'} on ${event.date}!`,
-        url: `https://clubconnect.app/event/${event.id}`, // Placeholder
+        url: `https://huggingface.co/spaces/AquaWit/ClubConnect`,
       });
     } catch (error) {
       console.error(error);
