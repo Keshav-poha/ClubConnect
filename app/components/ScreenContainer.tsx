@@ -20,28 +20,33 @@ export const ScreenContainer = ({
   const { isWideScreen } = useResponsive();
 
   return (
-    <Container 
-      style={[
-        styles.container,
-        { backgroundColor: colors.backgroundPrimary },
-        isWideScreen && styles.containerWide,
-        style
-      ]} 
-      {...props}
-    >
-      {children}
-    </Container>
+    <View style={[styles.outerWrapper, { backgroundColor: colors.backgroundPrimary }]}>
+      <Container 
+        style={[
+          styles.innerContainer,
+          isWideScreen && styles.innerContainerWide,
+          style
+        ]} 
+        {...props}
+      >
+        {children}
+      </Container>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  outerWrapper: {
+    flex: 1,
+    width: '100%',
+  },
+  innerContainer: {
     flex: 1,
     width: '100%',
     maxWidth: 1200,
     alignSelf: 'center',
   },
-  containerWide: {
+  innerContainerWide: {
     paddingLeft: 112, // Accommodate the 80px sidebar + 32px margins
     paddingRight: 32, // Add some breathing room on the right for wide screens
   }
