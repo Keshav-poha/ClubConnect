@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
@@ -65,7 +65,7 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
       keyExtractor={(item) => item.id}
       horizontal
       showsHorizontalScrollIndicator={isWideScreen} // Show scrollbar on desktop
-      snapToInterval={isWideScreen ? undefined : 336}
+      snapToInterval={isWideScreen ? undefined : 368} // 320 width + 48 margins
       decelerationRate={isWideScreen ? "normal" : "fast"}
       snapToAlignment="start"
       onViewableItemsChanged={!isWideScreen ? onViewableItemsChanged : undefined}
@@ -85,13 +85,19 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   listContent: {
-    paddingRight: 16, // Extra padding at end
+    paddingRight: 32, // Extra padding at end
+    paddingVertical: 24, // Allow shadows to breathe without clipping
   },
   filmStripItem: {
     width: 320,
-    marginLeft: 16,
+    marginLeft: 24, // increased from 16 for shadow breathing room
     opacity: 0.6,
     transform: [{ scale: 0.95 }],
+    ...Platform.select({
+      web: {
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
   },
   activeFilmStripItem: {
     opacity: 1,

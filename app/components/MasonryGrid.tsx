@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingBottom: 20,
+    paddingBottom: 40,
     paddingHorizontal: 8,
   },
   columnWrapper: {
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flex: 1,
-    paddingHorizontal: 8,
-    marginBottom: 16,
+    paddingHorizontal: 16, // Increased to allow puffy shadows to breathe
+    marginBottom: 16, // EventCard handles its own bottom margin, but we add some here too
   },
 });
