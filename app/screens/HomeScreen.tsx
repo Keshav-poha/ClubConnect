@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, FlatList, Pressable } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, Platform } from 'react-native';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { ErrorState } from '@/components/ErrorState';
@@ -9,6 +9,7 @@ import { FeaturedFilmStrip } from '@/components/FeaturedFilmStrip';
 import { useStore } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useGlobalStyles } from '@/styles/global';
 
 export const HomeScreen = () => {
   const featuredEvents = useStore((s) => s.featuredEvents);
@@ -27,6 +28,7 @@ export const HomeScreen = () => {
   const [activeFilter, setActiveFilter] = React.useState<string>('all');
   const { colors, borderRadius, isDark } = useTheme();
   const { isWideScreen } = useResponsive();
+  const globalStyles = useGlobalStyles();
 
   useEffect(() => {
     fetchFeaturedEvents();
@@ -52,20 +54,23 @@ export const HomeScreen = () => {
         styles.segmentContainer,
         {
           backgroundColor: colors.backgroundCard,
-          borderColor: colors.border,
+          borderTopColor: colors.clayShadow,
+          borderLeftColor: colors.clayShadow,
+          borderBottomColor: colors.clayHighlight,
+          borderRightColor: colors.clayHighlight,
           borderRadius: borderRadius.pill,
-          shadowColor: colors.shadow,
         },
         isWideScreen && styles.segmentContainerWide
       ]}>
         <Pressable
           style={[
             styles.segmentButton,
-            { borderRadius: borderRadius.pill },
             timeFilter === 'upcoming' && [
-              styles.segmentButtonActive,
+              globalStyles.clayButton,
               {
                 backgroundColor: colors.accentCyan,
+                borderTopColor: 'rgba(255,255,255,0.3)',
+                borderLeftColor: 'rgba(255,255,255,0.3)',
                 shadowColor: colors.accentCyan,
               }
             ],
@@ -74,7 +79,7 @@ export const HomeScreen = () => {
         >
           <Text
             variant="bodyMedium"
-            color={timeFilter === 'upcoming' ? (isDark ? 'textPrimary' : 'backgroundCard') : 'textMuted'}
+            color={timeFilter === 'upcoming' ? 'backgroundCard' : 'textMuted'}
           >
             Upcoming
           </Text>
@@ -82,11 +87,12 @@ export const HomeScreen = () => {
         <Pressable
           style={[
             styles.segmentButton,
-            { borderRadius: borderRadius.pill },
             timeFilter === 'past' && [
-              styles.segmentButtonActive,
+              globalStyles.clayButton,
               {
                 backgroundColor: colors.accentCyan,
+                borderTopColor: 'rgba(255,255,255,0.3)',
+                borderLeftColor: 'rgba(255,255,255,0.3)',
                 shadowColor: colors.accentCyan,
               }
             ],
@@ -95,7 +101,7 @@ export const HomeScreen = () => {
         >
           <Text
             variant="bodyMedium"
-            color={timeFilter === 'past' ? (isDark ? 'textPrimary' : 'backgroundCard') : 'textMuted'}
+            color={timeFilter === 'past' ? 'backgroundCard' : 'textMuted'}
           >
             Past
           </Text>
@@ -149,14 +155,13 @@ const styles = StyleSheet.create({
   },
   segmentContainer: {
     flexDirection: 'row',
-    padding: 4,
+    padding: 6,
     marginHorizontal: 16,
     marginBottom: 24,
-    borderWidth: 1.5,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    borderTopWidth: 3,
+    borderLeftWidth: 3,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
   },
   segmentContainerWide: {
     width: 400, // Constrain width on wide screens
@@ -166,12 +171,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  segmentButtonActive: {
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 9999,
+    ...Platform.select({
+      web: {
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
   },
   sectionHeader: {
     paddingHorizontal: 16,
