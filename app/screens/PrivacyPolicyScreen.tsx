@@ -54,7 +54,7 @@ export const PrivacyPolicyScreen = () => {
         <View style={styles.section}>
           <Text variant="h3" style={styles.sectionTitle}>5. Contact Us</Text>
           <Text variant="body" color="textMuted" style={styles.paragraph}>
-            If you have any questions about this Privacy Policy, please contact us at privacy@clubconnect.app.
+            If you have any questions about this Privacy Policy, please contact us at aquawit22@gmail.com.
           </Text>
         </View>
       </ScrollView>
