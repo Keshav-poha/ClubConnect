@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Pressable, StyleSheet, ViewStyle, Animated } from 'react-native';
+import { View, Pressable, StyleSheet, ViewStyle, Animated, Platform } from 'react-native';
 import { Event } from '@/types';
 import { Text } from './Text';
 import { Image } from './Image';
@@ -21,7 +21,7 @@ interface EventCardProps {
 export const EventCard = ({ event, onPress, style }: EventCardProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const globalStyles = useGlobalStyles();
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { isWideScreen } = useResponsive();
 
   useEffect(() => {
@@ -43,19 +43,19 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
         onPress={handlePress}
         style={({ pressed }) => [
           styles.container,
-          globalStyles.cardSurface,
-          pressed && styles.pressed,
+          pressed ? globalStyles.clayCardPressed : globalStyles.clayCard,
           style,
         ]}
       >
-        {event.image_url ? (
-          <Image
-            source={{ uri: event.image_url }}
-            style={[styles.cardImage, { borderColor: colors.border }]}
-            resizeMode="cover"
-          />
-        ) : null}
         <View style={styles.content}>
+          {event.image_url ? (
+            <Image
+              source={{ uri: event.image_url }}
+              style={[styles.cardImage, { borderRadius: borderRadius.sm }]}
+              resizeMode="cover"
+            />
+          ) : null}
+          
           <View style={styles.headerRow}>
             {event.club && (
               <View style={styles.clubInfo}>
@@ -98,23 +98,23 @@ const styles = StyleSheet.create({
   },
   container: {
     marginBottom: 24,
-    overflow: 'hidden',
     flex: 1,
-  },
-  cardImage: {
-    width: '100%',
-    height: 180,
-    borderBottomWidth: 1.5,
-  },
-  pressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
+    ...Platform.select({
+      web: {
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      } as any,
+    }),
   },
   content: {
     padding: 16,
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
+  },
+  cardImage: {
+    width: '100%',
+    height: 180,
+    marginBottom: 16,
   },
   headerRow: {
     flexDirection: 'row',
