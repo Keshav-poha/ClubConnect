@@ -58,7 +58,7 @@ export const ApplicationsDirectoryScreen = () => {
         </Text>
         <FlatList
           data={clubs}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id || item.handle)}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
           numColumns={2}
