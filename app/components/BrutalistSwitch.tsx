@@ -31,7 +31,13 @@ export const BrutalistSwitch = ({ value, onValueChange }: BrutalistSwitchProps) 
   });
 
   return (
-    <Pressable onPress={() => onValueChange(!value)} accessible role="switch" aria-checked={value}>
+    <Pressable
+      onPress={() => onValueChange(!value)}
+      accessible
+      role="switch"
+      aria-checked={value}
+      style={Platform.OS === 'web' ? { outline: 'none' } as any : undefined}
+    >
       <Animated.View style={[styles.track, { backgroundColor, borderColor: colors.border, borderRadius: borderRadius.pill }]}>
         <Animated.View style={[styles.thumb, { transform: [{ translateX }], borderRadius: borderRadius.pill }]} />
       </Animated.View>
