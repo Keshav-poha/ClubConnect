@@ -9,6 +9,7 @@ interface TextProps extends RNTextProps {
   color?: keyof typeof colors;
 }
 
+// Standard theme text layout wrapper component
 export const Text = ({
   variant = 'body',
   color = 'textPrimary',
