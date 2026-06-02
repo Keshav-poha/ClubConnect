@@ -27,6 +27,7 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 	api := r.Group("/api")
 	{
 		api.GET("/health", handlers.HealthCheck())
+		api.GET("/proxy", handlers.ProxyImage())
 		api.GET("/events", evH.ListEvents)
 		api.GET("/events/:id", evH.GetEvent)
 		api.GET("/clubs", clH.ListClubs)

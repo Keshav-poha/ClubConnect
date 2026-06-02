@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image as RNImage, ImageProps as RNImageProps, View, StyleSheet } from 'react-native';
+import { Image as RNImage, ImageProps as RNImageProps, View, StyleSheet, Platform } from 'react-native';
 import { Image as ImageIcon } from 'lucide-react-native';
 import { LoadingIndicator } from './LoadingIndicator';
 import { colors } from '@/theme';
@@ -22,8 +22,12 @@ export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
   }, [uri]);
 
   let imageSource = source;
-  // Removed unauthenticated weserv.nl proxy for security and privacy
-
+  
+  if (Platform.OS === 'web' && uri) {
+    if (uri.includes('instagram.com') || uri.includes('fbcdn.net')) {
+      imageSource = { uri: `/api/proxy?url=${encodeURIComponent(uri)}` };
+    }
+  }
   const handleLoadEnd = () => setIsLoading(false);
   const handleError = () => {
     setHasError(true);
