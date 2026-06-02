@@ -1,9 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Bookmark, Film, Settings } from 'lucide-react-native';
+import { Bookmark, Film, Settings, ClipboardList } from 'lucide-react-native';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { SavedScreen } from '@/screens/SavedScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
+import { ApplicationsDirectoryScreen } from '@/screens/ApplicationsDirectoryScreen';
 import { useTheme } from '@/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useResponsive } from '@/hooks/useResponsive';
@@ -117,6 +118,15 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Bookmark color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Applications"
+        component={ApplicationsDirectoryScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <ClipboardList color={color} size={size} />
           ),
         }}
       />

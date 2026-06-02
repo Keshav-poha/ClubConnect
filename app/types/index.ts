@@ -21,3 +21,29 @@ export interface Event {
   is_featured: boolean;
   club?: Club;
 }
+
+export interface ApplicationField {
+  id: string;
+  type: 'text' | 'dropdown' | 'checkbox' | 'file';
+  label: string;
+  required: boolean;
+  options?: string[]; // Used for dropdowns
+}
+
+export interface Application {
+  id: string;
+  club_id: string;
+  title: string;
+  description: string;
+  deadline?: string;
+  status: 'open' | 'closed';
+  fields: ApplicationField[];
+}
+
+export interface ApplicationResponse {
+  id: string;
+  application_id: string;
+  user_id: string;
+  submitted_at: string;
+  data: Record<string, any>;
+}

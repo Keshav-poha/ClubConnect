@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
 import { EventDetailScreen } from '@/screens/EventDetailScreen';
 import { PrivacyPolicyScreen } from '@/screens/PrivacyPolicyScreen';
+import { SocietyApplicationsListScreen } from '@/screens/SocietyApplicationsListScreen';
+import { ApplicationFormScreen } from '@/screens/ApplicationFormScreen';
 import { FilmGrain } from '@/components/FilmGrain';
 import { Toast } from '@/components/Toast';
 import { useStore } from '@/store';
@@ -21,6 +23,8 @@ export const RootNavigator = () => {
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="EventDetail" component={EventDetailScreen} />
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+        <Stack.Screen name="SocietyApplicationsList" component={SocietyApplicationsListScreen} />
+        <Stack.Screen name="ApplicationForm" component={ApplicationFormScreen} />
       </Stack.Navigator>
       <FilmGrain />
       <Toast 

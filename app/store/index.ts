@@ -5,8 +5,9 @@ import { EventSlice, createEventSlice } from './eventSlice';
 import { ClubSlice, createClubSlice } from './clubSlice';
 import { BookmarkSlice, createBookmarkSlice } from './bookmarkSlice';
 import { UiSlice, createUiSlice } from './uiSlice';
+import { ApplicationSlice, createApplicationSlice } from './applicationSlice';
 
-export type StoreState = EventSlice & ClubSlice & BookmarkSlice & UiSlice;
+export type StoreState = EventSlice & ClubSlice & BookmarkSlice & UiSlice & ApplicationSlice;
 
 export const useStore = create<StoreState>()(
   persist(
@@ -15,6 +16,7 @@ export const useStore = create<StoreState>()(
       ...createClubSlice(...a),
       ...createBookmarkSlice(...a),
       ...createUiSlice(...a),
+      ...createApplicationSlice(...a),
     }),
     {
       name: 'clubconnect-storage',
