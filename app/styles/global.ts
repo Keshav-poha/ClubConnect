@@ -28,9 +28,9 @@ export const useGlobalStyles = () => {
         },
         web: {
           shadowColor: colors.shadowOuter,
-          shadowOffset: { width: 6, height: 10 },
-          shadowOpacity: 1,
-          shadowRadius: 16,
+          shadowOffset: { width: 5, height: 8 },
+          shadowOpacity: 0.95,
+          shadowRadius: 14,
         },
       }),
     },
