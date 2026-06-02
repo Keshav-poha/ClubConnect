@@ -10,7 +10,6 @@ import { Image } from '@/components/Image';
 import { DateTag } from '@/components/DateTag';
 import { LocationTag } from '@/components/LocationTag';
 import { IconButton } from '@/components/IconButton';
-import { LightLeak } from '@/components/LightLeak';
 import { Button } from '@/components/Button';
 import { Tooltip } from '@/components/Tooltip';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
@@ -30,7 +29,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
   const { colors, borderRadius } = useTheme();
   const { isWideScreen } = useResponsive();
   const globalStyles = useGlobalStyles();
-  
+
   const isBookmarked = checkBookmarked(event.id);
   const [showTooltip, setShowTooltip] = useState(false);
   // Stub for actual attendee count when backend supports it
@@ -117,12 +116,17 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
   return (
     <ScreenContainer style={styles.container}>
-      <View style={[styles.headerBar, { paddingTop: Math.max(insets.top, 16), backgroundColor: colors.backgroundPrimary }]}>
+      <View
+        style={[
+          styles.headerBar,
+          { paddingTop: Math.max(insets.top, 16), backgroundColor: colors.backgroundPrimary },
+        ]}
+      >
         <IconButton Icon={ArrowLeft} onPress={() => navigation.goBack()} />
         <View style={styles.headerRight}>
-          <IconButton 
-            Icon={BookmarkIcon} 
-            color={isBookmarked ? colors.accentCyan : colors.textPrimary} 
+          <IconButton
+            Icon={BookmarkIcon}
+            color={isBookmarked ? colors.accentCyan : colors.textPrimary}
             onPress={handleBookmark}
             onLongPress={() => setShowTooltip(true)}
             onPressOut={() => setShowTooltip(false)}
@@ -133,22 +137,20 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={[styles.contentWrapper, isWideScreen && styles.contentWrapperWide]}>
-          <View style={styles.lightLeakContainer}>
-             <LightLeak color={colors.accentCyan} />
-          </View>
-
           {event.image_url ? (
-            <Animated.View style={[
-              { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-              isWideScreen ? styles.imageContainerWide : styles.imageContainer
-            ]}>
+            <Animated.View
+              style={[
+                { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
+                isWideScreen ? styles.imageContainerWide : styles.imageContainer,
+              ]}
+            >
               <View style={[globalStyles.clayCard, styles.imageClayContainer]}>
                 <Image
                   source={{ uri: event.image_url }}
                   style={[
-                    styles.imageHeader, 
+                    styles.imageHeader,
                     { borderRadius: borderRadius.md },
-                    isWideScreen && styles.imageHeaderWide
+                    isWideScreen && styles.imageHeaderWide,
                   ]}
                   resizeMode="cover"
                 />
@@ -157,13 +159,17 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
           ) : null}
 
           <View style={[styles.content, isWideScreen && styles.contentWide]}>
-            <Animated.View style={[
-              globalStyles.clayCard, 
-              styles.infoPanel, 
-              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
-            ]}>
-              <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>{event.title || 'Untitled Event'}</Text>
-              
+            <Animated.View
+              style={[
+                globalStyles.clayCard,
+                styles.infoPanel,
+                { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+              ]}
+            >
+              <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>
+                {event.title || 'Untitled Event'}
+              </Text>
+
               {/* Attendee count display placeholder */}
 
               <View style={styles.tagsContainer}>
@@ -172,13 +178,17 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               </View>
 
               <View style={[styles.clubContainer, { borderLeftColor: colors.accentCyan }]}>
-                <Text variant="caption" color="textMuted">Hosted by</Text>
+                <Text variant="caption" color="textMuted">
+                  Hosted by
+                </Text>
                 <Text variant="h3">{event.club?.name}</Text>
               </View>
 
               {event.attendance ? (
                 <View style={[styles.attendanceContainer, { borderLeftColor: colors.accentCyan }]}>
-                  <Text variant="caption" color="textMuted">Eligibility & Attendance</Text>
+                  <Text variant="caption" color="textMuted">
+                    Eligibility & Attendance
+                  </Text>
                   <Text variant="h3">{event.attendance}</Text>
                 </View>
               ) : null}
@@ -188,27 +198,21 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
               </Text>
             </Animated.View>
 
-            <Animated.View style={[
-              globalStyles.clayCard, 
-              styles.actionPanel,
-              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
-            ]}>
-              <Button 
-                label="Add to Calendar" 
-                variant="primary" 
-                onPress={handleAddToCalendar} 
+            <Animated.View
+              style={[
+                globalStyles.clayCard,
+                styles.actionPanel,
+                { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+              ]}
+            >
+              <Button
+                label="Add to Calendar"
+                variant="primary"
+                onPress={handleAddToCalendar}
                 style={styles.actionButton}
               />
-              <Button 
-                label="View on Instagram" 
-                variant="outline" 
-                onPress={handleOpenInstagram} 
-              />
-              <Button 
-                label="Share Event" 
-                variant="outline" 
-                onPress={handleShare} 
-              />
+              <Button label="View on Instagram" variant="outline" onPress={handleOpenInstagram} />
+              <Button label="Share Event" variant="outline" onPress={handleShare} />
             </Animated.View>
           </View>
         </View>

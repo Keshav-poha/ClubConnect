@@ -6,7 +6,6 @@ import { EventDetailScreen } from '@/screens/EventDetailScreen';
 import { PrivacyPolicyScreen } from '@/screens/PrivacyPolicyScreen';
 import { SocietyApplicationsListScreen } from '@/screens/SocietyApplicationsListScreen';
 import { ApplicationFormScreen } from '@/screens/ApplicationFormScreen';
-import { FilmGrain } from '@/components/FilmGrain';
 import { Toast } from '@/components/Toast';
 import { useStore } from '@/store';
 import { RootStackParamList } from './types';
@@ -26,12 +25,11 @@ export const RootNavigator = () => {
         <Stack.Screen name="SocietyApplicationsList" component={SocietyApplicationsListScreen} />
         <Stack.Screen name="ApplicationForm" component={ApplicationFormScreen} />
       </Stack.Navigator>
-      <FilmGrain />
-      <Toast 
-        visible={!!toast} 
-        message={toast?.message || ''} 
-        type={toast?.type} 
-        onHide={hideToast} 
+      <Toast
+        visible={!!toast}
+        message={toast?.message || ''}
+        type={toast?.type}
+        onHide={hideToast}
       />
     </View>
   );
