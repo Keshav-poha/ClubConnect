@@ -17,7 +17,7 @@ export const ClubAvatar = ({ url, name, size = 40, style }: ClubAvatarProps) => 
   return (
     <View style={[styles.container, { width: size, height: size }, style]}>
       {url ? (
-        <Image source={{ uri: url }} style={styles.image} />
+        <Image source={{ uri: url }} style={styles.image} resizeMode="cover" />
       ) : (
         <Text variant="bodyMedium" color="textPrimary" style={styles.initials}>
           {getInitials()}
@@ -30,8 +30,6 @@ export const ClubAvatar = ({ url, name, size = 40, style }: ClubAvatarProps) => 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.backgroundCard,
-    borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: borderRadius.pill, // Rounded avatar
     justifyContent: 'center',
     alignItems: 'center',

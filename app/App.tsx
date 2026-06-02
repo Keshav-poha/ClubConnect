@@ -33,9 +33,11 @@ if (Platform.OS === 'web') {
       display: flex;
       flex-direction: column;
     }
-    *:focus, *:active {
+    *:focus-visible {
       outline: none !important;
-      box-shadow: none !important;
+    }
+    a:focus, button:focus, input:focus, select:focus, textarea:focus, [tabindex]:focus {
+      outline: none !important;
     }
   `;
   document.head.appendChild(style);
