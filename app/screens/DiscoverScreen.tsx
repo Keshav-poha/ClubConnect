@@ -72,7 +72,7 @@ export const DiscoverScreen = () => {
           />
         ) : (
           <UpcomingFeed 
-            events={filteredEvents}
+            events={filteredEvents} // Uses robust inner keyExtractor
             isLoading={isLoadingEvents}
             hasMore={searchQuery ? false : hasMore} // Don't show footer loading during search
             error={errorEvents}
