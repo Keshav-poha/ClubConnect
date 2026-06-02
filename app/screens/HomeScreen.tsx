@@ -39,7 +39,7 @@ export const HomeScreen = () => {
     fetchEvents(1, 20, activeFilter, timeFilter);
   }, [activeFilter, timeFilter]);
 
-  const filterOptions = React.useMemo(() => {
+  const filterOptions = useMemo(() => {
     return [
       { id: 'all', label: 'All' },
       ...clubs.map(club => ({ id: club.id, label: club.name }))
