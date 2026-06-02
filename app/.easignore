@@ -1,0 +1,13 @@
+# Ignore build directories
+android/
+ios/
+
+# Ignore web builds
+dist/
+web-build/
+
+# Ignore Expo temp files
+.expo/
+
+# Ignore dependencies
+node_modules/
