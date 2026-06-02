@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   placeholderContainer: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#161616',
+    backgroundColor: '#1E1E24',
     justifyContent: 'center',
     alignItems: 'center',
   },
