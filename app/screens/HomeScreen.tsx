@@ -25,7 +25,7 @@ export const HomeScreen = () => {
   const timeFilter = useStore((s) => s.timeFilter);
   const setTimeFilter = useStore((s) => s.setTimeFilter);
 
-  const [activeFilter, setActiveFilter] = React.useState<string>('all');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
   const { colors, borderRadius, isDark } = useTheme();
   const { isWideScreen } = useResponsive();
   const globalStyles = useGlobalStyles();
