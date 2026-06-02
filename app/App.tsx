@@ -33,6 +33,10 @@ if (Platform.OS === 'web') {
       display: flex;
       flex-direction: column;
     }
+    *:focus, *:active {
+      outline: none !important;
+      box-shadow: none !important;
+    }
   `;
   document.head.appendChild(style);
 }
