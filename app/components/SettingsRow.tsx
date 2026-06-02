@@ -28,7 +28,7 @@ export const SettingsRow = ({
   showDivider = true,
   danger = false,
 }: SettingsRowProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, typography } = useTheme();
   const dangerColor = isDark ? '#EF4444' : '#DC2626';
 
   const content = (
