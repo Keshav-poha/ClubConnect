@@ -2,9 +2,9 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors } from '@/theme';
-import { ChevronLeft } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Pressable } from 'react-native';
+import { IconButton } from './IconButton';
 
 interface HeaderProps {
   title: string;
