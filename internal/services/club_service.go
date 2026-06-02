@@ -42,10 +42,10 @@ func (s *ClubService) Create(club *models.Club) error {
 
 func (s *ClubService) SeedDefaults() error {
 	defaults := []models.Club{
-		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut"},
-		{Name: "IEEE NSUT", Handle: "ieee_nsut"},
-		{Name: "Junoon", Handle: "junoon.nsut"},
-		{Name: "Ares Robotics", Handle: "aresrobotics.nsut"},
+		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut", AvatarURL: "https://ui-avatars.com/api/?name=Debugging+Society&background=0D8ABC&color=fff&size=200"},
+		{Name: "IEEE NSUT", Handle: "ieee_nsut", AvatarURL: "https://ui-avatars.com/api/?name=IEEE+NSUT&background=0D8ABC&color=fff&size=200"},
+		{Name: "Junoon", Handle: "junoon.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Junoon&background=0D8ABC&color=fff&size=200"},
+		{Name: "Ares Robotics", Handle: "aresrobotics.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Ares+Robotics&background=0D8ABC&color=fff&size=200"},
 	}
 
 	handles := []string{"thedebuggingsocietynsut", "ieee_nsut", "junoon.nsut", "aresrobotics.nsut"}
@@ -56,7 +56,10 @@ func (s *ClubService) SeedDefaults() error {
 		if err := s.db.First(&existing, "handle = ?", d.Handle).Error; err != nil {
 			s.db.Create(&d)
 		} else {
-			s.db.Model(&existing).Update("name", d.Name)
+			s.db.Model(&existing).Updates(map[string]interface{}{
+				"name": d.Name,
+				"avatar_url": d.AvatarURL,
+			})
 		}
 	}
 	return nil

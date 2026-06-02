@@ -83,10 +83,16 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 		return fmt.Errorf("club not found: %s", handle)
 	}
 
-	posts, err := s.fetchInstagramPosts(club.Handle)
+	posts, profilePicUrl, err := s.fetchInstagramPosts(club.Handle)
 	if err != nil {
 		s.saveLog(club.ID, "failed", 0, 0, err.Error())
 		return err
+	}
+
+	if profilePicUrl != "" && club.AvatarURL != profilePicUrl {
+		club.AvatarURL = profilePicUrl
+		s.db.Save(&club)
+		log.Printf("updated avatar for [%s]", handle)
 	}
 
 	saved := 0
@@ -159,9 +165,9 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 
 // fetchInstagramPosts calls the RapidAPI Instagram endpoint to retrieve
 // recent posts for the given handle.
-func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error) {
+func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, string, error) {
 	if s.cfg.RapidAPIKey == "" {
-		return nil, fmt.Errorf("RAPIDAPI_KEY not configured")
+		return nil, "", fmt.Errorf("RAPIDAPI_KEY not configured")
 	}
 
 	url := fmt.Sprintf("https://%s/api/instagram/posts", s.cfg.RapidAPIHost)
@@ -173,7 +179,7 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 
 	req, err := http.NewRequest("POST", url, payload)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, "", fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Set("x-rapidapi-key", s.cfg.RapidAPIKey)
 	req.Header.Set("x-rapidapi-host", s.cfg.RapidAPIHost)
@@ -184,17 +190,17 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
+		return nil, "", fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("instagram API error: %d - %s", resp.StatusCode, string(body))
+		return nil, "", fmt.Errorf("instagram API error: %d - %s", resp.StatusCode, string(body))
 	}
 
 	var result struct {
@@ -212,18 +218,33 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 							URL string `json:"url"`
 						} `json:"candidates"`
 					} `json:"image_versions2"`
+					Owner struct {
+						ProfilePicUrl string `json:"profile_pic_url"`
+					} `json:"owner"`
+					User struct {
+						ProfilePicUrl string `json:"profile_pic_url"`
+					} `json:"user"`
 				} `json:"node"`
 			} `json:"edges"`
 		} `json:"result"`
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return nil, fmt.Errorf("json unmarshal error: %w", err)
+		return nil, "", fmt.Errorf("json unmarshal error: %w", err)
 	}
 
 	var posts []PostData
+	var profilePicUrl string
 	for _, edge := range result.Result.Edges {
 		p := edge.Node
+
+		if profilePicUrl == "" {
+			if p.Owner.ProfilePicUrl != "" {
+				profilePicUrl = p.Owner.ProfilePicUrl
+			} else if p.User.ProfilePicUrl != "" {
+				profilePicUrl = p.User.ProfilePicUrl
+			}
+		}
 		imgURL := ""
 		if len(p.ImageVersions2.Candidates) > 0 {
 			imgURL = p.ImageVersions2.Candidates[0].URL
@@ -247,7 +268,7 @@ func (s *DiscoveryService) fetchInstagramPosts(handle string) ([]PostData, error
 	}
 
 	log.Printf("fetched %d posts for %s", len(posts), handle)
-	return posts, nil
+	return posts, profilePicUrl, nil
 }
 
 func (s *DiscoveryService) saveLog(clubID uuid.UUID, status string, found, saved int, msg string) {
