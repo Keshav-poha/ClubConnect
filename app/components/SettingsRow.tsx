@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { Text } from './Text';
-import { BrutalistSwitch } from './BrutalistSwitch';
+import { ClaySwitch } from './Form/ClaySwitch';
 import { useTheme } from '@/hooks/useTheme';
 
 interface SettingsRowProps {
@@ -35,19 +35,24 @@ export const SettingsRow = ({
     <View style={styles.container}>
       <View style={styles.leftContent}>
         <Icon color={danger ? dangerColor : colors.textPrimary} size={20} />
-        <Text variant="bodyMedium" color={danger ? 'textPrimary' : 'textPrimary'} style={[styles.label, danger && { color: dangerColor }]}>
+        <Text
+          variant="bodyMedium"
+          color={danger ? 'textPrimary' : 'textPrimary'}
+          style={[styles.label, danger && { color: dangerColor }]}
+        >
           {label}
         </Text>
       </View>
       <View style={styles.rightContent}>
         {isSwitch ? (
-          <BrutalistSwitch
-            value={!!switchValue}
-            onValueChange={onSwitchChange || (() => {})}
-          />
+          <ClaySwitch value={!!switchValue} onValueChange={onSwitchChange || (() => {})} />
         ) : (
           <>
-            {value && <Text variant="body" color="textMuted" style={styles.value}>{value}</Text>}
+            {value && (
+              <Text variant="body" color="textMuted" style={styles.value}>
+                {value}
+              </Text>
+            )}
             <ChevronRight color={colors.textMuted} size={20} />
           </>
         )}
@@ -60,7 +65,15 @@ export const SettingsRow = ({
       {isSwitch ? (
         <View style={styles.wrapper}>{content}</View>
       ) : (
-        <Pressable onPress={onPress} style={({ pressed }) => [styles.wrapper, pressed && { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }]}>
+        <Pressable
+          onPress={onPress}
+          style={({ pressed }) => [
+            styles.wrapper,
+            pressed && {
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+            },
+          ]}
+        >
           {content}
         </Pressable>
       )}
