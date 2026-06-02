@@ -29,9 +29,7 @@ export const Header = ({ title, subtitle, rightElement, showBack, onBack, style 
   return (
     <View style={[styles.container, style]}>
       {showBack && (
-        <Pressable onPress={handleBack} style={styles.backButton}>
-          <ChevronLeft size={28} color={colors.textPrimary} />
-        </Pressable>
+        <IconButton Icon={ArrowLeft} onPress={handleBack} style={styles.backButton} />
       )}
       <View style={[styles.textContainer, showBack && styles.textContainerWithBack]}>
         <Text variant="h1">{title}</Text>
