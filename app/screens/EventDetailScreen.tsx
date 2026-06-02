@@ -164,12 +164,7 @@ export const EventDetailScreen = ({ route, navigation }: Props) => {
             ]}>
               <Text variant="h1" style={[styles.title, { color: colors.textPrimary }]}>{event.title || 'Untitled Event'}</Text>
               
-              {attendeeCount > 0 && (
-                <View style={styles.attendeesContainer}>
-                  <AnimatedNumber value={attendeeCount} duration={1500} />
-                  <Text variant="bodyMedium" color="textMuted" style={styles.attendeesLabel}>Attending</Text>
-                </View>
-              )}
+              {/* Attendee count display placeholder */}
 
               <View style={styles.tagsContainer}>
                 <DateTag date={event.date} />
@@ -292,16 +287,7 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 16,
   },
-  attendeesContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 8,
-    marginBottom: 24,
-  },
-  attendeesLabel: {
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
+  // Unused attendees styles removed for layout cleanup
   tagsContainer: {
     flexDirection: 'row',
     gap: 12,
