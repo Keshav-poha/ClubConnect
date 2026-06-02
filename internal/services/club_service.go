@@ -56,10 +56,13 @@ func (s *ClubService) SeedDefaults() error {
 		if err := s.db.First(&existing, "handle = ?", d.Handle).Error; err != nil {
 			s.db.Create(&d)
 		} else {
-			s.db.Model(&existing).Updates(map[string]interface{}{
+			updates := map[string]interface{}{
 				"name": d.Name,
-				"avatar_url": d.AvatarURL,
-			})
+			}
+			if existing.AvatarURL == "" {
+				updates["avatar_url"] = d.AvatarURL
+			}
+			s.db.Model(&existing).Updates(updates)
 		}
 	}
 	return nil
