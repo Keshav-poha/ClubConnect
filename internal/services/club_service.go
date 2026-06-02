@@ -1,6 +1,8 @@
 package services
 
 import (
+	"strings"
+
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -42,10 +44,10 @@ func (s *ClubService) Create(club *models.Club) error {
 
 func (s *ClubService) SeedDefaults() error {
 	defaults := []models.Club{
-		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut", AvatarURL: "https://ui-avatars.com/api/?name=Debugging+Society&background=0D8ABC&color=fff&size=200"},
-		{Name: "IEEE NSUT", Handle: "ieee_nsut", AvatarURL: "https://ui-avatars.com/api/?name=IEEE+NSUT&background=0D8ABC&color=fff&size=200"},
-		{Name: "Junoon", Handle: "junoon.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Junoon&background=0D8ABC&color=fff&size=200"},
-		{Name: "Ares Robotics", Handle: "aresrobotics.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Ares+Robotics&background=0D8ABC&color=fff&size=200"},
+		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut", AvatarURL: "https://unavatar.io/instagram/thedebuggingsocietynsut"},
+		{Name: "IEEE NSUT", Handle: "ieee_nsut", AvatarURL: "https://unavatar.io/instagram/ieee_nsut"},
+		{Name: "Junoon", Handle: "junoon.nsut", AvatarURL: "https://unavatar.io/instagram/junoon.nsut"},
+		{Name: "Ares Robotics", Handle: "aresrobotics.nsut", AvatarURL: "https://unavatar.io/instagram/aresrobotics.nsut"},
 	}
 
 	handles := []string{"thedebuggingsocietynsut", "ieee_nsut", "junoon.nsut", "aresrobotics.nsut"}
@@ -59,7 +61,7 @@ func (s *ClubService) SeedDefaults() error {
 			updates := map[string]interface{}{
 				"name": d.Name,
 			}
-			if existing.AvatarURL == "" {
+			if existing.AvatarURL == "" || strings.Contains(existing.AvatarURL, "ui-avatars.com") {
 				updates["avatar_url"] = d.AvatarURL
 			}
 			s.db.Model(&existing).Updates(updates)
