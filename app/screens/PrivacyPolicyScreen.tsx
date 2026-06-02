@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
+import { IconButton } from '@/components/IconButton';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useGlobalStyles } from '@/styles/global';
 
