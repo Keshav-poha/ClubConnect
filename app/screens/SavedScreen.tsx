@@ -45,6 +45,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyContainer: {
-    marginTop: 100,
+    marginTop: 80,
   },
 });
