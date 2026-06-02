@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet, FlatList, Pressable, Platform } from 'react-native';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { Text } from '@/components/Text';
