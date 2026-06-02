@@ -20,23 +20,23 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
   const { isWideScreen } = useResponsive();
   const globalStyles = useGlobalStyles();
 
-  const containerStyle = isWideScreen 
+  const containerStyle = isWideScreen
     ? [
-        styles.sidebarContainer, 
+        styles.sidebarContainer,
         globalStyles.clayCard,
-        { 
+        {
           marginLeft: insets.left > 0 ? insets.left : 16,
           marginTop: insets.top > 0 ? insets.top + 16 : 32,
           marginBottom: insets.bottom > 0 ? insets.bottom + 16 : 32,
-        }
+        },
       ]
     : [
-        styles.tabBarContainer, 
+        styles.tabBarContainer,
         globalStyles.clayCard,
-        { 
+        {
           borderRadius: 9999, // Pill shape for bottom bar
           marginBottom: insets.bottom > 0 ? insets.bottom : 16,
-        }
+        },
       ];
 
   return (
@@ -78,16 +78,19 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
             style={isWideScreen ? styles.sidebarItem : styles.tabItem}
           >
             {isFocused && (
-              <View style={[
-                isWideScreen ? styles.activeIndicatorSidebar : styles.activeIndicator, 
-                { backgroundColor: colors.accentCyan }
-              ]} />
+              <View
+                style={[
+                  isWideScreen ? styles.activeIndicatorSidebar : styles.activeIndicator,
+                  { backgroundColor: colors.accentCyan },
+                ]}
+              />
             )}
-            {Icon && Icon({
-              focused: isFocused,
-              color: isFocused ? colors.accentCyan : colors.textMuted,
-              size: 24
-            })}
+            {Icon &&
+              Icon({
+                focused: isFocused,
+                color: isFocused ? colors.accentCyan : colors.textMuted,
+                size: 24,
+              })}
           </Pressable>
         );
       })}
@@ -107,36 +110,28 @@ export const TabNavigator = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Film color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Film color={color} size={size} />,
         }}
       />
       <Tab.Screen
         name="Saved"
         component={SavedScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Bookmark color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Bookmark color={color} size={size} />,
         }}
       />
       <Tab.Screen
         name="Applications"
         component={ApplicationsDirectoryScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <ClipboardList color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <ClipboardList color={color} size={size} />,
         }}
       />
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Settings color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Settings color={color} size={size} />,
         }}
       />
     </Tab.Navigator>

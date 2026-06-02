@@ -42,19 +42,24 @@ export const Toast = ({ message, type = 'info', visible, onHide }: ToastProps) =
   if (!visible) return null;
 
   const Icon = type === 'success' ? Check : type === 'error' ? AlertCircle : Info;
-  const iconColor = type === 'success' ? colors.accentGreen : type === 'error' ? '#FF4444' : colors.accentCyan;
+  const iconColor =
+    type === 'success' ? colors.accentGreen : type === 'error' ? '#FF4444' : colors.accentCyan;
 
   return (
-    <Animated.View style={[
-      styles.container, 
-      globalStyles.clayCard, 
-      { 
-        transform: [{ translateY: slideAnim }],
-        borderRadius: borderRadius.pill, // pill shape for toasts
-      }
-    ]}>
+    <Animated.View
+      style={[
+        styles.container,
+        globalStyles.clayCard,
+        {
+          transform: [{ translateY: slideAnim }],
+          borderRadius: borderRadius.pill, // pill shape for toasts
+        },
+      ]}
+    >
       <Icon color={iconColor} size={20} />
-      <Text variant="bodyMedium" style={styles.text}>{message}</Text>
+      <Text variant="bodyMedium" style={styles.text}>
+        {message}
+      </Text>
     </Animated.View>
   );
 };

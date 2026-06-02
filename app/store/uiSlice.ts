@@ -23,5 +23,6 @@ export const createUiSlice: StateCreator<UiSlice> = (set) => ({
     set({ toast: null });
   },
   themeMode: 'light',
-  toggleTheme: () => set((state) => ({ themeMode: state.themeMode === 'light' ? 'dark' : 'light' })),
+  toggleTheme: () =>
+    set((state) => ({ themeMode: state.themeMode === 'light' ? 'dark' : 'light' })),
 });

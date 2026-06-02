@@ -11,11 +11,11 @@ interface ClayFileUploadProps {
   error?: string;
 }
 
-export const ClayFileUpload: React.FC<ClayFileUploadProps> = ({ 
-  label, 
-  value, 
-  onChange, 
-  error 
+export const ClayFileUpload: React.FC<ClayFileUploadProps> = ({
+  label,
+  value,
+  onChange,
+  error,
 }) => {
   const { colors } = useTheme();
   const { typography } = require('@/theme');
@@ -31,36 +31,57 @@ export const ClayFileUpload: React.FC<ClayFileUploadProps> = ({
   return (
     <View style={styles.container}>
       {label && (
-        <Text style={[styles.label, { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily }]}>
+        <Text
+          style={[
+            styles.label,
+            { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
+          ]}
+        >
           {label}
         </Text>
       )}
-      
-      <Pressable 
-        style={[
-          globalStyles.clayCardPressed, 
-          styles.dropzone,
-          { borderStyle: 'dashed' }
-        ]}
+
+      <Pressable
+        style={[globalStyles.clayCardPressed, styles.dropzone, { borderStyle: 'dashed' }]}
         onPress={handlePickFile}
       >
         {value ? (
           <View style={styles.content}>
             <FileIcon size={32} color={colors.accentCyan} />
-            <Text style={[styles.fileName, { color: colors.textPrimary, fontFamily: typography.bodyMedium.fontFamily }]}>
+            <Text
+              style={[
+                styles.fileName,
+                { color: colors.textPrimary, fontFamily: typography.bodyMedium.fontFamily },
+              ]}
+            >
               {value}
             </Text>
-            <Text style={[styles.changeText, { color: '#D97706', fontFamily: typography.body.fontFamily }]}>
+            <Text
+              style={[
+                styles.changeText,
+                { color: '#D97706', fontFamily: typography.body.fontFamily },
+              ]}
+            >
               Tap to change
             </Text>
           </View>
         ) : (
           <View style={styles.content}>
             <UploadCloud size={32} color={colors.textMuted} />
-            <Text style={[styles.placeholder, { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily }]}>
+            <Text
+              style={[
+                styles.placeholder,
+                { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
+              ]}
+            >
               Tap to upload a file
             </Text>
-            <Text style={[styles.hint, { color: colors.textMuted, fontFamily: typography.body.fontFamily }]}>
+            <Text
+              style={[
+                styles.hint,
+                { color: colors.textMuted, fontFamily: typography.body.fontFamily },
+              ]}
+            >
               PDF, DOCX, JPG up to 10MB
             </Text>
           </View>
@@ -115,5 +136,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 6,
     marginLeft: 4,
-  }
+  },
 });

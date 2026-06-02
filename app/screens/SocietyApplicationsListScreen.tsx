@@ -23,11 +23,11 @@ export const SocietyApplicationsListScreen = () => {
   const { colors } = useTheme();
   const { typography } = require('@/theme');
   const globalStyles = useGlobalStyles();
-  
+
   const applications = useStore((s) => s.applications);
   const isLoading = useStore((s) => s.isLoadingApplications);
   const fetchApps = useStore((s) => s.fetchApplicationsBySociety);
-  
+
   useEffect(() => {
     fetchApps(societyId);
   }, [societyId]);
@@ -38,26 +38,46 @@ export const SocietyApplicationsListScreen = () => {
       onPress={() => navigation.navigate('ApplicationForm', { applicationId: item.id })}
     >
       <View style={styles.cardHeader}>
-        <Text style={[styles.appTitle, { color: colors.textPrimary, fontFamily: typography.h2.fontFamily }]}>
+        <Text
+          style={[
+            styles.appTitle,
+            { color: colors.textPrimary, fontFamily: typography.h2.fontFamily },
+          ]}
+        >
           {item.title}
         </Text>
         {item.status === 'open' && (
           <View style={[styles.statusBadge, { backgroundColor: colors.accentGreen + '20' }]}>
-            <Text style={[styles.statusText, { color: colors.accentGreen, fontFamily: typography.bodyMedium.fontFamily }]}>
+            <Text
+              style={[
+                styles.statusText,
+                { color: colors.accentGreen, fontFamily: typography.bodyMedium.fontFamily },
+              ]}
+            >
               OPEN
             </Text>
           </View>
         )}
       </View>
-      
-      <Text style={[styles.appDescription, { color: colors.textMuted, fontFamily: typography.body.fontFamily }]}>
+
+      <Text
+        style={[
+          styles.appDescription,
+          { color: colors.textMuted, fontFamily: typography.body.fontFamily },
+        ]}
+      >
         {item.description}
       </Text>
-      
+
       <View style={styles.cardFooter}>
         <View style={styles.deadlineRow}>
           <Clock size={14} color={colors.textMuted} />
-          <Text style={[styles.deadlineText, { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily }]}>
+          <Text
+            style={[
+              styles.deadlineText,
+              { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
+            ]}
+          >
             {item.deadline ? new Date(item.deadline).toLocaleDateString() : 'No deadline'}
           </Text>
         </View>
@@ -70,10 +90,15 @@ export const SocietyApplicationsListScreen = () => {
     <ScreenContainer>
       <Header title={societyName} showBack />
       <View style={styles.content}>
-        <Text style={[styles.subtitle, { color: colors.textPrimary, fontFamily: typography.h2.fontFamily }]}>
+        <Text
+          style={[
+            styles.subtitle,
+            { color: colors.textPrimary, fontFamily: typography.h2.fontFamily },
+          ]}
+        >
           Active Applications
         </Text>
-        
+
         {isLoading ? (
           <LoadingIndicator />
         ) : (
@@ -83,9 +108,9 @@ export const SocietyApplicationsListScreen = () => {
             renderItem={renderItem}
             contentContainerStyle={styles.listContainer}
             ListEmptyComponent={
-              <EmptyState 
-                title="No Open Applications" 
-                message="This society currently has no active forms." 
+              <EmptyState
+                title="No Open Applications"
+                message="This society currently has no active forms."
               />
             }
           />

@@ -21,7 +21,7 @@ export const FeedSkeleton = () => {
           duration: 1000,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [animatedValue]);
 

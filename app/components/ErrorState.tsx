@@ -32,12 +32,7 @@ export const ErrorState = ({
         {message}
       </Text>
       {onRetry && (
-        <Button
-          label="Try Again"
-          variant="outline"
-          onPress={onRetry}
-          style={styles.button}
-        />
+        <Button label="Try Again" variant="outline" onPress={onRetry} style={styles.button} />
       )}
     </View>
   );

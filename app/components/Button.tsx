@@ -24,7 +24,7 @@ export const Button = ({
 
   const getVariantStyles = (pressed: boolean): ViewStyle => {
     const baseClayStyle = pressed ? globalStyles.clayButtonPressed : globalStyles.clayButton;
-    
+
     switch (variant) {
       case 'primary':
         return {

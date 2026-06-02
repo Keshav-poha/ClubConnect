@@ -3,9 +3,10 @@ import { Platform } from 'react-native';
 
 // For web, we use a relative path so it works seamlessly on HF Spaces or any domain.
 // For native (iOS/Android), it falls back to the absolute URL in .env
-const API_URL = Platform.OS === 'web' && typeof window !== 'undefined'
-  ? '/api/'
-  : process.env.EXPO_PUBLIC_API_URL;
+const API_URL =
+  Platform.OS === 'web' && typeof window !== 'undefined'
+    ? '/api/'
+    : process.env.EXPO_PUBLIC_API_URL;
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -21,5 +22,5 @@ api.interceptors.response.use(
   (error) => {
     console.error('API Error:', error?.response?.data || error.message);
     return Promise.reject(error);
-  }
+  },
 );

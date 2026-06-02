@@ -10,12 +10,7 @@ interface TextProps extends RNTextProps {
 }
 
 // Standard theme text layout wrapper component
-export const Text = ({
-  variant = 'body',
-  color = 'textPrimary',
-  style,
-  ...props
-}: TextProps) => {
+export const Text = ({ variant = 'body', color = 'textPrimary', style, ...props }: TextProps) => {
   const { colors: themeColors, typography: themeTypography } = useTheme();
 
   return (

@@ -23,20 +23,25 @@ export const Tooltip = ({ label, visible, position = 'bottom' }: TooltipProps) =
     }).start();
   }, [visible, fadeAnim]);
 
-  if (!visible && fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }) as any === 0) return null;
+  if (!visible && (fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }) as any) === 0)
+    return null;
 
   return (
-    <Animated.View style={[
-      styles.container, 
-      globalStyles.clayButton, 
-      { 
-        opacity: fadeAnim,
-        backgroundColor: colors.accentCyan,
-        borderRadius: borderRadius.md,
-      },
-      position === 'top' ? styles.top : styles.bottom
-    ]}>
-      <Text variant="caption" color={isDark ? "textPrimary" : "backgroundCard"}>{label}</Text>
+    <Animated.View
+      style={[
+        styles.container,
+        globalStyles.clayButton,
+        {
+          opacity: fadeAnim,
+          backgroundColor: colors.accentCyan,
+          borderRadius: borderRadius.md,
+        },
+        position === 'top' ? styles.top : styles.bottom,
+      ]}
+    >
+      <Text variant="caption" color={isDark ? 'textPrimary' : 'backgroundCard'}>
+        {label}
+      </Text>
     </Animated.View>
   );
 };

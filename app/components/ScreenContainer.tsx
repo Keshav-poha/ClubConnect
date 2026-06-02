@@ -21,12 +21,8 @@ export const ScreenContainer = ({
 
   return (
     <View style={[styles.outerWrapper, { backgroundColor: colors.backgroundPrimary }]}>
-      <Container 
-        style={[
-          styles.innerContainer,
-          isWideScreen && styles.innerContainerWide,
-          style
-        ]} 
+      <Container
+        style={[styles.innerContainer, isWideScreen && styles.innerContainerWide, style]}
         {...props}
       >
         {children}
@@ -59,5 +55,5 @@ const styles = StyleSheet.create({
   innerContainerWide: {
     paddingLeft: 112, // Accommodate the 80px sidebar + 32px margins
     paddingRight: 32, // Add some breathing room on the right for wide screens
-  }
+  },
 });

@@ -42,26 +42,30 @@ export const HomeScreen = () => {
   const filterOptions = useMemo(() => {
     return [
       { id: 'all', label: 'All' },
-      ...clubs.map(club => ({ id: club.id, label: club.name }))
+      ...clubs.map((club) => ({ id: club.id, label: club.name })),
     ];
   }, [clubs]);
 
   return (
     <ScreenContainer style={styles.container}>
-      <Text variant="h1" style={styles.headerTitle}>ClubConnect</Text>
-      
-      <View style={[
-        styles.segmentContainer,
-        {
-          backgroundColor: colors.backgroundCard,
-          borderTopColor: colors.clayShadow,
-          borderLeftColor: colors.clayShadow,
-          borderBottomColor: colors.clayHighlight,
-          borderRightColor: colors.clayHighlight,
-          borderRadius: borderRadius.pill,
-        },
-        isWideScreen && styles.segmentContainerWide
-      ]}>
+      <Text variant="h1" style={styles.headerTitle}>
+        ClubConnect
+      </Text>
+
+      <View
+        style={[
+          styles.segmentContainer,
+          {
+            backgroundColor: colors.backgroundCard,
+            borderTopColor: colors.clayShadow,
+            borderLeftColor: colors.clayShadow,
+            borderBottomColor: colors.clayHighlight,
+            borderRightColor: colors.clayHighlight,
+            borderRadius: borderRadius.pill,
+          },
+          isWideScreen && styles.segmentContainerWide,
+        ]}
+      >
         <Pressable
           style={[
             styles.segmentButton,
@@ -72,7 +76,7 @@ export const HomeScreen = () => {
                 borderTopColor: 'rgba(255,255,255,0.3)',
                 borderLeftColor: 'rgba(255,255,255,0.3)',
                 shadowColor: colors.accentCyan,
-              }
+              },
             ],
           ]}
           onPress={() => setTimeFilter('upcoming')}
@@ -94,15 +98,12 @@ export const HomeScreen = () => {
                 borderTopColor: 'rgba(255,255,255,0.3)',
                 borderLeftColor: 'rgba(255,255,255,0.3)',
                 shadowColor: colors.accentCyan,
-              }
+              },
             ],
           ]}
           onPress={() => setTimeFilter('past')}
         >
-          <Text
-            variant="bodyMedium"
-            color={timeFilter === 'past' ? 'backgroundCard' : 'textMuted'}
-          >
+          <Text variant="bodyMedium" color={timeFilter === 'past' ? 'backgroundCard' : 'textMuted'}>
             Past
           </Text>
         </Pressable>
@@ -111,7 +112,7 @@ export const HomeScreen = () => {
       {timeFilter === 'upcoming' && errorEvents && (
         <ErrorState message={errorEvents} onRetry={fetchFeaturedEvents} />
       )}
-      
+
       {timeFilter === 'upcoming' && !errorEvents && featuredEvents.length > 0 && (
         <FeaturedFilmStrip
           events={featuredEvents}
@@ -121,9 +122,7 @@ export const HomeScreen = () => {
       )}
 
       <View style={styles.sectionHeader}>
-        <Text variant="h2">
-          {timeFilter === 'upcoming' ? 'Upcoming Events' : 'Past Events'}
-        </Text>
+        <Text variant="h2">{timeFilter === 'upcoming' ? 'Upcoming Events' : 'Past Events'}</Text>
       </View>
 
       <FilterRow

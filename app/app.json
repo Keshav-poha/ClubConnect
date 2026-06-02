@@ -29,10 +29,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font",
-      "./withJitpackFix.js"
-    ],
+    "plugins": ["expo-font", "./withJitpackFix.js"],
     "extra": {
       "eas": {
         "projectId": "e3087b0f-0633-4e68-960d-f0044cf84406"

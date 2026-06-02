@@ -19,7 +19,7 @@ export const SettingsScreen = () => {
   const toggleTheme = useStore((s) => s.toggleTheme);
   const themeMode = useStore((s) => s.themeMode);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  
+
   const { colors, isDark } = useTheme();
   const globalStyles = useGlobalStyles();
   const { isWideScreen } = useResponsive();
@@ -30,8 +30,8 @@ export const SettingsScreen = () => {
       'Are you sure you want to clear your local data? This will remove your saved bookmarks.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Clear', 
+        {
+          text: 'Clear',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -40,9 +40,9 @@ export const SettingsScreen = () => {
             } catch (e) {
               showToast({ message: 'Failed to clear cache', type: 'error' });
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
@@ -55,9 +55,11 @@ export const SettingsScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         <View style={[styles.contentWrapper, isWideScreen && styles.centeredContent]}>
           <View style={styles.section}>
-            <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>App Preferences</Text>
+            <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>
+              App Preferences
+            </Text>
             <View style={[globalStyles.clayCard, styles.card]}>
-              <SettingsRow 
+              <SettingsRow
                 icon={Bell}
                 label="Push Notifications"
                 isSwitch
@@ -65,7 +67,7 @@ export const SettingsScreen = () => {
                 onSwitchChange={setPushEnabled}
                 showDivider={true}
               />
-              <SettingsRow 
+              <SettingsRow
                 icon={isDark ? Moon : Sun}
                 label="Dark Theme"
                 isSwitch
@@ -77,9 +79,11 @@ export const SettingsScreen = () => {
           </View>
 
           <View style={styles.section}>
-            <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>About</Text>
+            <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>
+              About
+            </Text>
             <View style={[globalStyles.clayCard, styles.card]}>
-              <SettingsRow 
+              <SettingsRow
                 icon={Shield}
                 label="Privacy Policy"
                 onPress={() => navigation.navigate('PrivacyPolicy')}
@@ -89,9 +93,11 @@ export const SettingsScreen = () => {
           </View>
 
           <View style={styles.section}>
-            <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>Data Management</Text>
+            <Text variant="bodyMedium" color="textMuted" style={styles.sectionTitle}>
+              Data Management
+            </Text>
             <View style={[globalStyles.clayCard, styles.card]}>
-              <SettingsRow 
+              <SettingsRow
                 icon={Trash2}
                 label="Clear Cache & Data"
                 onPress={handleClearCache}
@@ -102,7 +108,9 @@ export const SettingsScreen = () => {
           </View>
 
           <View style={styles.versionContainer}>
-            <Text variant="caption" color="textMuted">ClubConnect Version 1.0.0</Text>
+            <Text variant="caption" color="textMuted">
+              ClubConnect Version 1.0.0
+            </Text>
           </View>
         </View>
       </ScrollView>

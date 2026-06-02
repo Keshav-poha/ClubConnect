@@ -39,7 +39,12 @@ export const typography = {
   h2: { fontFamily: sansBold, fontSize: 24, lineHeight: 32, fontWeight: '700' as const },
   h3: { fontFamily: sansMedium, fontSize: 20, lineHeight: 28, fontWeight: '600' as const },
   body: { fontFamily: sansRegular, fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
-  bodyMedium: { fontFamily: sansSemiBold, fontSize: 16, lineHeight: 24, fontWeight: '600' as const },
+  bodyMedium: {
+    fontFamily: sansSemiBold,
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: '600' as const,
+  },
   caption: { fontFamily: sansRegular, fontSize: 14, lineHeight: 20, fontWeight: '400' as const },
   mono: { fontFamily: monoFont, fontSize: 12, lineHeight: 16 },
 };

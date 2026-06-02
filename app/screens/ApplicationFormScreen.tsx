@@ -20,13 +20,13 @@ export const ApplicationFormScreen = () => {
   const { applicationId } = route.params;
   const { colors } = useTheme();
   const { typography } = require('@/theme');
-  
+
   const applications = useStore((s) => s.applications);
   const submitApp = useStore((s) => s.submitApplication);
   const showToast = useStore((s) => s.showToast);
-  
-  const application = applications.find(a => a.id === applicationId);
-  
+
+  const application = applications.find((a) => a.id === applicationId);
+
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,10 +43,10 @@ export const ApplicationFormScreen = () => {
   }
 
   const handleChange = (fieldId: string, value: any) => {
-    setFormData(prev => ({ ...prev, [fieldId]: value }));
+    setFormData((prev) => ({ ...prev, [fieldId]: value }));
     // Clear error for this field
     if (errors[fieldId]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[fieldId];
         return newErrors;
@@ -57,21 +57,25 @@ export const ApplicationFormScreen = () => {
   const validate = () => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
-    
-    application.fields.forEach(field => {
-      if (field.required && (!formData[field.id] || (typeof formData[field.id] === 'string' && formData[field.id].trim() === ''))) {
+
+    application.fields.forEach((field) => {
+      if (
+        field.required &&
+        (!formData[field.id] ||
+          (typeof formData[field.id] === 'string' && formData[field.id].trim() === ''))
+      ) {
         newErrors[field.id] = 'This field is required';
         isValid = false;
       }
     });
-    
+
     setErrors(newErrors);
     return isValid;
   };
 
   const handleSubmit = async () => {
     if (!validate()) return;
-    
+
     setIsSubmitting(true);
     try {
       await submitApp(applicationId, formData);
@@ -87,20 +91,25 @@ export const ApplicationFormScreen = () => {
   return (
     <ScreenContainer>
       <Header title={application.title} showBack />
-      
-      <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
+
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.description, { color: colors.textMuted, fontFamily: typography.body.fontFamily }]}>
+          <Text
+            style={[
+              styles.description,
+              { color: colors.textMuted, fontFamily: typography.body.fontFamily },
+            ]}
+          >
             {application.description}
           </Text>
-          
+
           <View style={styles.formContainer}>
             {application.fields.map((field) => (
               <DynamicField
@@ -112,10 +121,10 @@ export const ApplicationFormScreen = () => {
               />
             ))}
           </View>
-          
+
           <View style={styles.submitContainer}>
             <Button
-              label={isSubmitting ? "Submitting..." : "Submit Application"}
+              label={isSubmitting ? 'Submitting...' : 'Submit Application'}
               onPress={handleSubmit}
               disabled={isSubmitting}
               style={styles.submitBtn}
@@ -155,5 +164,5 @@ const styles = StyleSheet.create({
   },
   submitBtn: {
     width: '100%',
-  }
+  },
 });

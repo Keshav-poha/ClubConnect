@@ -18,7 +18,7 @@ export const DiscoverScreen = () => {
   const fetchEvents = useStore((s) => s.fetchEvents);
   const loadMoreEvents = useStore((s) => s.loadMoreEvents);
   const hasMore = useStore((s) => s.hasMore);
-  
+
   const globalStyles = useGlobalStyles();
   const { colors, typography } = useTheme();
   const { isWideScreen } = useResponsive();
@@ -32,25 +32,37 @@ export const DiscoverScreen = () => {
   const filteredEvents = useMemo(() => {
     if (!searchQuery.trim()) return events;
     const query = searchQuery.toLowerCase();
-    return events.filter(event => 
-      event.title.toLowerCase().includes(query) || 
-      event.club?.name.toLowerCase().includes(query) ||
-      event.description.toLowerCase().includes(query)
+    return events.filter(
+      (event) =>
+        event.title.toLowerCase().includes(query) ||
+        event.club?.name.toLowerCase().includes(query) ||
+        event.description.toLowerCase().includes(query),
     );
   }, [events, searchQuery]);
 
   return (
     <ScreenContainer style={styles.container}>
-      <Text variant="h1" style={styles.headerTitle}>Discover</Text>
-      
-      <View style={[
-        styles.searchContainer, 
-        globalStyles.clayCard, 
-        { backgroundColor: colors.backgroundCard, borderColor: colors.border },
-        isWideScreen && styles.searchContainerWide
-      ]}>
+      <Text variant="h1" style={styles.headerTitle}>
+        Discover
+      </Text>
+
+      <View
+        style={[
+          styles.searchContainer,
+          globalStyles.clayCard,
+          { backgroundColor: colors.backgroundCard, borderColor: colors.border },
+          isWideScreen && styles.searchContainerWide,
+        ]}
+      >
         <TextInput
-          style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.body.fontFamily, fontSize: typography.body.fontSize }]}
+          style={[
+            styles.searchInput,
+            {
+              color: colors.textPrimary,
+              fontFamily: typography.body.fontFamily,
+              fontSize: typography.body.fontSize,
+            },
+          ]}
           placeholder="Search clubs, events..."
           placeholderTextColor={colors.textMuted}
           value={searchQuery}
@@ -65,13 +77,13 @@ export const DiscoverScreen = () => {
 
       <View style={styles.content}>
         {searchQuery.trim() && filteredEvents.length === 0 ? (
-          <EmptyState 
-            title="No Results" 
+          <EmptyState
+            title="No Results"
             message="Try searching for something else."
             style={styles.emptyContainer}
           />
         ) : (
-          <UpcomingFeed 
+          <UpcomingFeed
             events={filteredEvents} // Uses robust inner keyExtractor
             isLoading={isLoadingEvents}
             hasMore={searchQuery ? false : hasMore} // Don't show footer loading during search

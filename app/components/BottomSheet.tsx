@@ -11,12 +11,7 @@ interface BottomSheetProps {
 
 export const BottomSheet = ({ visible, onClose, children }: BottomSheetProps) => {
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={onClose} />
         <View style={styles.content}>

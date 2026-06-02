@@ -18,53 +18,70 @@ export const PrivacyPolicyScreen = () => {
   return (
     <ScreenContainer style={styles.container}>
       <View style={[styles.header, isWideScreen && styles.centeredContent]}>
-        <IconButton 
+        <IconButton
           Icon={ArrowLeft}
-          onPress={() => navigation.goBack()} 
+          onPress={() => navigation.goBack()}
           style={styles.backButton}
         />
         <Text variant="h2">Privacy Policy</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        <View style={[
-          styles.contentWrapper, 
-          isWideScreen && styles.centeredContent,
-          globalStyles.clayCard,
-          styles.documentCard
-        ]}>
+        <View
+          style={[
+            styles.contentWrapper,
+            isWideScreen && styles.centeredContent,
+            globalStyles.clayCard,
+            styles.documentCard,
+          ]}
+        >
           <View style={styles.section}>
-            <Text variant="h3" style={styles.sectionTitle}>1. Information We Collect</Text>
+            <Text variant="h3" style={styles.sectionTitle}>
+              1. Information We Collect
+            </Text>
             <Text variant="body" color="textMuted" style={styles.paragraph}>
-              We collect information you provide directly to us when you create an account, update your profile, use the interactive features of the app, or communicate with us.
+              We collect information you provide directly to us when you create an account, update
+              your profile, use the interactive features of the app, or communicate with us.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text variant="h3" style={styles.sectionTitle}>2. How We Use Information</Text>
+            <Text variant="h3" style={styles.sectionTitle}>
+              2. How We Use Information
+            </Text>
             <Text variant="body" color="textMuted" style={styles.paragraph}>
-              We use the information we collect to provide, maintain, and improve our services, to develop new features, and to protect ClubConnect and our users.
+              We use the information we collect to provide, maintain, and improve our services, to
+              develop new features, and to protect ClubConnect and our users.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text variant="h3" style={styles.sectionTitle}>3. Sharing of Information</Text>
+            <Text variant="h3" style={styles.sectionTitle}>
+              3. Sharing of Information
+            </Text>
             <Text variant="body" color="textMuted" style={styles.paragraph}>
-              We do not share your personal information with third parties except as described in this privacy policy or with your consent.
+              We do not share your personal information with third parties except as described in
+              this privacy policy or with your consent.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text variant="h3" style={styles.sectionTitle}>4. Data Security</Text>
+            <Text variant="h3" style={styles.sectionTitle}>
+              4. Data Security
+            </Text>
             <Text variant="body" color="textMuted" style={styles.paragraph}>
-              We take reasonable measures to help protect information about you from loss, theft, misuse and unauthorized access, disclosure, alteration and destruction.
+              We take reasonable measures to help protect information about you from loss, theft,
+              misuse and unauthorized access, disclosure, alteration and destruction.
             </Text>
           </View>
-          
+
           <View style={styles.section}>
-            <Text variant="h3" style={styles.sectionTitle}>5. Contact Us</Text>
+            <Text variant="h3" style={styles.sectionTitle}>
+              5. Contact Us
+            </Text>
             <Text variant="body" color="textMuted" style={styles.paragraph}>
-              If you have any questions about this Privacy Policy, please contact us at aquawit22@gmail.com.
+              If you have any questions about this Privacy Policy, please contact us at
+              aquawit22@gmail.com.
             </Text>
           </View>
         </View>

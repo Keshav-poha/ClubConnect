@@ -11,22 +11,19 @@ export const SavedScreen = () => {
 
   return (
     <ScreenContainer style={styles.container}>
-      <Text variant="h1" style={styles.headerTitle}>Bookmarks</Text>
-      
+      <Text variant="h1" style={styles.headerTitle}>
+        Bookmarks
+      </Text>
+
       <View style={styles.content}>
         {bookmarkedEvents.length === 0 ? (
-          <EmptyState 
-            title="No Bookmarks" 
+          <EmptyState
+            title="No Bookmarks"
             message="Events you bookmark will appear here."
             style={styles.emptyContainer}
           />
         ) : (
-          <UpcomingFeed 
-            events={bookmarkedEvents}
-            isLoading={false}
-            hasMore={false}
-            error={null}
-          />
+          <UpcomingFeed events={bookmarkedEvents} isLoading={false} hasMore={false} error={null} />
         )}
       </View>
     </ScreenContainer>

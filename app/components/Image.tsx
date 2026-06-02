@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Image as RNImage, ImageProps as RNImageProps, View, StyleSheet, Platform } from 'react-native';
+import {
+  Image as RNImage,
+  ImageProps as RNImageProps,
+  View,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import { Image as ImageIcon } from 'lucide-react-native';
 import { LoadingIndicator } from './LoadingIndicator';
 import { colors } from '@/theme';
@@ -22,7 +28,7 @@ export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
   }, [uri]);
 
   let imageSource = source;
-  
+
   if (Platform.OS === 'web' && uri) {
     if (uri.includes('instagram.com') || uri.includes('fbcdn.net')) {
       imageSource = { uri: `/api/proxy?url=${encodeURIComponent(uri)}` };
@@ -36,7 +42,7 @@ export const Image = ({ style, source, fallbackUrl, ...props }: ImageProps) => {
 
   return (
     <View style={[styles.container, style]}>
-      {(!isSourceValid || hasError) ? (
+      {!isSourceValid || hasError ? (
         <View style={styles.placeholderContainer}>
           <ImageIcon color={colors.textMuted} size={32} />
         </View>

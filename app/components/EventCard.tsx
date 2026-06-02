@@ -55,29 +55,37 @@ export const EventCard = ({ event, onPress, style }: EventCardProps) => {
               resizeMode="cover"
             />
           ) : null}
-          
+
           <View style={styles.headerRow}>
             {event.club && (
               <View style={styles.clubInfo}>
-                <ClubAvatar name={event.club.name} url={event.club.avatar_url} size={24} style={styles.clubAvatar} />
+                <ClubAvatar
+                  name={event.club.name}
+                  url={event.club.avatar_url}
+                  size={24}
+                  style={styles.clubAvatar}
+                />
                 <Text variant="bodyMedium" color="textPrimary" style={styles.clubName}>
                   {event.club.name}
                 </Text>
               </View>
             )}
-            {event.is_featured && (
-              <Badge label="Featured" variant="accent" />
-            )}
+            {event.is_featured && <Badge label="Featured" variant="accent" />}
           </View>
-          
+
           <Text variant="h3" style={styles.title} numberOfLines={2}>
             {event.title || 'Untitled Event'}
           </Text>
-          
-          <Text variant="body" color="textMuted" style={styles.description} numberOfLines={isWideScreen ? 4 : 3}>
+
+          <Text
+            variant="body"
+            color="textMuted"
+            style={styles.description}
+            numberOfLines={isWideScreen ? 4 : 3}
+          >
             {event.description}
           </Text>
-          
+
           <View style={styles.metaSpacer} />
 
           <View style={styles.metaContainer}>

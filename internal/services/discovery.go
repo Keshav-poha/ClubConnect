@@ -110,7 +110,7 @@ func (s *DiscoveryService) fetchInstagramProfilePic(handle string) (string, erro
 		return "", nil
 	}
 	picUrl := bodyStr[startIdx : startIdx+endIdx]
-	
+
 	// Unescape HTML entities (like &amp;)
 	picUrl = strings.ReplaceAll(picUrl, "&amp;", "&")
 	return picUrl, nil
@@ -343,4 +343,3 @@ func (s *DiscoveryService) GetLastScrapeTime() (time.Time, error) {
 	}
 	return lastLog.ScrapedAt, nil
 }
-

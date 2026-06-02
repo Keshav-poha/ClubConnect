@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func CORS() gin.HandlerFunc {
 	allowedOrigins := map[string]bool{
-		"http://localhost:8081": true,
+		"http://localhost:8081":                true,
 		"https://aquawit-clubconnect.hf.space": true,
 	}
 

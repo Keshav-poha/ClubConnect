@@ -8,13 +8,13 @@ interface ClayTextInputProps extends TextInputProps {
   error?: string;
 }
 
-export const ClayTextInput: React.FC<ClayTextInputProps> = ({ 
-  label, 
-  error, 
-  style, 
+export const ClayTextInput: React.FC<ClayTextInputProps> = ({
+  label,
+  error,
+  style,
   onFocus,
   onBlur,
-  ...props 
+  ...props
 }) => {
   const { colors } = useTheme();
   const { typography } = require('@/theme');
@@ -34,20 +34,27 @@ export const ClayTextInput: React.FC<ClayTextInputProps> = ({
   return (
     <View style={styles.container}>
       {label && (
-        <Text style={[styles.label, { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily }]}>
+        <Text
+          style={[
+            styles.label,
+            { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
+          ]}
+        >
           {label}
         </Text>
       )}
-      <View style={[
-        globalStyles.clayCardPressed, 
-        styles.inputContainer,
-        isFocused && { borderColor: colors.accentCyan, borderWidth: 2 }
-      ]}>
+      <View
+        style={[
+          globalStyles.clayCardPressed,
+          styles.inputContainer,
+          isFocused && { borderColor: colors.accentCyan, borderWidth: 2 },
+        ]}
+      >
         <TextInput
           style={[
             styles.input,
             { color: colors.textPrimary, fontFamily: typography.body.fontFamily },
-            style
+            style,
           ]}
           placeholderTextColor={colors.textMuted}
           onFocus={handleFocus}
@@ -89,5 +96,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 6,
     marginLeft: 4,
-  }
+  },
 });

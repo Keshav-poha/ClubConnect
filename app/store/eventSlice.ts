@@ -16,7 +16,12 @@ export interface EventSlice {
   hasMore: boolean;
   timeFilter: 'upcoming' | 'past';
   setTimeFilter: (filter: 'upcoming' | 'past') => void;
-  fetchEvents: (page?: number, limit?: number, clubId?: string, timeFilter?: 'upcoming' | 'past') => Promise<void>;
+  fetchEvents: (
+    page?: number,
+    limit?: number,
+    clubId?: string,
+    timeFilter?: 'upcoming' | 'past',
+  ) => Promise<void>;
   loadMoreEvents: (limit?: number, clubId?: string) => Promise<void>;
   fetchFeaturedEvents: () => Promise<void>;
 }
@@ -33,7 +38,12 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
   setTimeFilter: (timeFilter) => set({ timeFilter }),
   fetchEvents: async (page = 1, limit = 20, clubId?: string, timeFilter?: 'upcoming' | 'past') => {
     const activeTimeFilter = timeFilter !== undefined ? timeFilter : get().timeFilter;
-    set({ isLoadingEvents: true, errorEvents: null, currentPage: page, timeFilter: activeTimeFilter });
+    set({
+      isLoadingEvents: true,
+      errorEvents: null,
+      currentPage: page,
+      timeFilter: activeTimeFilter,
+    });
     try {
       const params: any = { page, limit };
       if (clubId && clubId !== 'all') {
@@ -44,8 +54,8 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
       }
       const response = await api.get('/events', { params });
       const newEvents = response.data.events || [];
-      set({ 
-        events: newEvents, 
+      set({
+        events: newEvents,
         isLoadingEvents: false,
         hasMore: newEvents.length === limit,
       });
@@ -59,7 +69,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
 
     set({ isFetchingMore: true });
     const nextPage = currentPage + 1;
-    
+
     try {
       const params: any = { page: nextPage, limit };
       if (clubId && clubId !== 'all') {
@@ -70,8 +80,8 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
       }
       const response = await api.get('/events', { params });
       const moreEvents = response.data.events || [];
-      
-      set({ 
+
+      set({
         events: [...events, ...moreEvents],
         isFetchingMore: false,
         currentPage: nextPage,
@@ -92,4 +102,3 @@ export const createEventSlice: StateCreator<EventSlice> = (set, get) => ({
     }
   },
 });
-

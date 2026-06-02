@@ -1,11 +1,8 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    plugins: [
-      '@babel/plugin-transform-async-to-generator',
-      'babel-plugin-transform-import-meta'
-    ],
+    plugins: ['@babel/plugin-transform-async-to-generator', 'babel-plugin-transform-import-meta'],
     overrides: [
       {
         test: /[\\/]node_modules[\\/]/,
@@ -15,9 +12,9 @@ module.exports = function(api) {
           '@babel/plugin-transform-class-properties',
           '@babel/plugin-transform-private-methods',
           '@babel/plugin-transform-private-property-in-object',
-          '@babel/plugin-transform-classes'
-        ]
-      }
-    ]
+          '@babel/plugin-transform-classes',
+        ],
+      },
+    ],
   };
 };

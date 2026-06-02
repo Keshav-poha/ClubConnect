@@ -28,19 +28,19 @@ type ClubResponse struct {
 
 // EventResponse is the JSON shape returned for each event in the API.
 type EventResponse struct {
-	ID           uuid.UUID     `json:"id"`
-	ClubID       uuid.UUID     `json:"club_id"`
-	Title        string        `json:"title"`
-	Description  string        `json:"description"`
-	Date         *time.Time    `json:"date"`
-	Location     string        `json:"location"`
-	Attendance   string        `json:"attendance"`
-	ImageURL     string        `json:"image_url"`
-	InstagramURL string        `json:"instagram_url"`
-	PostID       string        `json:"post_id"`
-	IsFeatured   bool          `json:"is_featured"`
-	CreatedAt    time.Time     `json:"created_at"`
-	UpdatedAt    time.Time     `json:"updated_at"`
+	ID           uuid.UUID  `json:"id"`
+	ClubID       uuid.UUID  `json:"club_id"`
+	Title        string     `json:"title"`
+	Description  string     `json:"description"`
+	Date         *time.Time `json:"date"`
+	Location     string     `json:"location"`
+	Attendance   string     `json:"attendance"`
+	ImageURL     string     `json:"image_url"`
+	InstagramURL string     `json:"instagram_url"`
+	PostID       string     `json:"post_id"`
+	IsFeatured   bool       `json:"is_featured"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
 
 	Club *ClubResponse `json:"club,omitempty"`
 }

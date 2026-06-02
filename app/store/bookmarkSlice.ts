@@ -11,15 +11,15 @@ export const createBookmarkSlice: StateCreator<BookmarkSlice> = (set, get) => ({
   bookmarkedEvents: [],
   toggleBookmark: (event: Event) => {
     const { bookmarkedEvents } = get();
-    const exists = bookmarkedEvents.some(e => e.id === event.id);
-    
+    const exists = bookmarkedEvents.some((e) => e.id === event.id);
+
     if (exists) {
-      set({ bookmarkedEvents: bookmarkedEvents.filter(e => e.id !== event.id) });
+      set({ bookmarkedEvents: bookmarkedEvents.filter((e) => e.id !== event.id) });
     } else {
       set({ bookmarkedEvents: [...bookmarkedEvents, event] });
     }
   },
   isBookmarked: (eventId: string) => {
-    return get().bookmarkedEvents.some(e => e.id === eventId);
+    return get().bookmarkedEvents.some((e) => e.id === eventId);
   },
 });

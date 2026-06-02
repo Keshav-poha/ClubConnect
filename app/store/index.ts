@@ -21,12 +21,12 @@ export const useStore = create<StoreState>()(
     {
       name: 'clubconnect-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({ 
+      partialize: (state) => ({
         bookmarkedEvents: state.bookmarkedEvents,
         events: state.events.slice(0, 20), // Cache first page of events
         featuredEvents: state.featuredEvents,
         themeMode: state.themeMode,
       }),
-    }
-  )
+    },
+  ),
 );

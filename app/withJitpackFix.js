@@ -11,7 +11,7 @@ const withJitpackFix = (config) => {
       content {
         excludeGroup "io.github.react-native-community"
       }
-    }`
+    }`,
       );
     }
     return config;

@@ -11,39 +11,38 @@ interface ClayCheckboxProps {
   error?: string;
 }
 
-export const ClayCheckbox: React.FC<ClayCheckboxProps> = ({ 
-  label, 
-  checked, 
-  onChange,
-  error 
-}) => {
+export const ClayCheckbox: React.FC<ClayCheckboxProps> = ({ label, checked, onChange, error }) => {
   const { colors } = useTheme();
   const { typography } = require('@/theme');
   const globalStyles = useGlobalStyles();
 
   return (
     <View style={styles.container}>
-      <Pressable 
+      <Pressable
         style={styles.row}
         onPress={() => onChange(!checked)}
         accessibilityRole="checkbox"
         accessibilityState={{ checked }}
       >
-        <View style={[
-          checked ? globalStyles.clayCardPressed : globalStyles.clayButton,
-          styles.checkbox,
-          checked && { backgroundColor: colors.accentCyan }
-        ]}>
+        <View
+          style={[
+            checked ? globalStyles.clayCardPressed : globalStyles.clayButton,
+            styles.checkbox,
+            checked && { backgroundColor: colors.accentCyan },
+          ]}
+        >
           {checked && <Check size={16} color={colors.backgroundPrimary} strokeWidth={3} />}
         </View>
-        <Text style={[
-          styles.label, 
-          { color: colors.textPrimary, fontFamily: typography.bodyMedium.fontFamily }
-        ]}>
+        <Text
+          style={[
+            styles.label,
+            { color: colors.textPrimary, fontFamily: typography.bodyMedium.fontFamily },
+          ]}
+        >
           {label}
         </Text>
       </Pressable>
-      
+
       {error && (
         <Text style={[styles.error, { color: '#E11D48', fontFamily: typography.body.fontFamily }]}>
           {error}
@@ -79,5 +78,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 6,
     marginLeft: 36,
-  }
+  },
 });

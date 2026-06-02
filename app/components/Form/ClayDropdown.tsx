@@ -13,13 +13,13 @@ interface ClayDropdownProps {
   placeholder?: string;
 }
 
-export const ClayDropdown: React.FC<ClayDropdownProps> = ({ 
-  label, 
-  value, 
-  options, 
-  onChange, 
+export const ClayDropdown: React.FC<ClayDropdownProps> = ({
+  label,
+  value,
+  options,
+  onChange,
   error,
-  placeholder = "Select an option" 
+  placeholder = 'Select an option',
 }) => {
   const { colors, borderRadius } = useTheme();
   const { typography } = require('@/theme');
@@ -29,22 +29,29 @@ export const ClayDropdown: React.FC<ClayDropdownProps> = ({
   return (
     <View style={styles.container}>
       {label && (
-        <Text style={[styles.label, { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily }]}>
+        <Text
+          style={[
+            styles.label,
+            { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
+          ]}
+        >
           {label}
         </Text>
       )}
-      
-      <Pressable 
+
+      <Pressable
         style={[globalStyles.clayButton, styles.inputContainer]}
         onPress={() => setIsOpen(true)}
       >
-        <Text style={[
-          styles.inputText, 
-          { 
-            color: value ? colors.textPrimary : colors.textMuted, 
-            fontFamily: typography.body.fontFamily 
-          }
-        ]}>
+        <Text
+          style={[
+            styles.inputText,
+            {
+              color: value ? colors.textPrimary : colors.textMuted,
+              fontFamily: typography.body.fontFamily,
+            },
+          ]}
+        >
           {value || placeholder}
         </Text>
         <ChevronDown size={20} color={colors.textMuted} />
@@ -63,41 +70,50 @@ export const ClayDropdown: React.FC<ClayDropdownProps> = ({
         onRequestClose={() => setIsOpen(false)}
       >
         <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
-          <View style={[
-            globalStyles.clayCard, 
-            styles.modalContent, 
-            { backgroundColor: colors.backgroundPrimary }
-          ]}>
+          <View
+            style={[
+              globalStyles.clayCard,
+              styles.modalContent,
+              { backgroundColor: colors.backgroundPrimary },
+            ]}
+          >
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.textPrimary, fontFamily: typography.h3.fontFamily }]}>
+              <Text
+                style={[
+                  styles.modalTitle,
+                  { color: colors.textPrimary, fontFamily: typography.h3.fontFamily },
+                ]}
+              >
                 {label || placeholder}
               </Text>
               <Pressable onPress={() => setIsOpen(false)} style={styles.closeButton}>
                 <X size={24} color={colors.textMuted} />
               </Pressable>
             </View>
-            
+
             <FlatList
               data={options}
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <Pressable
-                  style={[
-                    styles.optionItem,
-                    value === item && { backgroundColor: colors.border }
-                  ]}
+                  style={[styles.optionItem, value === item && { backgroundColor: colors.border }]}
                   onPress={() => {
                     onChange(item);
                     setIsOpen(false);
                   }}
                 >
-                  <Text style={[
-                    styles.optionText, 
-                    { 
-                      color: value === item ? colors.accentCyan : colors.textPrimary,
-                      fontFamily: value === item ? typography.bodyMedium.fontFamily : typography.body.fontFamily 
-                    }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.optionText,
+                      {
+                        color: value === item ? colors.accentCyan : colors.textPrimary,
+                        fontFamily:
+                          value === item
+                            ? typography.bodyMedium.fontFamily
+                            : typography.body.fontFamily,
+                      },
+                    ]}
+                  >
                     {item}
                   </Text>
                 </Pressable>
@@ -170,5 +186,5 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-  }
+  },
 });

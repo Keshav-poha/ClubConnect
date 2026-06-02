@@ -20,9 +20,12 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isWideScreen } = useResponsive();
 
-  const handlePress = React.useCallback((event: Event) => {
-    navigation.navigate('EventDetail', { event });
-  }, [navigation]);
+  const handlePress = React.useCallback(
+    (event: Event) => {
+      navigation.navigate('EventDetail', { event });
+    },
+    [navigation],
+  );
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 50 }).current;
   const onViewableItemsChanged = React.useRef(({ viewableItems }: any) => {
@@ -49,15 +52,20 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
     );
   }
 
-  const renderFilmStripItem = React.useCallback(({ item, index }: { item: Event; index: number }) => (
-    <View style={[
-      styles.filmStripItem, 
-      !isWideScreen && index === activeIndex && styles.activeFilmStripItem,
-      isWideScreen && styles.wideFilmStripItem
-    ]}>
-      <EventCard event={item} onPress={handlePress} />
-    </View>
-  ), [activeIndex, handlePress, isWideScreen]);
+  const renderFilmStripItem = React.useCallback(
+    ({ item, index }: { item: Event; index: number }) => (
+      <View
+        style={[
+          styles.filmStripItem,
+          !isWideScreen && index === activeIndex && styles.activeFilmStripItem,
+          isWideScreen && styles.wideFilmStripItem,
+        ]}
+      >
+        <EventCard event={item} onPress={handlePress} />
+      </View>
+    ),
+    [activeIndex, handlePress, isWideScreen],
+  );
 
   return (
     <FlatList
@@ -66,7 +74,7 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
       horizontal
       showsHorizontalScrollIndicator={isWideScreen} // Show scrollbar on desktop
       snapToInterval={isWideScreen ? undefined : 368} // 320 width + 48 margins
-      decelerationRate={isWideScreen ? "normal" : "fast"}
+      decelerationRate={isWideScreen ? 'normal' : 'fast'}
       snapToAlignment="start"
       onViewableItemsChanged={!isWideScreen ? onViewableItemsChanged : undefined}
       viewabilityConfig={!isWideScreen ? viewabilityConfig : undefined}
@@ -107,5 +115,5 @@ const styles = StyleSheet.create({
     width: 350,
     opacity: 1, // On wide screens, don't dim inactive items
     transform: [{ scale: 1 }], // Don't scale down
-  }
+  },
 });

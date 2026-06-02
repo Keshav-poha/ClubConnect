@@ -21,7 +21,7 @@ export const FeaturedSkeleton = () => {
           duration: 1000,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [animatedValue]);
 

@@ -8,7 +8,7 @@ interface CardProps extends ViewProps {
 
 export const Card = ({ children, style, ...props }: CardProps) => {
   const globalStyles = useGlobalStyles();
-  
+
   return (
     <View style={[styles.card, globalStyles.clayCard, style]} {...props}>
       {children}

@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleSheet, FlatList, StyleProp, ViewStyle, RefreshControlProps, View } from 'react-native';
+import {
+  StyleSheet,
+  FlatList,
+  StyleProp,
+  ViewStyle,
+  RefreshControlProps,
+  View,
+} from 'react-native';
 import { useResponsive } from '@/hooks/useResponsive';
 
 interface MasonryGridProps<T> {
@@ -33,11 +40,9 @@ export function MasonryGrid<T>({
       key={`grid-${cols}`}
       data={data}
       numColumns={cols}
-      keyExtractor={(item: any, index) => item.id ? String(item.id) : `grid-item-${index}`}
+      keyExtractor={(item: any, index) => (item.id ? String(item.id) : `grid-item-${index}`)}
       renderItem={({ item, index }) => (
-        <View style={styles.itemContainer}>
-          {renderItem(item, index)}
-        </View>
+        <View style={styles.itemContainer}>{renderItem(item, index)}</View>
       )}
       style={[styles.container, style]}
       contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
