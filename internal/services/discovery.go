@@ -75,6 +75,47 @@ func (s *DiscoveryService) RunDiscoveryCycle() {
 	log.Println("discovery cycle done")
 }
 
+// fetchInstagramProfilePic anonymously scrapes the public Instagram profile page for the og:image.
+func (s *DiscoveryService) fetchInstagramProfilePic(handle string) (string, error) {
+	url := fmt.Sprintf("https://www.instagram.com/%s/", handle)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+	// Use a modern user-agent to avoid immediate blocks
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	// Instagram exposes the profile picture in the og:image meta tag on public profiles
+	bodyStr := string(body)
+	ogImagePrefix := `<meta property="og:image" content="`
+	idx := strings.Index(bodyStr, ogImagePrefix)
+	if idx == -1 {
+		return "", nil
+	}
+	startIdx := idx + len(ogImagePrefix)
+	endIdx := strings.Index(bodyStr[startIdx:], `"`)
+	if endIdx == -1 {
+		return "", nil
+	}
+	picUrl := bodyStr[startIdx : startIdx+endIdx]
+	
+	// Unescape HTML entities (like &amp;)
+	picUrl = strings.ReplaceAll(picUrl, "&amp;", "&")
+	return picUrl, nil
+}
+
 // ScrapeClub fetches Instagram posts for a single club handle, parses each
 // caption through the AI, and saves qualifying events to the database.
 func (s *DiscoveryService) ScrapeClub(handle string) error {
@@ -83,16 +124,25 @@ func (s *DiscoveryService) ScrapeClub(handle string) error {
 		return fmt.Errorf("club not found: %s", handle)
 	}
 
+	// Always attempt to refresh the profile picture first using the public scrape
+	picUrl, err := s.fetchInstagramProfilePic(club.Handle)
+	if err == nil && picUrl != "" && club.AvatarURL != picUrl {
+		club.AvatarURL = picUrl
+		s.db.Save(&club)
+		log.Printf("updated avatar for [%s] via public scrape", handle)
+	}
+
 	posts, profilePicUrl, err := s.fetchInstagramPosts(club.Handle)
 	if err != nil {
 		s.saveLog(club.ID, "failed", 0, 0, err.Error())
 		return err
 	}
 
-	if profilePicUrl != "" && club.AvatarURL != profilePicUrl {
+	// Fallback to RapidAPI profile pic if public scrape failed
+	if picUrl == "" && profilePicUrl != "" && club.AvatarURL != profilePicUrl {
 		club.AvatarURL = profilePicUrl
 		s.db.Save(&club)
-		log.Printf("updated avatar for [%s]", handle)
+		log.Printf("updated avatar for [%s] via RapidAPI", handle)
 	}
 
 	saved := 0
