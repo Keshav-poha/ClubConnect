@@ -18,13 +18,11 @@ export const PrivacyPolicyScreen = () => {
   return (
     <ScreenContainer style={styles.container}>
       <View style={[styles.header, isWideScreen && styles.centeredContent]}>
-        <TouchableOpacity 
+        <IconButton 
+          Icon={ArrowLeft}
           onPress={() => navigation.goBack()} 
           style={styles.backButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <ArrowLeft size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
+        />
         <Text variant="h2">Privacy Policy</Text>
       </View>
 
