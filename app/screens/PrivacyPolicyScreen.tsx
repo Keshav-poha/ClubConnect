@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   documentCard: {
-    padding: 24,
+    padding: 20,
     ...Platform.select({
       web: {
         transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
