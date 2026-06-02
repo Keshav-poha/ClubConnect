@@ -33,7 +33,7 @@ export const ApplicationFormScreen = () => {
   if (!application) {
     return (
       <ScreenContainer>
-        <Header title="Error" />
+        <Header title="Error" showBack />
         <View style={styles.center}>
           <Text style={{ color: colors.textPrimary }}>Application not found</Text>
         </View>
@@ -85,7 +85,7 @@ export const ApplicationFormScreen = () => {
 
   return (
     <ScreenContainer>
-      <Header title={application.title} />
+      <Header title={application.title} showBack />
       
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 

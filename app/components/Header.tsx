@@ -2,18 +2,38 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors } from '@/theme';
+import { ChevronLeft } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Pressable } from 'react-native';
 
 interface HeaderProps {
   title: string;
   subtitle?: string;
   rightElement?: React.ReactNode;
+  showBack?: boolean;
+  onBack?: () => void;
   style?: ViewStyle;
 }
 
-export const Header = ({ title, subtitle, rightElement, style }: HeaderProps) => {
+export const Header = ({ title, subtitle, rightElement, showBack, onBack, style }: HeaderProps) => {
+  const navigation = useNavigation();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  };
+
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.textContainer}>
+      {showBack && (
+        <Pressable onPress={handleBack} style={styles.backButton}>
+          <ChevronLeft size={28} color={colors.textPrimary} />
+        </Pressable>
+      )}
+      <View style={[styles.textContainer, showBack && styles.textContainerWithBack]}>
         <Text variant="h1">{title}</Text>
         {subtitle && (
           <Text variant="body" color="textMuted" style={styles.subtitle}>
@@ -38,6 +58,13 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+  },
+  textContainerWithBack: {
+    marginLeft: 8,
+  },
+  backButton: {
+    padding: 4,
+    marginLeft: -4,
   },
   subtitle: {
     marginTop: 4,

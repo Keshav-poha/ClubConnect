@@ -67,7 +67,7 @@ export const SocietyApplicationsListScreen = () => {
 
   return (
     <ScreenContainer>
-      <Header title={societyName} />
+      <Header title={societyName} showBack />
       <View style={styles.content}>
         <Text style={[styles.subtitle, { color: colors.textPrimary, fontFamily: typography.h2.fontFamily }]}>
           Active Applications
