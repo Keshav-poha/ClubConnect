@@ -35,7 +35,7 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService, cfg *config.Config
 		api.GET("/events/:id", evH.GetEvent)
 		api.GET("/clubs", clH.ListClubs)
 		api.GET("/clubs/:id", clH.GetClub)
-		api.GET("/clubs/:club_id/forms", formPublicH.GetClubForms)
+		api.GET("/clubs/:id/forms", formPublicH.GetClubForms)
 		api.POST("/forms/:id/submit", formPublicH.SubmitForm)
 	}
 

@@ -17,7 +17,7 @@ func NewFormPublicHandler(db *gorm.DB) *FormPublicHandler {
 }
 
 func (h *FormPublicHandler) GetClubForms(c *gin.Context) {
-	clubID := c.Param("club_id")
+	clubID := c.Param("id")
 	var forms []models.Form
 
 	// Get active forms with their fields
