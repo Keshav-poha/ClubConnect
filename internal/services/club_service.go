@@ -1,10 +1,12 @@
 package services
 
 import (
+	"log"
 	"strings"
 
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -43,11 +45,18 @@ func (s *ClubService) Create(club *models.Club) error {
 }
 
 func (s *ClubService) SeedDefaults() error {
+	defaultPassword := "password123"
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(defaultPassword), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("Failed to hash default password: %v", err)
+	}
+	hashStr := string(hashedPassword)
+
 	defaults := []models.Club{
-		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut", AvatarURL: "https://ui-avatars.com/api/?name=Debugging+Society&background=0D8ABC&color=fff&size=200"},
-		{Name: "IEEE NSUT", Handle: "ieee_nsut", AvatarURL: "https://ui-avatars.com/api/?name=IEEE+NSUT&background=0D8ABC&color=fff&size=200"},
-		{Name: "Junoon", Handle: "junoon.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Junoon&background=0D8ABC&color=fff&size=200"},
-		{Name: "Ares Robotics", Handle: "aresrobotics.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Ares+Robotics&background=0D8ABC&color=fff&size=200"},
+		{Name: "The Debugging Society", Handle: "thedebuggingsocietynsut", AvatarURL: "https://ui-avatars.com/api/?name=Debugging+Society&background=0D8ABC&color=fff&size=200", AdminUsername: "debug", AdminPasswordHash: hashStr},
+		{Name: "IEEE NSUT", Handle: "ieee_nsut", AvatarURL: "https://ui-avatars.com/api/?name=IEEE+NSUT&background=0D8ABC&color=fff&size=200", AdminUsername: "ieee", AdminPasswordHash: hashStr},
+		{Name: "Junoon", Handle: "junoon.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Junoon&background=0D8ABC&color=fff&size=200", AdminUsername: "junoon", AdminPasswordHash: hashStr},
+		{Name: "Ares Robotics", Handle: "aresrobotics.nsut", AvatarURL: "https://ui-avatars.com/api/?name=Ares+Robotics&background=0D8ABC&color=fff&size=200", AdminUsername: "ares", AdminPasswordHash: hashStr},
 	}
 
 	handles := []string{"thedebuggingsocietynsut", "ieee_nsut", "junoon.nsut", "aresrobotics.nsut"}
@@ -63,6 +72,10 @@ func (s *ClubService) SeedDefaults() error {
 			}
 			if existing.AvatarURL == "" || strings.Contains(existing.AvatarURL, "unavatar.io") {
 				updates["avatar_url"] = d.AvatarURL
+			}
+			if existing.AdminUsername == "" {
+				updates["admin_username"] = d.AdminUsername
+				updates["admin_password_hash"] = d.AdminPasswordHash
 			}
 			s.db.Model(&existing).Updates(updates)
 		}
