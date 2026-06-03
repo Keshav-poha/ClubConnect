@@ -33,11 +33,15 @@ export const HomeScreen = () => {
   useEffect(() => {
     fetchFeaturedEvents();
     fetchClubs();
-  }, []);
+  }, [fetchFeaturedEvents, fetchClubs]);
 
   useEffect(() => {
     fetchEvents(1, 20, activeFilter, timeFilter);
-  }, [activeFilter, timeFilter]);
+  }, [activeFilter, timeFilter, fetchEvents]);
+
+  const handleRefresh = React.useCallback(() => {
+    fetchEvents(1, 20, activeFilter, timeFilter);
+  }, [activeFilter, timeFilter, fetchEvents]);
 
   const filterOptions = useMemo(() => {
     return [
@@ -137,7 +141,7 @@ export const HomeScreen = () => {
         isLoading={isLoadingEvents}
         hasMore={hasMore}
         error={errorEvents}
-        onRefresh={() => fetchEvents(1, 20, activeFilter, timeFilter)}
+        onRefresh={handleRefresh}
         onLoadMore={() => loadMoreEvents(20, activeFilter)}
       />
     </ScreenContainer>
