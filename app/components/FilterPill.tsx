@@ -5,20 +5,25 @@ import { useTheme } from '@/hooks/useTheme';
 import { useGlobalStyles } from '@/styles/global';
 
 interface FilterPillProps {
+  id: string;
   label: string;
   isActive?: boolean;
-  onPress?: () => void;
+  onPress?: (id: string) => void;
   style?: ViewStyle;
 }
 
 export const FilterPill = React.memo(
-  ({ label, isActive = false, onPress, style }: FilterPillProps) => {
+  ({ id, label, isActive = false, onPress, style }: FilterPillProps) => {
     const { colors, isDark } = useTheme();
     const globalStyles = useGlobalStyles();
 
+    const handlePress = React.useCallback(() => {
+      onPress?.(id);
+    }, [id, onPress]);
+
     return (
       <Pressable
-        onPress={onPress}
+        onPress={handlePress}
         style={({ pressed }) => [
           {
             paddingHorizontal: 16,

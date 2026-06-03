@@ -9,7 +9,7 @@ export const FeaturedSkeleton = () => {
   const { colors } = useTheme();
 
   React.useEffect(() => {
-    Animated.loop(
+    const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(animatedValue, {
           toValue: 0.7,
@@ -22,7 +22,9 @@ export const FeaturedSkeleton = () => {
           useNativeDriver: true,
         }),
       ]),
-    ).start();
+    );
+    loop.start();
+    return () => loop.stop();
   }, [animatedValue]);
 
   return (

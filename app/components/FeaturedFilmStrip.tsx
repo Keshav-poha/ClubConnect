@@ -15,6 +15,9 @@ interface FeaturedFilmStripProps {
   error: string | null;
 }
 
+const CARD_WIDTH = 320;
+const CARD_MARGIN = 48; // 24 on each side
+
 export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStripProps) => {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -73,7 +76,7 @@ export const FeaturedFilmStrip = ({ events, isLoading, error }: FeaturedFilmStri
       keyExtractor={(item) => item.id}
       horizontal
       showsHorizontalScrollIndicator={isWideScreen} // Show scrollbar on desktop
-      snapToInterval={isWideScreen ? undefined : 368} // 320 width + 48 margins
+      snapToInterval={isWideScreen ? undefined : CARD_WIDTH + CARD_MARGIN} // 368
       decelerationRate={isWideScreen ? 'normal' : 'fast'}
       snapToAlignment="start"
       onViewableItemsChanged={!isWideScreen ? onViewableItemsChanged : undefined}

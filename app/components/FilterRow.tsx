@@ -25,9 +25,10 @@ export const FilterRow = React.memo(({ options, activeId, onSelect, style }: Fil
       {options.map((option) => (
         <FilterPill
           key={option.id}
+          id={option.id}
           label={option.label}
           isActive={activeId === option.id}
-          onPress={() => onSelect(option.id)}
+          onPress={onSelect}
         />
       ))}
     </ScrollView>
