@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextInput, TextInputProps, StyleSheet, View, Text, Platform } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useGlobalStyles } from '@/styles/global';
+import { typography } from '@/theme';
 
 interface ClayTextInputProps extends TextInputProps {
   label?: string;
@@ -17,7 +18,6 @@ export const ClayTextInput: React.FC<ClayTextInputProps> = ({
   ...props
 }) => {
   const { colors } = useTheme();
-  const { typography } = require('@/theme');
   const globalStyles = useGlobalStyles();
   const [isFocused, setIsFocused] = useState(false);
 

@@ -3,12 +3,14 @@ import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useGlobalStyles } from '@/styles/global';
 import { UploadCloud, File as FileIcon } from 'lucide-react-native';
+import { typography } from '@/theme';
 
 interface ClayFileUploadProps {
   label?: string;
   value: string | null;
   onChange: (fileName: string) => void;
   error?: string;
+  hint?: string;
 }
 
 export const ClayFileUpload: React.FC<ClayFileUploadProps> = ({
@@ -16,9 +18,9 @@ export const ClayFileUpload: React.FC<ClayFileUploadProps> = ({
   value,
   onChange,
   error,
+  hint = 'PDF, DOCX, JPG up to 10MB',
 }) => {
   const { colors } = useTheme();
-  const { typography } = require('@/theme');
   const globalStyles = useGlobalStyles();
 
   // Simulate file picking for now
@@ -82,7 +84,7 @@ export const ClayFileUpload: React.FC<ClayFileUploadProps> = ({
                 { color: colors.textMuted, fontFamily: typography.body.fontFamily },
               ]}
             >
-              PDF, DOCX, JPG up to 10MB
+              {hint}
             </Text>
           </View>
         )}

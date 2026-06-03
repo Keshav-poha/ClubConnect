@@ -7,8 +7,8 @@ import { ClayFileUpload } from './ClayFileUpload';
 
 interface DynamicFieldProps {
   field: ApplicationField;
-  value: any;
-  onChange: (value: any) => void;
+  value: unknown;
+  onChange: (value: unknown) => void;
   error?: string;
 }
 
