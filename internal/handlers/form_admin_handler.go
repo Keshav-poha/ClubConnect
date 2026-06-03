@@ -8,6 +8,7 @@ import (
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -83,8 +84,12 @@ func (h *FormAdminHandler) CreateForm(c *gin.Context) {
 		return
 	}
 
-	// Force ClubID to authenticated user
-	h.db.Raw("SELECT id FROM clubs WHERE id = ?", clubID).Scan(&form.ClubID)
+	parsedID, err := uuid.Parse(clubID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid club ID"})
+		return
+	}
+	form.ClubID = parsedID
 
 	if err := h.db.Create(&form).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create form"})
