@@ -6,6 +6,7 @@ import { EventDetailScreen } from '@/screens/EventDetailScreen';
 import { PrivacyPolicyScreen } from '@/screens/PrivacyPolicyScreen';
 import { SocietyApplicationsListScreen } from '@/screens/SocietyApplicationsListScreen';
 import { ApplicationFormScreen } from '@/screens/ApplicationFormScreen';
+import { AdminLoginScreen, AdminDashboardScreen, AdminCreateFormScreen, AdminFormResponsesScreen } from '@/screens';
 import { Toast } from '@/components/Toast';
 import { useStore } from '@/store';
 import { RootStackParamList } from './types';
@@ -24,6 +25,10 @@ export const RootNavigator = () => {
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         <Stack.Screen name="SocietyApplicationsList" component={SocietyApplicationsListScreen} />
         <Stack.Screen name="ApplicationForm" component={ApplicationFormScreen} />
+        <Stack.Screen name="AdminLogin" component={AdminLoginScreen} />
+        <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+        <Stack.Screen name="AdminCreateForm" component={AdminCreateFormScreen} />
+        <Stack.Screen name="AdminFormResponses" component={AdminFormResponsesScreen} />
       </Stack.Navigator>
       <Toast
         visible={!!toast}

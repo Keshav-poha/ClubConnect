@@ -6,4 +6,8 @@ export type RootStackParamList = {
   PrivacyPolicy: undefined;
   SocietyApplicationsList: { societyId: string; societyName: string };
   ApplicationForm: { applicationId: string };
+  AdminLogin: undefined;
+  AdminDashboard: undefined;
+  AdminCreateForm: undefined;
+  AdminFormResponses: { formId: string; formTitle: string };
 };

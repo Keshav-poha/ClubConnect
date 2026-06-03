@@ -73,9 +73,21 @@ export default function App() {
     },
   };
 
+  const linking = {
+    prefixes: ['clubconnect://', 'https://clubconnect.com'],
+    config: {
+      screens: {
+        AdminLogin: 'admin',
+        AdminDashboard: 'admin/dashboard',
+        AdminCreateForm: 'admin/forms/create',
+        AdminFormResponses: 'admin/forms/:formId/responses',
+      },
+    },
+  };
+
   return (
     <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <NavigationContainer theme={MyTheme}>
+      <NavigationContainer theme={MyTheme} linking={linking}>
         <RootNavigator />
         <StatusBar style="light" />
       </NavigationContainer>

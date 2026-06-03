@@ -1,50 +1,6 @@
 import { StateCreator } from 'zustand';
-import { Application, ApplicationResponse } from '@/types';
-
-// Temporary mock data until backend is ready
-const MOCK_APPLICATIONS: Application[] = [
-  {
-    id: 'app-1',
-    club_id: 'club-1', // Make sure this matches a real club ID in the DB (or is resilient to missing clubs)
-    title: 'Core Committee Recruitment',
-    description: 'Join the core team to help organize our biggest events this semester.',
-    deadline: '2026-06-15T23:59:59Z',
-    status: 'open',
-    fields: [
-      { id: 'f-1', type: 'text', label: 'Full Name', required: true },
-      { id: 'f-2', type: 'text', label: 'Student ID', required: true },
-      {
-        id: 'f-3',
-        type: 'dropdown',
-        label: 'Role of Interest',
-        required: true,
-        options: ['Technical', 'Design', 'Management', 'Marketing'],
-      },
-      { id: 'f-4', type: 'checkbox', label: 'I can commit to 5 hours a week', required: true },
-      { id: 'f-5', type: 'file', label: 'Resume (PDF)', required: false },
-    ],
-  },
-  {
-    id: 'app-2',
-    club_id: 'club-2',
-    title: 'Annual Tech Event Registration',
-    description: 'Register for the upcoming Hackathon. Teams can be up to 4 people.',
-    deadline: '2026-06-10T12:00:00Z',
-    status: 'open',
-    fields: [
-      { id: 'f-1', type: 'text', label: 'Team Name', required: true },
-      {
-        id: 'f-2',
-        type: 'dropdown',
-        label: 'Experience Level',
-        required: true,
-        options: ['Beginner', 'Intermediate', 'Advanced'],
-      },
-      { id: 'f-3', type: 'text', label: 'Dietary Restrictions', required: false },
-      { id: 'f-4', type: 'checkbox', label: 'I agree to the code of conduct', required: true },
-    ],
-  },
-];
+import { Application } from '@/types';
+import { api } from '@/services/api';
 
 export interface ApplicationSlice {
   applications: Application[];
@@ -52,6 +8,16 @@ export interface ApplicationSlice {
   errorApplications: string | null;
   fetchApplicationsBySociety: (societyId: string) => Promise<void>;
   submitApplication: (applicationId: string, data: Record<string, any>) => Promise<void>;
+
+  // Admin state
+  adminToken: string | null;
+  adminForms: any[];
+  adminResponses: Record<string, any[]>;
+  adminLogin: (username: string, password: string) => Promise<void>;
+  adminLogout: () => void;
+  fetchAdminForms: () => Promise<void>;
+  adminCreateForm: (data: any) => Promise<void>;
+  fetchAdminResponses: (formId: string) => Promise<void>;
 }
 
 export const createApplicationSlice: StateCreator<ApplicationSlice> = (set, get) => ({
@@ -59,38 +25,87 @@ export const createApplicationSlice: StateCreator<ApplicationSlice> = (set, get)
   isLoadingApplications: false,
   errorApplications: null,
 
+  adminToken: null,
+  adminForms: [],
+  adminResponses: {},
+
   fetchApplicationsBySociety: async (societyId: string) => {
     set({ isLoadingApplications: true, errorApplications: null });
     try {
-      // Simulate network request
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Filter mock applications by societyId
-      // Fallback: If no apps for this society, show the mock apps anyway for demo purposes
-      let filtered = MOCK_APPLICATIONS.filter((app) => app.club_id === societyId);
-      if (filtered.length === 0) {
-        // For demonstration, map the mock apps to the requested society
-        filtered = MOCK_APPLICATIONS.map((app) => ({ ...app, club_id: societyId }));
-      }
-
-      set({ applications: filtered, isLoadingApplications: false });
+      const { data } = await api.get(`/clubs/${societyId}/forms`);
+      set({ applications: data, isLoadingApplications: false });
     } catch (error: any) {
       set({ errorApplications: error.message, isLoadingApplications: false });
     }
   },
 
-  submitApplication: async (applicationId: string, data: Record<string, any>) => {
+  submitApplication: async (applicationId: string, formData: Record<string, any>) => {
     set({ isLoadingApplications: true, errorApplications: null });
     try {
-      // Simulate network request
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(`Submitted application ${applicationId} with data:`, data);
-
-      // In a real app, this would be an API call
+      const answers = Object.keys(formData).map((fieldId) => ({
+        field_id: fieldId,
+        value: formData[fieldId]?.toString() || '',
+      }));
+      await api.post(`/forms/${applicationId}/submit`, {
+        student_id: 'anonymous', // In real app, fetch from auth
+        student_name: 'Anonymous Student',
+        answers,
+      });
       set({ isLoadingApplications: false });
     } catch (error: any) {
       set({ errorApplications: error.message, isLoadingApplications: false });
       throw error;
+    }
+  },
+
+  adminLogin: async (username, password) => {
+    try {
+      const { data } = await api.post('/society/login', { username, password });
+      set({ adminToken: data.token });
+      // update api defaults for future requests
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Login failed');
+    }
+  },
+
+  adminLogout: () => {
+    set({ adminToken: null, adminForms: [], adminResponses: {} });
+    delete api.defaults.headers.common['Authorization'];
+  },
+
+  fetchAdminForms: async () => {
+    try {
+      const { data } = await api.get('/society/forms');
+      set({ adminForms: data });
+    } catch (error: any) {
+      console.error('Failed to fetch admin forms', error);
+    }
+  },
+
+  adminCreateForm: async (formData) => {
+    try {
+      await api.post('/society/forms', formData);
+      await get().fetchAdminForms(); // refresh list
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Failed to create form');
+    }
+  },
+
+  fetchAdminResponses: async (formId) => {
+    set({ isLoadingApplications: true });
+    try {
+      const { data } = await api.get(`/society/forms/${formId}/responses`);
+      set((state) => ({
+        adminResponses: {
+          ...state.adminResponses,
+          [formId]: data,
+        },
+        isLoadingApplications: false,
+      }));
+    } catch (error: any) {
+      set({ isLoadingApplications: false });
+      console.error('Failed to fetch responses', error);
     }
   },
 });

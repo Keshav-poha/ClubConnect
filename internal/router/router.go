@@ -3,6 +3,7 @@ package router
 import (
 	"os"
 
+	"github.com/clubconnect/clubconnect/internal/config"
 	"github.com/clubconnect/clubconnect/internal/handlers"
 	"github.com/clubconnect/clubconnect/internal/middleware"
 	"github.com/clubconnect/clubconnect/internal/services"
@@ -10,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
+func Setup(db *gorm.DB, discovery *services.DiscoveryService, cfg *config.Config) *gin.Engine {
 	r := gin.New()
 
 	r.Use(gin.Recovery())
@@ -23,6 +24,8 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 	evH := handlers.NewEventHandler(db)
 	clH := handlers.NewClubHandler(db)
 	adH := handlers.NewAdminHandler(db, discovery)
+	formPublicH := handlers.NewFormPublicHandler(db)
+	formAdminH := handlers.NewFormAdminHandler(db, cfg)
 
 	api := r.Group("/api")
 	{
@@ -32,6 +35,22 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService) *gin.Engine {
 		api.GET("/events/:id", evH.GetEvent)
 		api.GET("/clubs", clH.ListClubs)
 		api.GET("/clubs/:id", clH.GetClub)
+		api.GET("/clubs/:club_id/forms", formPublicH.GetClubForms)
+		api.POST("/forms/:id/submit", formPublicH.SubmitForm)
+	}
+
+	// Society Admin portal routes
+	societyAdmin := r.Group("/api/society")
+	{
+		societyAdmin.POST("/login", formAdminH.Login)
+		
+		protected := societyAdmin.Group("/")
+		protected.Use(middleware.RequireAdminAuth(cfg))
+		{
+			protected.GET("/forms", formAdminH.GetForms)
+			protected.POST("/forms", formAdminH.CreateForm)
+			protected.GET("/forms/:id/responses", formAdminH.GetFormResponses)
+		}
 	}
 
 	admin := r.Group("/api/admin")

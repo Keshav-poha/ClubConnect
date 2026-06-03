@@ -52,8 +52,7 @@ func main() {
 			time.Sleep(cfg.ScrapeInterval)
 		}
 	}()
-
-	r := router.Setup(db, discovery)
+	r := router.Setup(db, discovery, cfg)
 
 	port := cfg.Port
 	if port == "" {

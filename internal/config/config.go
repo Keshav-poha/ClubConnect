@@ -18,8 +18,9 @@ type Config struct {
 	DBSSLMode  string
 
 	// Server
-	Port    string
-	GinMode string
+	Port      string
+	GinMode   string
+	JWTSecret string
 
 	// External Scraper (RapidAPI)
 	RapidAPIKey  string
@@ -60,6 +61,7 @@ func Load() (*Config, error) {
 		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
 		Port:       getEnv("PORT", "7860"),
 		GinMode:    getEnv("GIN_MODE", "debug"),
+		JWTSecret:  getEnv("JWT_SECRET", "supersecretkey_change_me_in_prod"),
 
 		RapidAPIKey:    getEnv("RAPIDAPI_KEY", ""),
 		RapidAPIHost:   getEnv("RAPIDAPI_HOST", ""),

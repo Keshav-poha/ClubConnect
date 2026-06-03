@@ -32,6 +32,10 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 		&models.Club{},
 		&models.Event{},
 		&models.ScrapeLog{},
+		&models.Form{},
+		&models.FormField{},
+		&models.FormResponse{},
+		&models.FormResponseAnswer{},
 	)
 	if err != nil {
 		return nil, err

@@ -14,9 +14,13 @@ type Club struct {
 	Bio        string         `gorm:"type:text" json:"bio"`
 	AvatarURL  string         `gorm:"type:text" json:"avatar_url"`
 	IsVerified bool           `gorm:"default:false" json:"is_verified"`
-	CreatedAt  time.Time      `json:"created_at"`
-	UpdatedAt  time.Time      `json:"updated_at"`
-	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
+	DeletedAt         gorm.DeletedAt `gorm:"index" json:"-"`
+
+	// Admin access for the society
+	AdminUsername     string `gorm:"type:varchar(100);uniqueIndex" json:"-"`
+	AdminPasswordHash string `gorm:"type:varchar(255)" json:"-"`
 
 	Events     []Event     `gorm:"foreignKey:ClubID" json:"events,omitempty"`
 	ScrapeLogs []ScrapeLog `gorm:"foreignKey:ClubID" json:"-"`
