@@ -12,7 +12,7 @@ export interface Event {
   club_id: string;
   title: string;
   description: string;
-  date: string;
+  date: string; // ISO-8601 string
   location: string;
   attendance?: string;
   image_url?: string;
@@ -35,7 +35,7 @@ export interface Application {
   club_id: string;
   title: string;
   description: string;
-  deadline?: string;
+  deadline?: string; // ISO-8601 string
   status: 'open' | 'closed';
   fields: ApplicationField[];
 }
@@ -44,6 +44,6 @@ export interface ApplicationResponse {
   id: string;
   application_id: string;
   user_id: string;
-  submitted_at: string;
+  submitted_at: string; // ISO-8601 string
   data: Record<string, any>;
 }

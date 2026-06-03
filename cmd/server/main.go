@@ -1,7 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/clubconnect/clubconnect/internal/config"
@@ -33,10 +37,18 @@ func main() {
 
 	clubSvc.SeedDefaults()
 
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
 	// background scraper
 	go func() {
 		// Small startup delay to let the HTTP server bind first
-		time.Sleep(10 * time.Second)
+		select {
+		case <-time.After(10 * time.Second):
+		case <-ctx.Done():
+			return
+		}
+
 		for {
 			lastScraped, err := discovery.GetLastScrapeTime()
 			if err == nil && !lastScraped.IsZero() {
@@ -44,12 +56,21 @@ func main() {
 				if time.Now().Before(nextScrape) {
 					sleepDuration := time.Until(nextScrape)
 					log.Printf("Last scrape was at %v. Next scrape scheduled in %v", lastScraped, sleepDuration)
-					time.Sleep(sleepDuration)
+					select {
+					case <-time.After(sleepDuration):
+					case <-ctx.Done():
+						return
+					}
 					continue
 				}
 			}
 			discovery.RunDiscoveryCycle()
-			time.Sleep(cfg.ScrapeInterval)
+			select {
+			case <-time.After(cfg.ScrapeInterval):
+			case <-ctx.Done():
+				log.Println("Scraper goroutine shutting down")
+				return
+			}
 		}
 	}()
 	r := router.Setup(db, discovery, cfg)
@@ -59,8 +80,26 @@ func main() {
 		port = "8080"
 	}
 
-	log.Println("starting on :" + port)
-	if err := r.Run(":" + port); err != nil {
-		log.Fatal(err)
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: r,
 	}
+
+	go func() {
+		log.Println("starting on :" + port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	<-ctx.Done()
+	stop()
+	log.Println("shutting down gracefully...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
+	}
+	log.Println("Server exiting")
 }

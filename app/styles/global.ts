@@ -1,10 +1,11 @@
 import { StyleSheet, Platform } from 'react-native';
+import { useMemo } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 
 export const useGlobalStyles = () => {
   const { colors, borderRadius } = useTheme();
 
-  return StyleSheet.create({
+  return useMemo(() => StyleSheet.create({
     clayCard: {
       backgroundColor: colors.backgroundCard,
       borderRadius: borderRadius.md,
@@ -125,5 +126,5 @@ export const useGlobalStyles = () => {
       alignItems: 'center',
       justifyContent: 'center',
     },
-  });
+  }), [colors, borderRadius]);
 };

@@ -15,7 +15,7 @@ export interface UiSlice {
 }
 
 export const createUiSlice: StateCreator<UiSlice> = (set) => ({
-  toast: null,
+  toast: null as ToastConfig | null,
   showToast: (config: ToastConfig) => {
     set({ toast: config });
   },
