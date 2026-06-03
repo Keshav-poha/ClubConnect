@@ -39,10 +39,10 @@ export const AdminDashboardScreen = () => {
       <View style={styles.cardHeader}>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <View style={[styles.badge, { backgroundColor: item.status === 'open' ? colors.accentCyan : colors.textMuted }]}>
-          <Text style={styles.badgeText}>{item.status}</Text>
+          <Text style={[styles.badgeText, { color: colors.backgroundCard }]}>{item.status}</Text>
         </View>
       </View>
-      <Text style={styles.responsesText}>
+      <Text style={[styles.responsesText, { color: colors.textMuted }]}>
         {item.fields?.length || 0} fields
       </Text>
     </Pressable>
@@ -108,12 +108,10 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     fontFamily: 'Montserrat_700Bold',
-    color: '#080808',
     textTransform: 'uppercase',
   },
   responsesText: {
     fontSize: 14,
-    color: '#888',
   },
   empty: {
     padding: 32,

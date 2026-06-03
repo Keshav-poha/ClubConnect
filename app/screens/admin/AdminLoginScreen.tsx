@@ -18,6 +18,7 @@ export const AdminLoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
   const login = useStore((s) => s.adminLogin);
   const showToast = useStore((s) => s.showToast);
@@ -30,11 +31,14 @@ export const AdminLoginScreen = () => {
     setError('');
 
     try {
+      setIsLoading(true);
       await login(username, password);
       showToast({ message: 'Login successful', type: 'success' });
       navigation.replace('AdminDashboard');
     } catch (err: any) {
       setError(err.message || 'Invalid credentials');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,10 +71,11 @@ export const AdminLoginScreen = () => {
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <Button 
-            label="Log In" 
+            label={isLoading ? "Logging in..." : "Log In"} 
             onPress={handleLogin} 
             variant="primary" 
             style={styles.button}
+            disabled={isLoading}
           />
         </View>
       </KeyboardAvoidingView>

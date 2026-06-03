@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
+import { useStore } from '@/store';
 
 // For web, we use a relative path so it works seamlessly on HF Spaces or any domain.
 // For native (iOS/Android), it falls back to the absolute URL in .env
@@ -21,6 +22,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error?.response?.data || error.message);
+    if (error?.response?.status === 401) {
+      useStore.getState().adminLogout();
+    }
     return Promise.reject(error);
   },
 );

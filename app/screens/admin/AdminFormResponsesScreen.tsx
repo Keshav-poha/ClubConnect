@@ -33,8 +33,8 @@ export const AdminFormResponsesScreen = () => {
         Submitted: {new Date(item.submitted_at).toLocaleString()}
       </Text>
       <View style={styles.divider} />
-      {item.answers?.map((ans: any, idx: number) => (
-        <View key={idx} style={styles.answerRow}>
+      {item.answers?.map((ans: any) => (
+        <View key={ans.field_id} style={styles.answerRow}>
           <Text style={styles.answerLabel}>Field ID: {ans.field_id}</Text>
           <Text style={styles.answerValue}>{ans.value}</Text>
         </View>
