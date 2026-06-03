@@ -17,7 +17,7 @@ interface SettingsRowProps {
   danger?: boolean;
 }
 
-export const SettingsRow = ({
+export const SettingsRow = React.memo(({
   icon: Icon,
   label,
   value,
@@ -80,7 +80,7 @@ export const SettingsRow = ({
       {showDivider && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
     </>
   );
-};
+});
 
 const styles = StyleSheet.create({
   wrapper: {

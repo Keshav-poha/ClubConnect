@@ -13,7 +13,7 @@ export const LocationTag = ({ location, style }: LocationTagProps) => {
   return (
     <View style={[styles.container, style]}>
       <MapPin color={colors.textMuted} size={14} style={styles.icon} />
-      <Text variant="mono" color="textPrimary" style={styles.text} numberOfLines={1}>
+      <Text variant="mono" color="textPrimary" style={styles.text} numberOfLines={1} ellipsizeMode="tail">
         {location}
       </Text>
     </View>

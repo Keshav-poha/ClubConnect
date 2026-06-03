@@ -54,9 +54,9 @@ export function MasonryGrid<T>({
       ListHeaderComponent={ListHeaderComponent ? <>{ListHeaderComponent}</> : null}
       ListFooterComponent={ListFooterComponent ? <>{ListFooterComponent}</> : null}
       removeClippedSubviews={true}
-      maxToRenderPerBatch={10}
-      updateCellsBatchingPeriod={50}
-      initialNumToRender={8}
+      maxToRenderPerBatch={5}
+      updateCellsBatchingPeriod={150}
+      initialNumToRender={4}
       windowSize={5}
     />
   );
