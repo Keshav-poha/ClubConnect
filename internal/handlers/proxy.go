@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -18,8 +19,23 @@ func ProxyImage() gin.HandlerFunc {
 		}
 
 		// Basic validation to prevent arbitrary proxying
-		if !strings.HasPrefix(imageURL, "http://") && !strings.HasPrefix(imageURL, "https://") {
+		parsed, err := url.Parse(imageURL)
+		if err != nil || (!strings.HasPrefix(imageURL, "http://") && !strings.HasPrefix(imageURL, "https://")) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid url"})
+			return
+		}
+
+		allowedDomains := []string{"instagram.com", "scontent.cdninstagram.com", "googleusercontent.com"}
+		isAllowed := false
+		for _, domain := range allowedDomains {
+			if strings.HasSuffix(parsed.Host, domain) {
+				isAllowed = true
+				break
+			}
+		}
+
+		if !isAllowed {
+			c.JSON(http.StatusForbidden, gin.H{"error": "domain not allowed for proxy"})
 			return
 		}
 

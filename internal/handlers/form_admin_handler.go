@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/clubconnect/clubconnect/internal/config"
@@ -36,6 +37,8 @@ func (h *FormAdminHandler) Login(c *gin.Context) {
 
 	var club models.Club
 	if err := h.db.Where("admin_username = ?", req.Username).First(&club).Error; err != nil {
+		// Dummy compare to prevent timing attacks
+		bcrypt.CompareHashAndPassword([]byte("$2a$10$b/2Lw5ZVroQErWr62bq.B.Dw0O2txAJXqgTDXvayMF16w6f1CzRsa"), []byte(req.Password))
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
@@ -110,8 +113,13 @@ func (h *FormAdminHandler) GetFormResponses(c *gin.Context) {
 		return
 	}
 
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+	limit, _ := strconv.Atoi(limitStr)
+	offset, _ := strconv.Atoi(offsetStr)
+
 	var responses []models.FormResponse
-	if err := h.db.Preload("Answers").Where("form_id = ?", formID).Find(&responses).Error; err != nil {
+	if err := h.db.Preload("Answers").Where("form_id = ?", formID).Limit(limit).Offset(offset).Find(&responses).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch responses"})
 		return
 	}
