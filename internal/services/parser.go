@@ -101,7 +101,7 @@ func (s *ParserService) runGroqParser(caption string) (*ExtractedEvent, error) {
 	}
 
 	today := time.Now().Format("2006-01-02")
-	prompt := fmt.Sprintf(`You are a strict event classifier and information extractor for a college club aggregator app.
+	systemPrompt := fmt.Sprintf(`You are a strict event classifier and information extractor for a college club aggregator app.
 
 TASK: Analyze the Instagram caption below. Determine if it is an ACTIONABLE UPCOMING EVENT that a student would want to attend or participate in.
 
@@ -127,15 +127,13 @@ Output ONLY valid JSON matching this exact structure:
   "location": "string",
   "description": "string",
   "attendance": "string"
-}
-
-Caption: %s`, today, caption)
+}`, today)
 
 	reqBody := groqRequest{
 		Model: s.model,
 		Messages: []groqMessage{
-			{Role: "system", Content: "You are a JSON event extractor. Output only valid JSON matching the schema."},
-			{Role: "user", Content: prompt},
+			{Role: "system", Content: systemPrompt},
+			{Role: "user", Content: "Caption: " + caption},
 		},
 		ResponseFormat: groqResponseFormat{Type: "json_object"},
 		Temperature:    0.1,
@@ -207,7 +205,8 @@ Caption: %s`, today, caption)
 			}
 		}
 		if !parsed {
-			log.Printf("could not parse date %q, using default fallback", dateStr)
+			log.Printf("could not parse date %q, marking as non-event", dateStr)
+			raw.IsEvent = false
 		}
 	}
 
