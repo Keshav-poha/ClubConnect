@@ -13,7 +13,7 @@ const formatDate = (dateString?: string) => {
   if (!dateString) return 'TBA';
   try {
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
+    if (isNaN(date.getTime())) return 'TBA';
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
@@ -21,7 +21,7 @@ const formatDate = (dateString?: string) => {
       year: 'numeric',
     });
   } catch (e) {
-    return dateString;
+    return 'TBA';
   }
 };
 

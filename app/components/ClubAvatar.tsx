@@ -11,7 +11,7 @@ interface ClubAvatarProps {
   style?: ViewStyle;
 }
 
-export const ClubAvatar = ({ url, name, size = 40, style }: ClubAvatarProps) => {
+export const ClubAvatar = ({ url, name = '', size = 40, style }: ClubAvatarProps) => {
   const getInitials = () => name.substring(0, 2).toUpperCase();
 
   return (
