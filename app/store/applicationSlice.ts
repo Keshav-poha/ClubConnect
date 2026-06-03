@@ -17,6 +17,7 @@ export interface ApplicationSlice {
   adminLogout: () => void;
   fetchAdminForms: () => Promise<void>;
   adminCreateForm: (data: any) => Promise<void>;
+  adminDeleteForm: (formId: string) => Promise<void>;
   fetchAdminResponses: (formId: string) => Promise<void>;
 }
 
@@ -39,16 +40,16 @@ export const createApplicationSlice: StateCreator<ApplicationSlice> = (set, get)
     }
   },
 
-  submitApplication: async (applicationId: string, formData: Record<string, any>) => {
+  submitApplication: async (applicationId: string, payload: Record<string, any>) => {
     set({ isLoadingApplications: true, errorApplications: null });
     try {
-      const answers = Object.keys(formData).map((fieldId) => ({
+      const answers = Object.keys(payload.answers).map((fieldId) => ({
         field_id: fieldId,
-        value: formData[fieldId]?.toString() || '',
+        value: payload.answers[fieldId]?.toString() || '',
       }));
       await api.post(`/forms/${applicationId}/submit`, {
-        student_id: 'anonymous', // In real app, fetch from auth
-        student_name: 'Anonymous Student',
+        student_id: payload.student_id,
+        student_name: payload.student_name,
         answers,
       });
       set({ isLoadingApplications: false });
@@ -89,6 +90,15 @@ export const createApplicationSlice: StateCreator<ApplicationSlice> = (set, get)
       await get().fetchAdminForms(); // refresh list
     } catch (error: any) {
       throw new Error(error.response?.data?.error || 'Failed to create form');
+    }
+  },
+
+  adminDeleteForm: async (formId) => {
+    try {
+      await api.delete(`/society/forms/${formId}`);
+      await get().fetchAdminForms(); // refresh list
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Failed to delete form');
     }
   },
 

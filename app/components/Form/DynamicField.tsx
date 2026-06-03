@@ -20,18 +20,21 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
       return (
         <ClayTextInput
           label={labelWithRequired}
-          value={value || ''}
+          value={(value as string) || ''}
           onChangeText={onChange}
           error={error}
           placeholder={`Enter ${field.label.toLowerCase()}`}
         />
       );
     case 'dropdown':
+      const opts = Array.isArray(field.options) 
+        ? field.options 
+        : (typeof field.options === 'string' ? field.options.split(',').map(s => s.trim()).filter(Boolean) : []);
       return (
         <ClayDropdown
           label={labelWithRequired}
-          value={value || ''}
-          options={field.options || []}
+          value={(value as string) || ''}
+          options={opts}
           onChange={onChange}
           error={error}
           placeholder={`Select ${field.label.toLowerCase()}`}
@@ -50,7 +53,7 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
       return (
         <ClayFileUpload
           label={labelWithRequired}
-          value={value || null}
+          value={(value as string) || null}
           onChange={onChange}
           error={error}
         />

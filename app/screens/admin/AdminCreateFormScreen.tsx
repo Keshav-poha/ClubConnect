@@ -9,6 +9,7 @@ import { Text } from '@/components/Text';
 import { Button } from '@/components/Button';
 import { ClayTextInput } from '@/components/Form/ClayTextInput';
 import { ClayDropdown } from '@/components/Form/ClayDropdown';
+import { ClayCheckbox } from '@/components/Form/ClayCheckbox';
 import { useTheme } from '@/hooks/useTheme';
 import { useStore } from '@/store';
 
@@ -22,6 +23,7 @@ export const AdminCreateFormScreen = () => {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [deadline, setDeadline] = useState('');
   const [fields, setFields] = useState<any[]>([]);
 
   const addField = () => {
@@ -45,9 +47,20 @@ export const AdminCreateFormScreen = () => {
     }
 
     try {
+      let parsedDeadline = undefined;
+      if (deadline.trim()) {
+        const d = new Date(deadline.trim() + 'T23:59:59Z');
+        if (isNaN(d.getTime())) {
+          showToast({ message: 'Invalid deadline format. Use YYYY-MM-DD', type: 'error' });
+          return;
+        }
+        parsedDeadline = d.toISOString();
+      }
+
       await createForm({
         title,
         description,
+        deadline: parsedDeadline,
         fields,
       });
       showToast({ message: 'Form created!', type: 'success' });
@@ -73,6 +86,10 @@ export const AdminCreateFormScreen = () => {
           multiline 
           style={{ height: 100 }}
         />
+
+        <View style={{ height: 16 }} />
+        <Text style={styles.label}>Deadline (Optional)</Text>
+        <ClayTextInput value={deadline} onChangeText={setDeadline} placeholder="YYYY-MM-DD" />
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Fields</Text>
@@ -109,6 +126,13 @@ export const AdminCreateFormScreen = () => {
                 />
               </View>
             )}
+            <View style={{ marginTop: 12 }}>
+              <ClayCheckbox 
+                label="Required field?" 
+                checked={field.required} 
+                onChange={(checked) => updateField(index, 'required', checked)} 
+              />
+            </View>
             <Pressable onPress={() => removeField(index)} style={styles.removeBtn}>
               <Text style={{ color: '#FF4B4B', fontSize: 12 }}>Remove Field</Text>
             </Pressable>

@@ -20,7 +20,16 @@ export const AdminFormResponsesScreen = () => {
   
   const responses = useStore((s) => s.adminResponses[formId] || []);
   const fetchResponses = useStore((s) => s.fetchAdminResponses);
+  const adminForms = useStore((s) => s.adminForms);
   const isLoading = useStore((s) => s.isLoadingApplications);
+  
+  const currentForm = adminForms.find(f => f.id === formId);
+
+  const getFieldLabel = (fieldId: string) => {
+    if (!currentForm) return `Field ID: ${fieldId}`;
+    const field = currentForm.fields?.find((f: any) => f.id === fieldId);
+    return field ? field.label : `Field ID: ${fieldId}`;
+  };
 
   useEffect(() => {
     fetchResponses(formId);
@@ -35,7 +44,7 @@ export const AdminFormResponsesScreen = () => {
       <View style={styles.divider} />
       {item.answers?.map((ans: any) => (
         <View key={ans.field_id} style={styles.answerRow}>
-          <Text style={styles.answerLabel}>Field ID: {ans.field_id}</Text>
+          <Text style={styles.answerLabel}>{getFieldLabel(ans.field_id)}</Text>
           <Text style={styles.answerValue}>{ans.value}</Text>
         </View>
       ))}

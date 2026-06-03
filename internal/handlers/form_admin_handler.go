@@ -126,3 +126,21 @@ func (h *FormAdminHandler) GetFormResponses(c *gin.Context) {
 
 	c.JSON(http.StatusOK, responses)
 }
+
+func (h *FormAdminHandler) DeleteForm(c *gin.Context) {
+	clubID := c.GetString("club_id")
+	formID := c.Param("id")
+
+	var form models.Form
+	if err := h.db.Where("id = ? AND club_id = ?", formID, clubID).First(&form).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Form not found or unauthorized"})
+		return
+	}
+
+	if err := h.db.Delete(&form).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete form"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Form deleted successfully"})
+}

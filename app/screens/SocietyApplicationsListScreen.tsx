@@ -32,33 +32,39 @@ export const SocietyApplicationsListScreen = () => {
     fetchApps(societyId);
   }, [societyId]);
 
-  const renderItem = ({ item }: { item: any }) => (
-    <Pressable
-      style={[globalStyles.clayCard, styles.appCard]}
-      onPress={() => navigation.navigate('ApplicationForm', { applicationId: item.id })}
-    >
-      <View style={styles.cardHeader}>
-        <Text
-          style={[
-            styles.appTitle,
-            { color: colors.textPrimary, fontFamily: typography.h2.fontFamily },
-          ]}
-        >
-          {item.title}
-        </Text>
-        {item.status === 'open' && (
-          <View style={[styles.statusBadge, { backgroundColor: colors.accentGreen + '20' }]}>
-            <Text
-              style={[
-                styles.statusText,
-                { color: colors.accentGreen, fontFamily: typography.bodyMedium.fontFamily },
-              ]}
-            >
-              OPEN
-            </Text>
-          </View>
-        )}
-      </View>
+  const renderItem = ({ item }: { item: any }) => {
+    const isClosed = item.status === 'closed' || (item.deadline && new Date() > new Date(item.deadline));
+    const deadlineStr = item.deadline ? new Date(item.deadline).toLocaleDateString() : 'No deadline';
+
+    return (
+      <Pressable
+        style={[globalStyles.clayCard, styles.appCard, isClosed && { opacity: 0.6 }]}
+        onPress={() => navigation.navigate('ApplicationForm', { applicationId: item.id })}
+        disabled={isClosed}
+      >
+        <View style={styles.cardHeader}>
+          <Text
+            style={[
+              styles.appTitle,
+              { color: colors.textPrimary, fontFamily: typography.h2.fontFamily },
+            ]}
+          >
+            {item.title}
+          </Text>
+          {isClosed ? (
+            <View style={[styles.statusBadge, { backgroundColor: '#E11D4820' }]}>
+              <Text style={[styles.statusText, { color: '#E11D48', fontFamily: typography.bodyMedium.fontFamily }]}>
+                CLOSED
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.statusBadge, { backgroundColor: colors.accentGreen + '20' }]}>
+              <Text style={[styles.statusText, { color: colors.accentGreen, fontFamily: typography.bodyMedium.fontFamily }]}>
+                OPEN
+              </Text>
+            </View>
+          )}
+        </View>
 
       <Text
         style={[
@@ -69,22 +75,23 @@ export const SocietyApplicationsListScreen = () => {
         {item.description}
       </Text>
 
-      <View style={styles.cardFooter}>
-        <View style={styles.deadlineRow}>
-          <Clock size={14} color={colors.textMuted} />
-          <Text
-            style={[
-              styles.deadlineText,
-              { color: colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
-            ]}
-          >
-            {item.deadline ? new Date(item.deadline).toLocaleDateString() : 'No deadline'}
-          </Text>
+        <View style={styles.cardFooter}>
+          <View style={styles.deadlineRow}>
+            <Clock size={14} color={isClosed ? '#E11D48' : colors.textMuted} />
+            <Text
+              style={[
+                styles.deadlineText,
+                { color: isClosed ? '#E11D48' : colors.textMuted, fontFamily: typography.bodyMedium.fontFamily },
+              ]}
+            >
+              {deadlineStr}
+            </Text>
+          </View>
+          <ChevronRight size={20} color={isClosed ? colors.textMuted : colors.accentCyan} />
         </View>
-        <ChevronRight size={20} color={colors.accentCyan} />
-      </View>
-    </Pressable>
-  );
+      </Pressable>
+    );
+  };
 
   return (
     <ScreenContainer>

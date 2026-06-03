@@ -9,6 +9,7 @@ import { ScreenContainer } from '@/components/ScreenContainer';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { DynamicField } from '@/components/Form/DynamicField';
+import { ClayTextInput } from '@/components/Form/ClayTextInput';
 import { useTheme } from '@/hooks/useTheme';
 
 type RouteProps = RouteProp<RootStackParamList, 'ApplicationForm'>;
@@ -28,6 +29,8 @@ export const ApplicationFormScreen = () => {
   const application = applications.find((a) => a.id === applicationId);
 
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [studentName, setStudentName] = useState('');
+  const [studentId, setStudentId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,6 +61,15 @@ export const ApplicationFormScreen = () => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
 
+    if (!studentName.trim()) {
+      newErrors['studentName'] = 'Name is required';
+      isValid = false;
+    }
+    if (!studentId.trim()) {
+      newErrors['studentId'] = 'Student/Registration ID is required';
+      isValid = false;
+    }
+
     application.fields.forEach((field) => {
       if (
         field.required &&
@@ -78,7 +90,11 @@ export const ApplicationFormScreen = () => {
 
     setIsSubmitting(true);
     try {
-      await submitApp(applicationId, formData);
+      await submitApp(applicationId, {
+        student_name: studentName.trim(),
+        student_id: studentId.trim(),
+        answers: formData,
+      });
       showToast({ message: 'Application submitted successfully!', type: 'success' });
       navigation.goBack();
     } catch (error: any) {
@@ -111,6 +127,25 @@ export const ApplicationFormScreen = () => {
           </Text>
 
           <View style={styles.formContainer}>
+            <View style={styles.identitySection}>
+              <ClayTextInput
+                label="Full Name *"
+                value={studentName}
+                onChangeText={(val) => { setStudentName(val); if (errors['studentName']) { const e = {...errors}; delete e['studentName']; setErrors(e); } }}
+                placeholder="Enter your name"
+                error={errors['studentName']}
+              />
+              <ClayTextInput
+                label="Student/Registration ID *"
+                value={studentId}
+                onChangeText={(val) => { setStudentId(val); if (errors['studentId']) { const e = {...errors}; delete e['studentId']; setErrors(e); } }}
+                placeholder="Enter your ID"
+                error={errors['studentId']}
+              />
+            </View>
+
+            <View style={{ height: 1, backgroundColor: '#333', marginVertical: 16 }} />
+
             {application.fields.map((field) => (
               <DynamicField
                 key={field.id}
@@ -157,6 +192,10 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     gap: 16,
+  },
+  identitySection: {
+    gap: 16,
+    marginBottom: 8,
   },
   submitContainer: {
     marginTop: 32,

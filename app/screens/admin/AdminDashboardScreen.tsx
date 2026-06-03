@@ -10,6 +10,8 @@ import { Button } from '@/components/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { useGlobalStyles } from '@/styles/global';
 import { useStore } from '@/store';
+import { Trash2 } from 'lucide-react-native';
+import { Alert } from 'react-native';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -20,6 +22,7 @@ export const AdminDashboardScreen = () => {
   
   const forms = useStore((s) => s.adminForms);
   const fetchForms = useStore((s) => s.fetchAdminForms);
+  const deleteForm = useStore((s) => s.adminDeleteForm);
   const logout = useStore((s) => s.adminLogout);
 
   useEffect(() => {
@@ -29,6 +32,13 @@ export const AdminDashboardScreen = () => {
   const handleLogout = () => {
     logout();
     navigation.replace('AdminLogin');
+  };
+
+  const handleDelete = (id: string, title: string) => {
+    Alert.alert('Delete Form', `Are you sure you want to delete "${title}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deleteForm(id) },
+    ]);
   };
 
   const renderItem = ({ item }: { item: any }) => (
@@ -42,9 +52,14 @@ export const AdminDashboardScreen = () => {
           <Text style={[styles.badgeText, { color: colors.backgroundCard }]}>{item.status}</Text>
         </View>
       </View>
-      <Text style={[styles.responsesText, { color: colors.textMuted }]}>
-        {item.fields?.length || 0} fields
-      </Text>
+      <View style={styles.cardFooter}>
+        <Text style={[styles.responsesText, { color: colors.textMuted }]}>
+          {item.fields?.length || 0} fields
+        </Text>
+        <Pressable onPress={() => handleDelete(item.id, item.title)} hitSlop={10}>
+          <Trash2 size={20} color="#FF4B4B" />
+        </Pressable>
+      </View>
     </Pressable>
   );
 
@@ -109,6 +124,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Montserrat_700Bold',
     textTransform: 'uppercase',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
   },
   responsesText: {
     fontSize: 14,

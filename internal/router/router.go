@@ -49,6 +49,7 @@ func Setup(db *gorm.DB, discovery *services.DiscoveryService, cfg *config.Config
 		{
 			protected.GET("/forms", formAdminH.GetForms)
 			protected.POST("/forms", formAdminH.CreateForm)
+			protected.DELETE("/forms/:id", formAdminH.DeleteForm)
 			protected.GET("/forms/:id/responses", formAdminH.GetFormResponses)
 		}
 	}

@@ -27,7 +27,7 @@ export interface ApplicationField {
   type: 'text' | 'dropdown' | 'checkbox' | 'file';
   label: string;
   required: boolean;
-  options?: string[]; // Used for dropdowns
+  options?: string | string[]; // Can be comma separated string or array
 }
 
 export interface Application {
