@@ -5,6 +5,7 @@ import (
 
 	"github.com/clubconnect/clubconnect/internal/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -45,8 +46,12 @@ func (h *FormPublicHandler) SubmitForm(c *gin.Context) {
 		return
 	}
 
-	// Force the correct form ID
-	h.db.Raw("SELECT id FROM forms WHERE id = ?", formID).Scan(&response.FormID)
+	parsedFormID, err := uuid.Parse(formID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form ID"})
+		return
+	}
+	response.FormID = parsedFormID
 
 	if err := h.db.Create(&response).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to submit response"})
