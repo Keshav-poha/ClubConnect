@@ -11,7 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useGlobalStyles } from '@/styles/global';
 import { useStore } from '@/store';
 import { Trash2 } from 'lucide-react-native';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -35,10 +35,17 @@ export const AdminDashboardScreen = () => {
   };
 
   const handleDelete = (id: string, title: string) => {
-    Alert.alert('Delete Form', `Are you sure you want to delete "${title}"?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteForm(id) },
-    ]);
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(`Are you sure you want to delete "${title}"?`);
+      if (confirmed) {
+        deleteForm(id);
+      }
+    } else {
+      Alert.alert('Delete Form', `Are you sure you want to delete "${title}"?`, [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteForm(id) },
+      ]);
+    }
   };
 
   const renderItem = ({ item }: { item: any }) => (
