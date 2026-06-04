@@ -25,7 +25,7 @@ func ProxyImage() gin.HandlerFunc {
 			return
 		}
 
-		allowedDomains := []string{"instagram.com", "scontent.cdninstagram.com", "googleusercontent.com"}
+		allowedDomains := []string{"instagram.com", "scontent.cdninstagram.com", "googleusercontent.com", "fbcdn.net"}
 		isAllowed := false
 		for _, domain := range allowedDomains {
 			if strings.HasSuffix(parsed.Host, domain) {
