@@ -11,7 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useGlobalStyles } from '@/styles/global';
 import { useStore } from '@/store';
 import { Trash2 } from 'lucide-react-native';
-import { Alert, Platform } from 'react-native';
+import { Alert, Platform, Modal } from 'react-native';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -34,18 +34,27 @@ export const AdminDashboardScreen = () => {
     navigation.replace('AdminLogin');
   };
 
+  const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
+  const [formToDelete, setFormToDelete] = React.useState<{id: string, title: string} | null>(null);
+
   const handleDelete = (id: string, title: string) => {
     if (Platform.OS === 'web') {
-      const confirmed = window.confirm(`Are you sure you want to delete "${title}"?`);
-      if (confirmed) {
-        deleteForm(id);
-      }
+      setFormToDelete({ id, title });
+      setDeleteModalVisible(true);
     } else {
       Alert.alert('Delete Form', `Are you sure you want to delete "${title}"?`, [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Delete', style: 'destructive', onPress: () => deleteForm(id) },
       ]);
     }
+  };
+
+  const confirmDelete = () => {
+    if (formToDelete) {
+      deleteForm(formToDelete.id);
+    }
+    setDeleteModalVisible(false);
+    setFormToDelete(null);
   };
 
   const renderItem = ({ item }: { item: any }) => (
@@ -98,6 +107,25 @@ export const AdminDashboardScreen = () => {
           variant="primary" 
         />
       </View>
+
+      <Modal visible={deleteModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[globalStyles.clayCard, styles.modalContent]}>
+            <Text style={styles.modalTitle}>Delete Form</Text>
+            <Text style={{ color: colors.textMuted, marginBottom: 24, textAlign: 'center' }}>
+              Are you sure you want to delete "{formToDelete?.title}"?
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <View style={{ flex: 1 }}>
+                <Button label="Cancel" variant="secondary" onPress={() => setDeleteModalVisible(false)} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Button label="Delete" variant="primary" onPress={confirmDelete} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 };
@@ -151,5 +179,23 @@ const styles = StyleSheet.create({
   },
   logoutBtn: {
     padding: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  modalContent: {
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'Poppins_600SemiBold',
+    marginBottom: 8,
   }
 });
