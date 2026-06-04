@@ -144,3 +144,39 @@ func (h *FormAdminHandler) DeleteForm(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Form deleted successfully"})
 }
+
+type UpdateScoreRequest struct {
+	Score int `json:"score"`
+}
+
+func (h *FormAdminHandler) UpdateResponseScore(c *gin.Context) {
+	clubID := c.GetString("club_id")
+	responseID := c.Param("response_id")
+
+	var req UpdateScoreRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid score data"})
+		return
+	}
+
+	if req.Score < 0 || req.Score > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Score must be between 0 and 100"})
+		return
+	}
+
+	var response models.FormResponse
+	// We need to join with forms to ensure the form belongs to the club
+	if err := h.db.Joins("JOIN forms ON forms.id = form_responses.form_id").
+		Where("form_responses.id = ? AND forms.club_id = ?", responseID, clubID).
+		First(&response).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Response not found or unauthorized"})
+		return
+	}
+
+	if err := h.db.Model(&response).Update("score", req.Score).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update score"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Score updated successfully", "score": req.Score})
+}

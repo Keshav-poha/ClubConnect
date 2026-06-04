@@ -50,6 +50,7 @@ type FormResponse struct {
 	FormID      uuid.UUID      `gorm:"type:uuid;not null;index" json:"form_id"`
 	StudentID   string         `gorm:"type:varchar(100);not null" json:"student_id"`
 	StudentName string         `gorm:"type:varchar(255);not null" json:"student_name"`
+	Score       *int           `gorm:"default:null" json:"score"`
 	SubmittedAt time.Time      `json:"submitted_at"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 

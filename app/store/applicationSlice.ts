@@ -19,6 +19,7 @@ export interface ApplicationSlice {
   adminCreateForm: (data: any) => Promise<void>;
   adminDeleteForm: (formId: string) => Promise<void>;
   fetchAdminResponses: (formId: string) => Promise<void>;
+  adminUpdateResponseScore: (formId: string, responseId: string, score: number) => Promise<void>;
 }
 
 export const createApplicationSlice: StateCreator<ApplicationSlice> = (set, get) => ({
@@ -116,6 +117,16 @@ export const createApplicationSlice: StateCreator<ApplicationSlice> = (set, get)
     } catch (error: any) {
       set({ isLoadingApplications: false });
       console.error('Failed to fetch responses', error);
+    }
+  },
+
+  adminUpdateResponseScore: async (formId, responseId, score) => {
+    try {
+      await api.patch(`/society/forms/${formId}/responses/${responseId}/score`, { score });
+      // Refresh responses
+      await get().fetchAdminResponses(formId);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Failed to update score');
     }
   },
 });
