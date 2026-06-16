@@ -23,8 +23,8 @@ The system is built on a modern decoupled architecture, combining a high-perform
 graph TD
     %% Frontend Layer
     subgraph Frontend [Client Applications]
-        Web[Web App (React Native Web)]
-        Mobile[Mobile App (Expo/React Native)]
+        Web["Web App (React Native Web)"]
+        Mobile["Mobile App (Expo/React Native)"]
     end
 
     %% API Gateway & Routing
@@ -42,8 +42,8 @@ graph TD
         %% Services
         subgraph Services
             Insta[Instagram Scraper Service]
-            AIParser[AI Parsing Service (Qwen/Gemini)]
-            FormService[Form & Ranking System]
+            AIParser["AI Parsing Service (Qwen/Gemini)"]
+            FormService["Form & Ranking System"]
         end
         
         %% Database
